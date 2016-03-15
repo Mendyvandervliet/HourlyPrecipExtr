@@ -1,0 +1,18 @@
+\documentclass{article}
+
+\title{BLa}
+\author{Mendy}
+
+\begin{document}
+
+\maketitle
+
+<<Greeting, cache=TRUE>>=
+library(HourlyPrecipExtr)
+hello()
+plot(rnorm(100))
+@
+
+
+
+\end{document}
