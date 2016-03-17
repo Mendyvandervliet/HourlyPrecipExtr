@@ -17,20 +17,22 @@
 % install.packages("PCICt")
 % install.packages("ggplot2")
 % install.packages("knitr")
-% install.packages("data.table")
 % install.packages(quantreg)
+% install.packages("data.table", repos="http://R-Forge.R-project.org")      % install.packages("data.table")
 
 <<setup, include=FALSE, cache=FALSE, echo=FALSE>>=
 library(PCICt)
 library(ggplot2)
 library(knitr)
-library(data.table)
+#library(data.table)
 library(quantreg)
 # set global chunk options
 opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
                echo=FALSE, fig.height=5, fig.width=5, #message=FALSE,
                fig.pos="!ht", fig.align='center') #,tidy=TRUE
 @
+
+
 
 \title{Generic Report\\
         Spatial and seasonal variability}
@@ -43,7 +45,7 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 
 \section{Data}
 
-<<getdata,cache=FALSE,>>=
+<<getdata,cache=FALSE>>=
 
 # How to get right file?
 # Go to http://projects.knmi.nl/klimatologie/uurgegevens/selectie.cgi
@@ -53,38 +55,54 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 # Select stations: 225 De Kooy, 260 De Bilt, 280 Eelde, 310 Vlissingen, 380 Maastricht
 # For description weather codes (WW) see: http://bibliotheek.knmi.nl/scholierenpdf/weercodes_Nederland,
 # these code are  only used to study specific extreme events
-
+library(data.table)
 library(HourlyPrecipExtr)
+# tmp <- fread("./inst/extData/KNMI_rainhr.txt", sep=",",col.names=c("STN", "YYYYMMDD", "HH", "DD", "T", "TD", "DR", "RH", "U", "WW"))
+# tmp[, Date := as.Date(as.POSIXlt(as.PCICt(strptime(YYYYMMDD,"%Y%m%d"),cal="gregorian")))]
+# tmp[, date := as.POSIXct(paste(Date,as.character(HH)), format="%Y-%m- %d %H")]
+# tmp[, ':='(Year= year(Date), Month= month(Date), Day= mday(Date))]
+# tmp[, ':='(RH = RH * 0.1, T = T * 0.1, TD = TD * 0.1, DR = DR * 0.1)] # RH in mm, T and Td in degrees Celsius, DR in hrs
+# tmp[RH == -0.1] <- tmp[RH == -0.1][,RH := 0] # All negative values(RH<0.05) become 0
+# hrKNMI <- tmp
+
 hrKNMI <- loaddata("./inst/extData/KNMI_rainhr.txt")
-save.image("./inst/tussenStap/hrKNMI")
+save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
 @
 
+% Data table error;  can't find the bug
 
-\chapter{Results}
+% FALSE Error in ‘:=‘(Date, as.Date(as.POSIXlt(as.PCICt(strptime(YYYYMMDD, "%Y%m%d"),
+% : Check that is.data.table(DT) == TRUE. Otherwise, := and ‘:=‘(...) are defined
+% for use in j, once only and in particular ways. See help(":=").
+% FALSE Error in save(hrKNMI, file = "./inst/tussenStap/hrKNMI.rda"): object ’hrKNMI’
+% not found
+
+\section{Results}
 
 This chapter consist of several parts. The first paragraph studies the spatial and seasonal variability regarding (extreme) precipitation. In the second paragraph trends in extreme precipitation are investigated. The third part focusses on the mechanisms behind these trends, by studying the correlation with temperature, dewpoint temperature, wind direction, CAPE (and location of cyclones). The last part extends the current work to European scale.
 
-<<loading, cache=TRUE>>=
-hrKNMI <- load("./inst/tussenStap/hrKNMI")
+<<loading, cache=FALSE>>=
+hrKNMI <- load("./inst/tussenStap/hrKNMI.rda")
 @
 
 % Histograms of binomial distribution RH for each station
 <<loadingpdf>>=
+#ggplot(hrKNMI[STN==260 & RH > 0], aes(x=RH)) + geom_histogram() +
 hB <- hist(hrKNMI[STN == 260][RH>0]$RH, #  B_table[RH>0]$RH,
        breaks = c(seq(-0.05,30, by=0.1), #"FD" For more breaks than the default
-       max(B_table[RH>0]$RH)),plot=FALSE)
-KB <- hist(K_table[RH>0]$RH,
-       breaks = c(seq(-0.05,30, by=0.1),max(K_table[RH>0]$RH)),
-       plot=FALSE)
-EB <- hist(E_table[RH>0]$RH,
-       breaks = c(seq(-0.05,30, by=0.1),max(E_table[RH>0]$RH)),
-       plot=FALSE)
-VB <- hist(V_table[RH>0]$RH,
-       breaks = c(seq(-0.05,30, by=0.1),max(V_table[RH>0]$RH)),
-       plot=FALSE)
-MB <- hist(M_table[RH>0]$RH,
-       breaks = c(seq(-0.05,30, by=0.1),max(M_table[RH>0]$RH)),
-       plot=FALSE)
+       max(hrKNMI[STN == 260][RH>0]$RH)),plot=FALSE)
+# KB <- hist(K_table[RH>0]$RH,
+#        breaks = c(seq(-0.05,30, by=0.1),max(K_table[RH>0]$RH)),
+#        plot=FALSE)
+# EB <- hist(E_table[RH>0]$RH,
+#        breaks = c(seq(-0.05,30, by=0.1),max(E_table[RH>0]$RH)),
+#        plot=FALSE)
+# VB <- hist(V_table[RH>0]$RH,
+#        breaks = c(seq(-0.05,30, by=0.1),max(V_table[RH>0]$RH)),
+#        plot=FALSE)
+# MB <- hist(M_table[RH>0]$RH,
+#        breaks = c(seq(-0.05,30, by=0.1),max(M_table[RH>0]$RH)),
+#        plot=FALSE)
 @
 
 \section{Spatial and seasonal variability in precipitation}
