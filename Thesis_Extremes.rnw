@@ -1,13 +1,56 @@
 \documentclass{article}
 
-\title{BLa}
-\author{Mendy}
+%------------------------------------------------------------------------------------------------------------------------
+%Packages
+
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{a4wide}
+\setcounter{tocdepth}{0}        % Put subsubsections in the table of contents
+\setcounter{secnumdepth}{6}     % Numbering of sections/paragraphs
+
+%------------------------------------------------------------------------------------------------------------------------
+<<setup, include=FALSE, cache=FALSE, echo=FALSE>>=
+#setwd("~/R projecten/KNMIdataloading_hourly_1957/cache")
+library(knitr)
+library(ggplot2)
+library(quantreg)
+library(data.table)
+# set global chunk options
+opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
+               echo=FALSE, fig.height=5, fig.width=5, #message=FALSE,
+               fig.pos="!ht", fig.align='center') #,tidy=TRUE
+@
+
+\title{Generic Report\\
+        Spatial and seasonal variability}
+\author{Mendy van der Vliet}
 
 \begin{document}
 
+
 \maketitle
 
-This is going to be a nice report!
+\section{Results}
+
+This chapter consist of several parts. The first paragraph studies the spatial and seasonal variability regarding (extreme) precipitation. In the second paragraph trends in extreme precipitation are investigated. The third part focusses on the mechanisms behind these trends, by studying the correlation with temperature, dewpoint temperature, wind direction, CAPE (and location of cyclones). The last part extends the current work to European scale.
+
+\subsection{Spatial and seasonal variability in precipitation}
+
+Before we analyse trends in hourly precipitation sums, it is relevant to investigate the spatial and seasonal variability in precipitation. By analysing the seasonal variability we can define a summer and a winter season, of which the results are also shown in this paragraph.
+
+
+<<loading,cache=FALSE,>>=
+setwd("~/R projecten/KNMIdataloading_hourly_1957/cache")   #setwd("C:/Users/hp/Google Drive/MPOC/Master thesis")
+load("~/R projecten/KNMIdataloading_hourly_1957/cache/Workspace/Spat&interan_var_08-03.RData")
+load("~/R projecten/KNMIdataloading_hourly_1957/cache/Workspace/Tables_correct_17-02.RData")
+
+@
+
+
 
 <<Greeting, cache=TRUE>>=
 library(HourlyPrecipExtr)
