@@ -3,10 +3,10 @@
 # Function to subset a data file containing only boxplot data
 # As data is lognormal, we use logaritmic plotting. Therefore all data which value = 0 is omitted.
 
-# Load dependent package
+#' Function to obtain boxplot data
+
 #' @import data.table
 #'
-# Get boxplot data
 #' @export
 bxdata <- function(file) {
   bx <- file[RH>0]

@@ -26,6 +26,8 @@ library(ggplot2)
 library(knitr)
 library(data.table)
 library(quantreg)
+
+library(HourlyPrecipExtr)
 # set global chunk options
 opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
                echo=FALSE, fig.height=5, fig.width=5, #message=FALSE,
@@ -55,7 +57,6 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 # Select stations: 225 De Kooy, 260 De Bilt, 280 Eelde, 310 Vlissingen, 380 Maastricht
 # For description weather codes (WW) see: http://bibliotheek.knmi.nl/scholierenpdf/weercodes_Nederland,
 # these code are  only used to study specific extreme events
-library(HourlyPrecipExtr)
 hrKNMI <- loaddata("./inst/extData/KNMI_rainhr.txt")
 save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
 @
@@ -157,10 +158,11 @@ bx1 <- bx[, list(Qm = mean(Qm), Q99 = mean(Q99), Q99.9 = mean(Q99.9)), by=STN]
 @
 
 \begin{figure}[H]
+  \hspace{-1cm}
   \centering
+  \hspace{-1cm}
   \textbf{Boxplot per station}\par\medskip
-<<label=intensity>>=
-#,out.width='450px',fig.height=4,fig.width=9>>=
+<<label=intensity,out.width='400px',out.height='300px'>>=
 ggplot(bx,aes(x=STN,group=STN))+
   geom_boxplot(aes(y=RH))+
   geom_point(data=bx1,aes(y=Qm), colour='green',size=4)+
