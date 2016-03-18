@@ -104,7 +104,8 @@ MB <- hist(hrKNMI[STN == 380][RH>0]$RH,plot=FALSE,
 \begin{figure}[H]
   \centering
   \textbf{PDF}
-<<pdfplot,cache=FALSE,fig.keep='high',out.height='320px',out.width='400px'>>=
+  \vspace{-1.5cm}
+<<pdfplot,cache=FALSE,fig.keep='high',out.height='300px',out.width='375px'>>=
 plot(HB$mids[HB$mids>0], HB$density[HB$mids>0], type='l', log="x", col='orange',
      lwd=3, xlab="Intensity (mm/hr)", ylab="Density")+
 lines(KB$mids[KB$mids>0],KB$density[KB$mids>0], col = "pink", lwd = 3)+
@@ -119,6 +120,9 @@ lines(MB$mids[MB$mids>0],MB$density[MB$mids>0], col = "purple", lwd = 3)
 
 
 \begin{figure}[H]
+  \centering
+  \textbf{CDE}
+  \vspace{0.5cm}
 <<graphs, out.width='.49\\linewidth', fig.show='hold'>>=
 cde <- ggplot(hrKNMI[RH>0])
 n <- nrow(hrKNMI[RH>0])
@@ -136,40 +140,10 @@ scale_x_log10(name='Intensity (mm/hr)', breaks=c(0.1,0.2,0.5,1,10,25,50))+
 scale_y_log10(name="Density")+
 theme_bw()
 @
+  \caption{The conditional density estimate for all 5 stations: De Kooy (235), de Bilt(260), Eelde(280), Vlissingen (310) and Maastricht (380) and the nr of values per intensity}
+  \label{fig:CDE_full}
 \end{figure}
 
-%' \begin{figure}[H]
-%'   \flushleft
-%'   \begin{minipage}[adjusting]{0.54\linewidth}
-%' <<cde_plot,cache=FALSE,out.width='225px',out.height='175px'>>=
-%' cde <- ggplot(hrKNMI[RH>0])
-%' n <- nrow(hrKNMI[RH>0])
-%' cde + geom_density(aes(x=RH, group=STN, fill=STN),position="fill") +
-%' scale_x_log10(name='Intensity (mm/hr)', breaks=c(0.1,0.2,0.5,1,10,25,50))+
-%' ylab("Density")+
-%' theme_bw()
-%' @
-%'     \subcaption{CDE}
-%'     \label{fig:CDE}
-%'   \end{minipage}
-%'   \hfill
-%'   \begin{minipage}[adjusting]{0.45\linewidth}
-%' <<cde_nr,cache=FALSE,out.width='175px',out.height='175px'>>=
-%' n <- nrow(hrKNMI[RH>0])
-%' cde +
-%' stat_count(aes(n=n,x=RH, y=..count../n,
-%'         label="Nr of observations"), width=0.1, geom='point',
-%'         fill="Black") +
-%' scale_x_log10(name='Intensity (mm/hr)', breaks=c(0.1,0.2,0.5,1,10,25,50))+
-%' scale_y_log10(name="Density")+
-%' theme_bw()
-%' @
-%'     \subcaption{Number of observations}
-%'     \label{fig:CDE_nr}
-%'   \end{minipage}
-%'   \caption{The conditional density estimate for all 5 stations: De Kooy (235), de Bilt(260), Eelde(280), Vlissingen (310) and Maastricht (380) and the nr of values per intensity}
-%'   \label{fig:CDE_full}
-%' \end{figure}
 
 Figures \ref{fig:PDF} and \ref{fig:CDE_full} demonstrate that the closer to 0 mm/hr the higher the frecuency. Dry hours occur approximately 88\% of the time. Of all the wet hours 25\% has a value of 0.1 mm/hr and 15\% a value of 0.2 mm/hr. We can see that the distributions of the stations are very similar, although there are some minor differences. In general, Eelde has higher frequencies of wet hours of all intensities smaller than 1 mm/hr compared to the other stations. The occurence of more weak wet hours and less extreme wet hours, could be explained by the non-coastal and and low geographic position. The most intense rain events are not only dependent on strong updrafts, but they also need a strong supply of moisture. The sea can be seen as a large moisture source for a station located downwind of the sea, As Eelde is located farther downwind from the sea, it has a more land (i.e. dry) climate. This could explain the relatively lower (intensity and frequency of) precipitation extremes with intensities in the order of $> 2$ mm/hr. However, Maastricht is also situated relatively far downwind from the sea. Another substrate (SOURCE substrate difference in Maastricht) in Maastricht compared to the other stations, could explain that the highest hourly extremes occur at Maastricht. Moreover, relief as is present in Limburg could stimulate vertical motion/updraft, which leads to more local and intense rain events. This relation can be tested by analysing the correlation of extreme precipitation with CAPE. Furthermore, de Kooy often has a relatively higher density for wet intensities (except for 0.1, 0.3 and $> 2$ mm/hr) compared to other stations. In the interval 0.4-1.2 mm/hr De Bilt has a relatively low density, while for higher intensities a relatively high density. So in contrast to Eele, de Bilt has relatively more extreme wet hours, but for now it remains unclear why. To increase our knowledge about possible mechanisms behind the spatial differences, we specify between summer and winter season(dominated processes).
 
