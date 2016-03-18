@@ -26,6 +26,7 @@ library(ggplot2)
 library(knitr)
 library(data.table)
 library(quantreg)
+library(plyr)
 
 library(HourlyPrecipExtr)
 # set global chunk options
@@ -160,7 +161,7 @@ bx1 <- bx[, list(Qm = mean(Qm), Q99 = mean(Q99), Q99.9 = mean(Q99.9)), by=STN]
 \begin{figure}[H]
   \hspace{-1cm}
   \centering
-  \hspace{-1cm}
+  \hspace{-0.5cm}
   \textbf{Boxplot per station}\par\medskip
 <<label=intensity,out.width='400px',out.height='300px'>>=
 ggplot(bx,aes(x=STN,group=STN))+
@@ -181,6 +182,87 @@ ggplot(bx,aes(x=STN,group=STN))+
 
 As can be seen from Figure \ref{fig:Qint} the extreme quantiles for each of the stations do not differ much; the maximum difference is 0.3 mm/hr ($\approx 5$\%). The median is 0.0 mm/hr for every station. MEAN ! De Bilt has a relatively higher intensity corresponding to the 99\% quantile. When a station measures relatively more extremes compared to the other stations, which we stated above about de Bilt, it is reasonable that the intensity for the highest 1\% is also higher. The highest 0.1\% of the  data from de Kooy and Eelde have deviating lower intensities (order of difference 0.2-0.3 mm/hr). For de Kooy the physical explanation is still unclear, while for Eelde this matches well with our theory in which extreme rain intensities are limited by moisture availibility.
 
+
+\subsubsection{Seasonal variability}
+
+Stratiform rain events, the dominated type in winter, are characterized by relatively weak-sloping fronts and updrafts and their large-scale (Figure of front!! time scale specific). As the scale of the front is relatively large, the precipitation will be spread out over a larger area. Therefore, the intensity of this kind of fronts is relatively low. (another explanation for low intensity winter --> low temp! ) Due to the long duration of these large-scale precipitation events, we would expect to observe more wet hours in winter than in the summer.
+
+Nu count of hour a day wet, naar een FRACTIE van de dag?!
+<<loadingseas,cache=FALSE>>=
+# Have subset table with count per season wet and dry hours
+
+# Er zit een fout in table Interan --> length of month included
+hrKNMI[, code := 0]
+hrKNMI <- within(hrKNMI, code[RH>0] <- 1)
+hrKNMI[, code[RH>0] := 1]
+
+hrKNMI[, mday := mday(Date)]
+
+
+
+w_season <- hrKNMI
+w_season <- within(w_season,
+                  Month <- factor(Month))
+
+
+#w_season[, ':='(Meanmday=mean(max(mday)),by=Month]
+w_season[, count := count(code),by=Month]
+w_season <- w_season[, list(count := count(code)),by=Month]
+
+w_season <- w_season[, list(count := count/58/5),by=Month]
+w_season[, max(mday)]
+w_season[, max(mday),by=Month]
+w_season$Meanmday
+w_season[, Count := freq/58, by=Month]
+w_season <- hrKNMI[, count(code),by=Month]
+w_season[, M_days ,by=Month]
+setnames(w_season,c("Month", "Code", "All_count"))
+w_season[, Count := All_count/5]        # Count meaned over 5 stations
+w_season[, c_day := Count/58/length(Month), by=Month]
+@
+
+\begin{figure}[H]
+  \centering
+  \textbf{Wet hours}\par\medskip
+  %\hspace{-4cm}
+<<label=seasonal_wet,out.width='450px',cache=TRUE,fig.height=4,fig.width=9>>=
+ggplot(Interan, aes(x=month, y=(freq_st/58*12/365.25),
+                    fill=(freq_st/58*12/365.25), fig.height=4,fig.width=8)) +
+  geom_bar(stat="identity", aes(fill=(freq_st/58*12/365.25)), color="black")+
+  #geom_histogram(aes(fill = ..count..), colour="black", origin= 0.5, binwidth=1, bins=12) +
+  scale_fill_gradient("Count", low = "red", high = "blue", guide="colourbar") +
+  scale_x_continuous(breaks = c(1:12),
+                     labels=c("Jan.", "Feb", "Mar.", "Apr.", "May", "June",
+                                      "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."))+
+  geom_text(aes(label=format((freq_st/58*12/365.25),digits=2)), position=position_dodge(width=0.9), vjust=-0.25)+
+  ylab("Wet hours a day")+
+  xlab("Month") +
+  theme_bw()
+# Translated total number per month over all years to number wet hours for 1 day/week/month
+@
+  \caption{Mean of wet hours a day (meaned over 5 stations).}
+  \label{fig:Wet_Int}
+\end{figure}
+
+As expected most of the wet hours are in the winter season, especially in November, December and January (Figure \ref{fig:Wet_Int}). The dry months are April, May, June, July and August. Whether these are mostly wet hours with a low intensity will be investigated in Figure \ref{fig:Qint_month}.
+
+
+<<loadingseas,cache=FALSE>>=
+# Have subset table of w_season: will reduce computational cost
+bx1 <- bx[, list(Qm = mean(Qm), Q99 = mean(Q99), Q99.9 = mean(Q99.9)), by=STN]
+
+Interan1[, ':='(Qm = mean(RH),Q50 = quantile(RH, probs=c(0.50)),Q99 = quantile(RH, probs=c(0.99)), Q99.9 = quantile(RH, probs=c(0.999))), by=month]
+Interan2 <- file_st[, ':='(Qm = mean(RH)), by=month]
+Interan2 <- file_st[, ':='(Q99 = quantile(RH, probs=c(0.99)), Q99.9 = quantile(RH, probs=c(0.999))), by=month]
+Interan2 <- file_st[, ':='(Q50 = quantile(RH, probs=c(0.50))), by=month]
+Interan2 <- file_st[, ':='(Q99 = quantile(RH, probs=c(0.99)), Q99.9 = quantile(RH, probs=c(0.999))), by=month]
+
+Interan2 <- Interan1[, list(Qm = mean(Qm), Q99 = mean(Q99), Q99.9 = mean(Q99.9)), by=month]
+
+Interan2 <- melt(Interan2, id=c("month"), variable.name="Quantile")
+
+within(Interan2, Var <- factor(Quantile, levels = c("Q50","Q99","Q99.9")))
+@
 
 
 \end{document}
