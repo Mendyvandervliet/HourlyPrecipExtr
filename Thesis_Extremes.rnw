@@ -85,24 +85,26 @@ load("./inst/tussenStap/hrKNMI.rda")
 @
 
 % Histograms of binomial distribution RH for each station
-<<loadingpdf,results='markup'>>=
+<<loadingpdf,cache=TRUE>>=
 #ggplot(hrKNMI[STN==260 & RH > 0], aes(x=RH)) + geom_histogram(breaks = c(seq(0.05,35.05, by=0.1))) +
 #  scale_x_log10(name='Intensity (mm/hr)',limits=c(0.1,36))
-hB <- hist(hrKNMI[STN == 260][RH>0]$RH, #  B_table[RH>0]$RH,
-       breaks = c(seq(-0.05,30, by=0.1), #"FD" For more breaks than the default
-       max(hrKNMI[STN == 260][RH>0]$RH)),plot=FALSE)
-# KB <- hist(K_table[RH>0]$RH,
-#        breaks = c(seq(-0.05,30, by=0.1),max(K_table[RH>0]$RH)),
-#        plot=FALSE)
-# EB <- hist(E_table[RH>0]$RH,
-#        breaks = c(seq(-0.05,30, by=0.1),max(E_table[RH>0]$RH)),
-#        plot=FALSE)
-# VB <- hist(V_table[RH>0]$RH,
-#        breaks = c(seq(-0.05,30, by=0.1),max(V_table[RH>0]$RH)),
-#        plot=FALSE)
-# MB <- hist(M_table[RH>0]$RH,
-#        breaks = c(seq(-0.05,30, by=0.1),max(M_table[RH>0]$RH)),
-#        plot=FALSE)
+## First want to make histogram and then latter plot the density (connect bin-mids of values)
+
+KB <- hist(hrKNMI[STN == 235][RH>0]$RH, plot=FALSE,
+       breaks = c(seq(-0.05,30, by=0.1),
+                  max(hrKNMI[STN == 235][RH>0]$RH)))
+hB <- hist(hrKNMI[STN == 260][RH>0]$RH, plot=FALSE,
+       breaks = c(seq(-0.05,30, by=0.1),
+       max(hrKNMI[STN == 260][RH>0]$RH)))
+EB <- hist(hrKNMI[STN == 280][RH>0]$RH,plot=FALSE,
+       breaks = c(seq(-0.05,30, by=0.1),
+                  max(hrKNMI[STN == 280][RH>0]$RH)))
+VB <- hist(hrKNMI[STN == 310][RH>0]$RH, plot=FALSE,
+       breaks = c(seq(-0.05,30, by=0.1),
+                  max(hrKNMI[STN == 310][RH>0]$RH)))
+MB <- hist(hrKNMI[STN == 380][RH>0]$RH,plot=FALSE,
+       breaks = c(seq(-0.05,30, by=0.1),
+                  max(hrKNMI[STN == 380][RH>0]$RH)))
 @
 
 \section{Spatial and seasonal variability in precipitation}
