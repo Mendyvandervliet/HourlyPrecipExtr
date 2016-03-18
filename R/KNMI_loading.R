@@ -9,8 +9,8 @@ loaddata <- function(file){
   tmp <- fread(file)
   setnames(tmp,c("STN", "YYYYMMDD", "HH", "DD", "T", "TD", "DR", "RH", "U", "WW"))
   #tmp <- data.table(tmp)
-  Date <- as.PCICt(strptime(tmp$YYYYMMDD,"%Y%m%d"),cal="gregorian")
-  #tmp[, Date := as.Date(as.POSIXlt(as.PCICt(strptime(YYYYMMDD,"%Y%m%d"),cal="gregorian")))]
+  #Date <- as.PCICt(strptime(tmp$YYYYMMDD,"%Y%m%d"),cal="gregorian")
+  tmp[, Date := as.Date(as.POSIXlt(as.PCICt(strptime(YYYYMMDD,"%Y%m%d"),cal="gregorian")))]
   tmp[, Date := as.Date(as.POSIXlt(Date))]
   tmp[, date := as.POSIXct(paste(Date,as.character(HH)), format="%Y-%m- %d %H")]
   tmp[, ':='(Year= year(Date), Month= month(Date), Day= mday(Date))]
