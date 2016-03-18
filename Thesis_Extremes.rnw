@@ -151,8 +151,9 @@ Figures \ref{fig:PDF} and \ref{fig:CDE_full} demonstrate that the closer to 0 mm
 <<loadingbx,cache=FALSE>>=
 # Have subset table with boxplot data
 bx <- bxdata(hrKNMI)
+
 # Subsubset with only means and quantiles per station ; will reduce computational cost
-bx1 <- bx[, list(Qm = mean(Qm), Q99 = mean(Q99), Q99.9 = mean(Q99.9)), by=Station]
+bx1 <- bx[, list(Qm = mean(Qm), Q99 = mean(Q99), Q99.9 = mean(Q99.9)), by=STN]
 @
 
 \begin{figure}[H]
@@ -160,14 +161,14 @@ bx1 <- bx[, list(Qm = mean(Qm), Q99 = mean(Q99), Q99.9 = mean(Q99.9)), by=Statio
   \textbf{Boxplot per station}\par\medskip
 <<label=intensity>>=
 #,out.width='450px',fig.height=4,fig.width=9>>=
-ggplot(Qt,aes(x=Station))+
+ggplot(bx,aes(x=STN,group=STN))+
   geom_boxplot(aes(y=RH))+
-  geom_point(data=Qtable1,aes(y=Qm), colour='green',size=4)+
-  geom_point(data=Qtable1,aes(y=Q99), colour='red',size=4)+
-  geom_point(data=Qtable1,aes(y=Q99.9), colour='purple',size=3.5) +
-  geom_text(data=Qtable1,aes(y=Qm,label=format(Qm,digits=2)),position=position_dodge(width=0.9),hjust=1.5,vjust=0.5)+
-  geom_text(data=Qtable1,aes(y=Q99,label=format(Q99,digits=2)),position=position_dodge(width=0.9),hjust=1.5,vjust=0)+
-  geom_text(data=Qtable1,aes(y=Q99.9,label=format(Q99.9,digits=2)),position=position_dodge(width=0.9),hjust=1.5,vjust=0)+
+  geom_point(data=bx1,aes(y=Qm), colour='green',size=4)+
+  geom_point(data=bx1,aes(y=Q99), colour='red',size=4)+
+  geom_point(data=bx1,aes(y=Q99.9), colour='purple',size=3.5) +
+  geom_text(data=bx1,aes(y=Qm,label=format(Qm,digits=2)),position=position_dodge(width=0.9),hjust=1,vjust=1.75)+
+  geom_text(data=bx1,aes(y=Q99,label=format(Q99,digits=2)),position=position_dodge(width=0.9),hjust=1.5,vjust=0)+
+  geom_text(data=bx1,aes(y=Q99.9,label=format(Q99.9,digits=2)),position=position_dodge(width=0.9),hjust=1.5,vjust=0)+
   ylab("Precipitation intensity (mm/hr)")+ # x and y-axis label
   scale_y_log10(breaks=c(0.1,0.2,0.4,1,10,50))+
   theme_bw()
