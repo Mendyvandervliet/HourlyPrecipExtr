@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass{report}
 
 %------------------------------------------------------------------------------------------------------------------------
 %Packages
@@ -9,8 +9,8 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{a4wide}
-\setcounter{tocdepth}{0}        % Put subsubsections in the table of contents
-\setcounter{secnumdepth}{6}     % Numbering of sections/paragraphs
+%\setcounter{tocdepth}{0}        % Put subsubsections in the table of contents
+%\setcounter{secnumdepth}{6}     % Numbering of sections/paragraphs
 
 %------------------------------------------------------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 
 \maketitle
 
-\section{Data}
+\chapter{Data}
 
 <<getdata,cache=TRUE>>=
 
@@ -56,33 +56,27 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 # For description weather codes (WW) see: http://bibliotheek.knmi.nl/scholierenpdf/weercodes_Nederland,
 # these code are  only used to study specific extreme events
 library(HourlyPrecipExtr)
-# tmp <- fread("./inst/extData/KNMI_rainhr.txt", sep=",",col.names=c("STN", "YYYYMMDD", "HH", "DD", "T", "TD", "DR", "RH", "U", "WW"))
-# tmp[, Date := as.Date(as.POSIXlt(as.PCICt(strptime(YYYYMMDD,"%Y%m%d"),cal="gregorian")))]
-# tmp[, date := as.POSIXct(paste(Date,as.character(HH)), format="%Y-%m- %d %H")]
-# tmp[, ':='(Year= year(Date), Month= month(Date), Day= mday(Date))]
-# tmp[, ':='(RH = RH * 0.1, T = T * 0.1, TD = TD * 0.1, DR = DR * 0.1)] # RH in mm, T and Td in degrees Celsius, DR in hrs
-# tmp[RH == -0.1] <- tmp[RH == -0.1][,RH := 0] # All negative values(RH<0.05) become 0
-# hrKNMI <- tmp
-
 hrKNMI <- loaddata("./inst/extData/KNMI_rainhr.txt")
 save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
 @
 
-% Data table error;  can't find the bug
-
-% FALSE Error in ‘:=‘(Date, as.Date(as.POSIXlt(as.PCICt(strptime(YYYYMMDD, "%Y%m%d"),
-% : Check that is.data.table(DT) == TRUE. Otherwise, := and ‘:=‘(...) are defined
-% for use in j, once only and in particular ways. See help(":=").
-% FALSE Error in save(hrKNMI, file = "./inst/tussenStap/hrKNMI.rda"): object ’hrKNMI’
-% not found
-
-\section{Results}
+\chapter{Results}
 
 This chapter consist of several parts. The first paragraph studies the spatial and seasonal variability regarding (extreme) precipitation. In the second paragraph trends in extreme precipitation are investigated. The third part focusses on the mechanisms behind these trends, by studying the correlation with temperature, dewpoint temperature, wind direction, CAPE (and location of cyclones). The last part extends the current work to European scale.
 
+\section{Spatial and seasonal variability in precipitation}
+
+Before we analyse trends in hourly precipitation sums, it is relevant to investigate the spatial and seasonal variability in precipitation. By analysing the seasonal variability we can define a summer and a winter season, of which the results are also shown in this paragraph.
+
+
 <<loading, cache=FALSE>>=
 load("./inst/tussenStap/hrKNMI.rda")
+nrKNMI <- within(hrKNMI,
+                  STN <- factor(STN))
 @
+
+\subsection{Spatial variability}
+\label{subpar:SV}
 
 % Histograms of binomial distribution RH for each station
 <<loadingpdf,cache=TRUE>>=
@@ -93,7 +87,7 @@ load("./inst/tussenStap/hrKNMI.rda")
 KB <- hist(hrKNMI[STN == 235][RH>0]$RH, plot=FALSE,
        breaks = c(seq(-0.05,30, by=0.1),
                   max(hrKNMI[STN == 235][RH>0]$RH)))
-hB <- hist(hrKNMI[STN == 260][RH>0]$RH, plot=FALSE,
+HB <- hist(hrKNMI[STN == 260][RH>0]$RH, plot=FALSE,
        breaks = c(seq(-0.05,30, by=0.1),
        max(hrKNMI[STN == 260][RH>0]$RH)))
 EB <- hist(hrKNMI[STN == 280][RH>0]$RH,plot=FALSE,
@@ -107,9 +101,61 @@ MB <- hist(hrKNMI[STN == 380][RH>0]$RH,plot=FALSE,
                   max(hrKNMI[STN == 380][RH>0]$RH)))
 @
 
-\section{Spatial and seasonal variability in precipitation}
+\begin{figure}[H]
+  \centering
+  \textbf{PDF}
+  % out.height='320px',out.width='400px'
+<<pdfplot,cache=FALSE,fig.keep='high'>>=
+plot(HB$mids[HB$mids>0], HB$density[HB$mids>0], type='l', log="x", col='orange',
+     lwd=3, xlab="Intensity (mm/hr)", ylab="Density")+
+lines(KB$mids[KB$mids>0],KB$density[KB$mids>0], col = "pink", lwd = 3)+
+lines(EB$mids[EB$mids>0],EB$density[EB$mids>0], col = "green", lwd = 3)+
+lines(VB$mids[VB$mids>0],VB$density[VB$mids>0], col = "blue", lwd = 3)+
+lines(MB$mids[MB$mids>0],MB$density[MB$mids>0], col = "purple", lwd = 3)
+@
+  \vspace{-0.5cm}
+  \caption{The probability density function for all 5 stations: De Kooy (235), de Bilt(260), Eelde(280), Vlissingen (310) and Maastricht (380).}
+  \label{fig:PDF}
+\end{figure}
+%'
+%'
+%' \begin{figure}[H]
+%'   \flushleft
+%'   \begin{minipage}[adjusting]{0.40\linewidth}
+%'
+\begin{figure}[H]
+  \centering
+  \textbf{CDE}\par\medskip
+  % out.width='400px'
+<<cde_plot,cache=FALSE>>=
+cde <- ggplot(hrKNMI[RH>0])
+n <- nrow(hrKNMI[RH>0])
+cde + geom_density(aes(x=RH, group=STN, fill=STN),position="fill") +
+scale_x_log10(name='Intensity (mm/hr)', breaks=c(0.1,0.2,0.5,1,10,25,50))+
+ylab("Density")+
+theme_bw()
+@
+  \caption{The conditional density estimate for all 5 stations: De Kooy (235), de Bilt(260), Eelde(280), Vlissingen (310) and Maastricht (380).}
+  \label{fig:CDE}
+\end{figure}
 
-Before we analyse trends in hourly precipitation sums, it is relevant to investigate the spatial and seasonal variability in precipitation. By analysing the seasonal variability we can define a summer and a winter season, of which the results are also shown in this paragraph.
+%' \begin{figure}
+%' <<cde_plot,cache=FALSE>>=
+%' cde <- ggplot(hrKNMI[RH>0])
+%' n <- nrow(hrKNMI[RH>0])
+%' cde +
+%' stat_bin(aes(n=n,x=RH, y=..count../n*4,
+%'         label="Nr of observations"), binwidth=0.1, geom='point',
+%'         fill="Black",shape=23) +
+%' scale_x_log10(name='Intensity (mm/hr)', breaks=c(0.1,0.2,0.5,1,10,25,50))+
+%' scale_y_log10(name="Density")+
+%' geom_text(x=-Inf, y=-Inf,label="Normalised nr of observations",
+%'           color= 'black', vjust=-3, hjust=-0.15, cex=3)+
+%' theme_bw()
+%' @
+%' \end{figure}
+%'
+%' Figures \ref{fig:PDF} and \ref{fig:CDE} demonstrate that the closer to 0 mm/hr the higher the frecuency. Dry hours occur approximately 88\% of the time. Of all the wet hours 25\% has a value of 0.1 mm/hr and 15\% a value of 0.2 mm/hr. We can see that the distributions of the stations are very similar, although there are some minor differences. In general, Eelde has higher frequencies of wet hours of all intensities smaller than 1 mm/hr compared to the other stations. The occurence of more weak wet hours and less extreme wet hours, could be explained by the non-coastal and and low geographic position. The most intense rain events are not only dependent on strong updrafts, but they also need a strong supply of moisture. The sea can be seen as a large moisture source for a station located downwind of the sea, As Eelde is located farther downwind from the sea, it has a more land (i.e. dry) climate. This could explain the relatively lower (intensity and frequency of) precipitation extremes with intensities in the order of $> 2$ mm/hr. However, Maastricht is also situated relatively far downwind from the sea. Another substrate (SOURCE substrate difference in Maastricht) in Maastricht compared to the other stations, could explain that the highest hourly extremes occur at Maastricht. Moreover, relief as is present in Limburg could stimulate vertical motion/updraft, which leads to more local and intense rain events. This relation can be tested by analysing the correlation of extreme precipitation with CAPE. Furthermore, de Kooy often has a relatively higher density for wet intensities (except for 0.1, 0.3 and $> 2$ mm/hr) compared to other stations. In the interval 0.4-1.2 mm/hr De Bilt has a relatively low density, while for higher intensities a relatively high density. So in contrast to Eele, de Bilt has relatively more extreme wet hours, but for now it remains unclear why. To increase our knowledge about possible mechanisms behind the spatial differences, we specify between summer and winter season(dominated processes).
 
 
 
