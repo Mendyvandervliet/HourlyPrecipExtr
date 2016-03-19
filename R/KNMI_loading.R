@@ -6,7 +6,7 @@
 
 #' @export
 loaddata <- function(file){
-  tmp <- fread(file)
+  tmp <- fread(file, skip = 21)
   setnames(tmp,c("STN", "YYYYMMDD", "HH", "DD", "T", "TD", "DR", "RH", "U", "WW"))
   #tmp <- data.table(tmp)
   #Date <- as.PCICt(strptime(tmp$YYYYMMDD,"%Y%m%d"),cal="gregorian")
@@ -16,6 +16,7 @@ loaddata <- function(file){
   tmp[, ':='(Year= year(Date), Month= month(Date), Day= mday(Date))]
   tmp[, ':='(RH = RH * 0.1, T = T * 0.1, TD = TD * 0.1, DR = DR * 0.1)] # RH in mm, T and Td in degrees Celsius, DR in hrs
   tmp[RH == -0.1] <- tmp[RH == -0.1][,RH := 0] # All negative values(RH<0.05) become 0
+  tmp[, STN := as.factor(STN)]
   return(tmp)
 }
 
