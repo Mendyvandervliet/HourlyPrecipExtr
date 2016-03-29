@@ -65,19 +65,40 @@ save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
 
 <<loading, cache=FALSE>>=
 load("./inst/tussenStap/hrKNMI.rda")
-# hrKNMI <- within(hrKNMI,
-#                   STN <- factor(STN))
+load("./inst/tussenStap/QR_hrKNMI.rda")
 @
+
+
 
 \subsection{Trends in extreme precipitation}
 This chapter focusses on linear trends in hourly precipitation extremes. Whether the hourly intensity of extremes regresses linearly in time or not is investigated for the period 1958 to 2014. Next to intensity, trends in the frequency of hourly extremes are considered (and compared to the proportional change by studying the regression of the mean hourly intensity in time as well).
 
-<<setup_trends,cache=FALSE,results='markup'>>=
+% Fit data via quantile regression
+<<setup_trends,cache=TRUE>>=
+QR_hrKNMI <- QR_all(data=hrKNMI,STN1=235,STN2=260,STN3=280,STN4=310,STN5=380)
+save(QR_hrKNMI, file="./inst/tussenStap/QR_hrKNMI.rda")
 
+Legendgrob2 <- legendGrob(c("50%","75%", "90%","95%","99%","99.9%"), pch=15,
+                          gp=gpar(col=c("black","gray", "blue" ,"green","orange","red"),cex=1), ncol=3)
 @
+
+% Load QR-fitted data
+<<loading, cache=FALSE>>=
+load("./inst/tussenStap/QR_hrKNMI.rda")
+@
+
 \subsubsection{Intensity}
 \paragraph{All hours}
 
-
+<<label=QR_allhr,out.width='450px'>>=
+ymax = 25
+plot1 <- QR_plotting(data=B_table, title="De Bilt",ymax)
+plot1 <- QR_plotting(data=K_table, title="De Kooy",ymax)
+plot3 <- QR_plotting(data=E_table, title="Eelde",ymax)
+plot4 <- QR_plotting(data=V_table, title="Vlissingen",ymax)
+plot5 <- QR_plotting(data=M_table, title="Maastricht",ymax)
+grid.arrange(arrangeGrob(plot4, plot2, plot1, plot3,plot5, Legendgrob2, ncol=2),
+             ncol= 1)
+@
 
 \end{document}
