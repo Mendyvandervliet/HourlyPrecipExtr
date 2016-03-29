@@ -65,9 +65,18 @@ save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
 
 <<loading, cache=FALSE>>=
 load("./inst/tussenStap/hrKNMI.rda")
-nrKNMI <- within(hrKNMI,
-                  STN <- factor(STN))
+# hrKNMI <- within(hrKNMI,
+#                   STN <- factor(STN))
 @
+
+\subsection{Trends in extreme precipitation}
+This chapter focusses on linear trends in hourly precipitation extremes. Whether the hourly intensity of extremes regresses linearly in time or not is investigated for the period 1958 to 2014. Next to intensity, trends in the frequency of hourly extremes are considered (and compared to the proportional change by studying the regression of the mean hourly intensity in time as well).
+
+<<setup_trends,cache=FALSE,results='markup'>>=
+
+@
+\subsubsection{Intensity}
+\paragraph{All hours}
 
 
 
