@@ -41,11 +41,11 @@ QR_all <- function(data=hrKNMI,STN1=235,STN2=260,STN3=280,STN4=310,STN5=380){
    tmp[STN == STN5] <- tmp[STN==STN5][, f999 := as.numeric(fitted.values(rq(RH ~ date, tau =0.999)))]
    # reduce computational cost, mean GR fitted values per year
    tmp[, ":="(m50 = -1, m75 = -1, m90 = -1, m95 = -1, m99 = -1, m999 = -1)]
-   tmp[STN==STN1] <- tmp[STN==STN1][, ":="(m50=mean(f50),m75=mean(f75),m90=mean(mf90),m95=mean(f95),m99=mean(f99),m999=mean(f999)), by=Year]
-   tmp[STN==STN2] <- tmp[STN==STN2][, ":="(m50=mean(f50),m75=mean(f75),m90=mean(mf90),m95=mean(f95),m99=mean(f99),m999=mean(f999)), by=Year]
-   tmp[STN==STN3] <- tmp[STN==STN3][, ":="(m50=mean(f50),m75=mean(f75),m90=mean(mf90),m95=mean(f95),m99=mean(f99),m999=mean(f999)), by=Year]
-   tmp[STN==STN4] <- tmp[STN==STN4][, ":="(m50=mean(f50),m75=mean(f75),m90=mean(mf90),m95=mean(f95),m99=mean(f99),m999=mean(f999)), by=Year]
-   tmp[STN==STN5] <- tmp[STN==STN5][, ":="(m50=mean(f50),m75=mean(f75),m90=mean(mf90),m95=mean(f95),m99=mean(f99),m999=mean(f999)), by=Year]
+   tmp[STN==STN1] <- tmp[STN==STN1][, ":="(m50=mean(f50),m75=mean(f75),m90=mean(f90),m95=mean(f95),m99=mean(f99),m999=mean(f999)), by=Year]
+   tmp[STN==STN2] <- tmp[STN==STN2][, ":="(m50=mean(f50),m75=mean(f75),m90=mean(f90),m95=mean(f95),m99=mean(f99),m999=mean(f999)), by=Year]
+   tmp[STN==STN3] <- tmp[STN==STN3][, ":="(m50=mean(f50),m75=mean(f75),m90=mean(f90),m95=mean(f95),m99=mean(f99),m999=mean(f999)), by=Year]
+   tmp[STN==STN4] <- tmp[STN==STN4][, ":="(m50=mean(f50),m75=mean(f75),m90=mean(f90),m95=mean(f95),m99=mean(f99),m999=mean(f999)), by=Year]
+   tmp[STN==STN5] <- tmp[STN==STN5][, ":="(m50=mean(f50),m75=mean(f75),m90=mean(f90),m95=mean(f95),m99=mean(f99),m999=mean(f999)), by=Year]
    return(tmp)
 }
 
