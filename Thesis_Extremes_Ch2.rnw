@@ -25,7 +25,7 @@ library(knitr)
 library(data.table)
 library(quantreg)
 library(plyr)
-
+library(grid)
 library(HourlyPrecipExtr)
 # set global chunk options
 opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
