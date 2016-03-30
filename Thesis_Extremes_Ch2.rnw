@@ -65,7 +65,6 @@ save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
 
 <<loading, cache=FALSE>>=
 load("./inst/tussenStap/hrKNMI.rda")
-load("./inst/tussenStap/QR_hrKNMI.rda")
 @
 
 
@@ -94,14 +93,15 @@ load("./inst/tussenStap/QR_hrKNMI.rda")
   \centering
   \textbf{Quantile regression on all hourly intensities}\par\medskip
   \vspace{-1cm}
-<<label=QR_allhr,out.width='450px'>>=
+<<label=QR_allhr>>=
+#,out.width='450px'
 ymax = 25
-plot1 <- QR_plotting(data=B_table, title="De Bilt",ymax)
-plot1 <- QR_plotting(data=K_table, title="De Kooy",ymax)
-plot3 <- QR_plotting(data=E_table, title="Eelde",ymax)
-plot4 <- QR_plotting(data=V_table, title="Vlissingen",ymax)
-plot5 <- QR_plotting(data=M_table, title="Maastricht",ymax)
-grid.arrange(arrangeGrob(plot4, plot2, plot1, plot3,plot5, Legendgrob2, ncol=2),
+plot1 <- QR_plotting(data=QR_hrKNMI[STN == 235], title="De Kooy",ymax)
+plot2 <- QR_plotting(data=QR_hrKNMI[STN == 260], title="De Bilt",ymax)
+plot3 <- QR_plotting(data=QR_hrKNMI[STN == 280], title="Eelde",ymax)
+plot4 <- QR_plotting(data=QR_hrKNMI[STN == 310], title="Vlissingen",ymax)
+plot5 <- QR_plotting(data=QR_hrKNMI[STN == 380], title="Maastricht",ymax)
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
              ncol= 1)
 @
   \vspace{-0.5cm}
@@ -112,43 +112,4 @@ hourly precipitation intensities (mm/hr), for all stations. Note that the upper 
 
 
 
-
-
-
-
-
-<<label=MC_perm>>=
-list <- coefperm(x=max_2d_B$d2, y=max_2d_B$max2d,tau=0.99)
-obs= as.numeric(unlist(list[1]))
-reps= as.numeric(unlist(list[2]))
-p= as.numeric(unlist(list[3]))
-
-mean <- mean(reps)
-sd <- sd(reps)
-area <- pnorm(max(reps), mean, sd) - pnorm(0, mean, sd)
-result <- paste("P(B >",0,") =",
-                signif(area, digits=3))
-mtext(result,3)
-
-
-# To make amooth density function
-d <- density(reps)
-plot(d, type='l', col='blue', lwd=3, main="Distribution of permuted slopes(99% QR fit), MC N=9999",
-     xlab="Slope (increase per 2days)", ylab="Density")
-i <- d$x >= p05 & d$x <= p95
-lines(d$x, d$y)
-#lines(density(reps)) #adjust=5
-p05 <- quantile(reps, probs=c(0.05))
-polygon(c(p05,d$x[i],p95), c(0,d$y[i],0), col="red")
-abline(v=obs, col="black")
-# p= 0.95 --> slope =
-p95 <- quantile(reps, probs=c(0.95))
-abline(v=p95,col="purple")
-p99 <- quantile(reps, probs=c(0.99))
-abline(v=p99,col="darkgray")
-text(x=p95, y=2625,"95%", col="purple", font=2)
-text(x=p99, y=2625, "99%", col="darkgray", font=2)
-text(x=obs, y=2625, "Observed",pos=4,col="black", font=2)
-mtext(result,3)
-@
 \end{document}
