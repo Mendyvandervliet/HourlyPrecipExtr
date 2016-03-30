@@ -117,8 +117,9 @@ The following figures show the autocorrelation plots for the hourly datasets of 
   \centering
   \textbf{Autocorrelation all hours}\par\medskip
   \begin{minipage}{0.48\textwidth}
+    \vspace{-1cm}
     \centering
-<<label=K_autocor,cache=TRUE,out.width='250px',fig.height=4,fig.width=5>>=
+<<label=K_autocor>>=
 acf(hrKNMI[STN==235]$RH,lag.max=80,main=NA)
   @
     \subcaption{Autocorrelation all hours}
@@ -127,41 +128,107 @@ acf(hrKNMI[STN==235]$RH,lag.max=80,main=NA)
   \hfill
   \begin{minipage}{0.48\textwidth}
     \centering
-<<label=B_autocor,cache=TRUE,out.width='250px',fig.height=4,fig.width=5>>=
+<<label=B_autocor>>=
 acf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
-  @
+ @
+    \vspace{-0.5cm}
     \subcaption{Autocorrelation all hours}
     \label{fig:B_autocor}
   \end{minipage}
   \hfill
+  \vspace{-1cm}
   \begin{minipage}{0.48\textwidth}
     \centering
-<<label=E_autocor,cache=TRUE,out.width='250px',fig.height=4,fig.width=5>>=
+<<label=E_autocor>>=
 acf(hrKNMI[STN==280]$RH,lag.max=80,main=NA)
-  @
+@
+    \vspace{-0.5cm}
     \subcaption{Autocorrelation all hours}
     \label{fig:E_autocor}
   \end{minipage}
   \hfill
-   \begin{minipage}{0.48\textwidth}
+  \begin{minipage}{0.48\textwidth}
     \centering
-<<label=V_autocor,cache=TRUE,out.width='250px',fig.height=4,fig.width=5>>=
+<<label=V_autocor>>=
 acf(hrKNMI[STN==310]$RH,lag.max=80,main=NA)
-  @
+ @
+    \vspace{-0.5cm}
     \subcaption{Autocorrelation all hours}
     \label{fig:V_autocor}
   \end{minipage}
   \hfill
-   \begin{minipage}{0.48\textwidth}
+  \vspace{-0.5cm}
+  \begin{minipage}{0.48\textwidth}
     \centering
-<<label=M_autocor,cache=TRUE,out.width='250px',fig.height=4,fig.width=5>>=
+<<label=M_autocor>>=
 acf(hrKNMI[STN==380]$RH,lag.max=80,main=NA)
-  @
+ @
+    \vspace{-0.5cm}
     \subcaption{Autocorrelation all hours}
     \label{fig:M_autocor}
-  \end{minipage}
-  \caption{Autocorrelation}
+ \end{minipage}
+ \caption{Autocorrelation}
 \end{figure}
+
+
+The partial autocorrelation for hourly data and all stations is shown in the following figure.
+\begin{figure}[H]
+ \centering
+ \textbf{Partial autocorrelation all hours}\par\medskip
+ \begin{minipage}{0.48\textwidth}
+   \centering
+<<label=K_pautocor>>=
+pacf(hrKNMI[STN==235]$RH,lag.max=80,main=NA)
+ @
+   \vspace{-0.5cm}
+   \subcaption{Autocorrelation all hours}
+   \label{fig:K_pautocor}
+ \end{minipage}
+ \hfill
+ \begin{minipage}{0.48\textwidth}
+   \centering
+<<label=B_pautocor>>=
+pacf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
+ @
+   \vspace{-0.5cm}
+   \subcaption{Autocorrelation all hours}
+   \label{fig:B_pautocor}
+ \end{minipage}
+ \hfill
+ \vspace{-1cm}
+ \begin{minipage}{0.48\textwidth}
+   \centering
+<<label=E_pautocor>>=
+pacf(hrKNMI[STN==280]$RH,lag.max=80,main=NA)
+ @
+   \vspace{-0.5cm}
+   \subcaption{Autocorrelation all hours}
+   \label{fig:E_pautocor}
+ \end{minipage}
+ \hfill
+  \begin{minipage}{0.48\textwidth}
+   \centering
+<<label=V_pautocor>>=
+pacf(hrKNMI[STN==310]$RH,lag.max=80,main=NA)
+ @
+   \vspace{-0.5cm}
+   \subcaption{Autocorrelation all hours}
+   \label{fig:V_pautocor}
+ \end{minipage}
+ \hfill
+ \vspace{-0.5cm}
+  \begin{minipage}{0.48\textwidth}
+   \centering
+<<label=M_pautocor>>=
+pacf(hrKNMI[STN==380]$RH,lag.max=80,main=NA)
+ @
+   \vspace{-0.5cm}
+   \subcaption{Autocorrelation all hours}
+   \label{fig:M_pautocor}
+ \end{minipage}
+\caption{Partial autocorrelation}
+\end{figure}
+
 
 
 
