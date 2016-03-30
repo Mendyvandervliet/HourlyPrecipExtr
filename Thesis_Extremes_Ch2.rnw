@@ -82,7 +82,7 @@ Legendgrob2 <- legendGrob(c("50%","75%", "90%","95%","99%","99.9%"), pch=15,
 @
 
 % Load QR-fitted data
-<<loading, cache=FALSE>>=
+<<loading2, cache=FALSE>>=
 load("./inst/tussenStap/QR_hrKNMI.rda")
 @
 
@@ -107,7 +107,60 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
   \vspace{-0.5cm}
   \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on all
 hourly precipitation intensities (mm/hr), for all stations. Note that the upper limit in intensity is set on 15 mm/hr.}
-  \label{fig:QR_all}
+  \label{fig:QR_allhr}
+\end{figure}
+
+However, trends can be biased when autocorrelation or partial autocorrelation is present. The assumption of independence of errors is violated by time series with a autocorrelation nature. Type I error rates may increase considerably for these time series and inherent pattern can dampen or enhance the effect of an intervention. Therefore, we now investigate whether there is any autocorrelation and partial autocorrelation present in the hourly data.
+
+The following figures show the autocorrelation plots for the hourly datasets of all stations.
+\begin{figure}[H]
+  \centering
+  \textbf{Autocorrelation all hours}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+    \centering
+<<label=K_autocor,cache=TRUE,out.width='250px',fig.height=4,fig.width=5>>=
+acf(hrKNMI[STN==235]$RH,lag.max=80,main=NA)
+  @
+    \subcaption{Autocorrelation all hours}
+    \label{fig:K_autocor}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+<<label=B_autocor,cache=TRUE,out.width='250px',fig.height=4,fig.width=5>>=
+acf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
+  @
+    \subcaption{Autocorrelation all hours}
+    \label{fig:B_autocor}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+<<label=E_autocor,cache=TRUE,out.width='250px',fig.height=4,fig.width=5>>=
+acf(hrKNMI[STN==280]$RH,lag.max=80,main=NA)
+  @
+    \subcaption{Autocorrelation all hours}
+    \label{fig:E_autocor}
+  \end{minipage}
+  \hfill
+   \begin{minipage}{0.48\textwidth}
+    \centering
+<<label=V_autocor,cache=TRUE,out.width='250px',fig.height=4,fig.width=5>>=
+acf(hrKNMI[STN==310]$RH,lag.max=80,main=NA)
+  @
+    \subcaption{Autocorrelation all hours}
+    \label{fig:V_autocor}
+  \end{minipage}
+  \hfill
+   \begin{minipage}{0.48\textwidth}
+    \centering
+<<label=M_autocor,cache=TRUE,out.width='250px',fig.height=4,fig.width=5>>=
+acf(hrKNMI[STN==380]$RH,lag.max=80,main=NA)
+  @
+    \subcaption{Autocorrelation all hours}
+    \label{fig:M_autocor}
+  \end{minipage}
+  \caption{Autocorrelation}
 \end{figure}
 
 
