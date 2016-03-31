@@ -98,11 +98,11 @@ load("./inst/tussenStap/QR_hrKNMI.rda")
 <<label=QR_allhr>>=
 #,out.width='450px'
 ymax <- 25
-plot1 <- QR_plotting(data=QR_hrKNMI[STN == 235], title="De Kooy",ymax)
-plot2 <- QR_plotting(data=QR_hrKNMI[STN == 260], title="De Bilt",ymax)
-plot3 <- QR_plotting(data=QR_hrKNMI[STN == 280], title="Eelde",ymax)
-plot4 <- QR_plotting(data=QR_hrKNMI[STN == 310], title="Vlissingen",ymax)
-plot5 <- QR_plotting(data=QR_hrKNMI[STN == 380], title="Maastricht",ymax)
+plot1 <- QR_plotting(data=QR_hrKNMI[STN == 235], title="De Kooy")
+plot2 <- QR_plotting(data=QR_hrKNMI[STN == 260], title="De Bilt")
+plot3 <- QR_plotting(data=QR_hrKNMI[STN == 280], title="Eelde")
+plot4 <- QR_plotting(data=QR_hrKNMI[STN == 310], title="Vlissingen")
+plot5 <- QR_plotting(data=QR_hrKNMI[STN == 380], title="Maastricht")
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
              ncol= 1)
 @
