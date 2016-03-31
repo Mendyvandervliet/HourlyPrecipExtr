@@ -25,6 +25,7 @@ library(knitr)
 library(data.table)
 library(quantreg)
 library(plyr)
+library(grid)
 library(gridExtra)
 library(HourlyPrecipExtr)
 # set global chunk options
@@ -96,7 +97,7 @@ load("./inst/tussenStap/QR_hrKNMI.rda")
   \vspace{-1cm}
 <<label=QR_allhr>>=
 #,out.width='450px'
-ymax = 25
+ymax <- 25
 plot1 <- QR_plotting(data=QR_hrKNMI[STN == 235], title="De Kooy",ymax)
 plot2 <- QR_plotting(data=QR_hrKNMI[STN == 260], title="De Bilt",ymax)
 plot3 <- QR_plotting(data=QR_hrKNMI[STN == 280], title="Eelde",ymax)
@@ -247,20 +248,20 @@ load("./inst/tussenStap/max2d.rda")
   \centering
   \textbf{Quantile regression on 2 day max. hourly intensities}\par\medskip
 <<label=QR_max2d,cache=TRUE>>=
-ggplot(max2d, aes(x = Year, color=Quantiles)) +        # data
-    geom_point(aes(y=max2d[max2d > quantile(max2d,probs=c(0.50))], color="Points"))+
-    geom_line(aes(y=m50, color="50%")) +
-    geom_line(aes(y=m75, color="75%")) +
-    geom_line(aes(y=m90, color="90%")) +
-    geom_line(aes(y=m95, color="95%")) +
-    geom_line(aes(y=m99, color="99%")) +
-    geom_line(aes(y=m99.9, color="99.9%")) +
-    #ggtitle("Quantile regression") + # title
-    #ylim(y1,y2) +
-    #scale_y_log10(name='2-Day max intensity (mm/hr)', breaks=c(0.1,0.5,1,5,10,25,50))+
-    scale_color_manual(values=c("Points"="gray","50%"="black", "75%"="purple", "90%"="blue" ,"95%"="green","99%"="orange","99.9%"="red" )) +
-    xlab("Time") + ylab("2-Day max intensity (mm/hr)")+ # x and y-axis label
-    theme_bw()
+# ggplot(max2d, aes(x = Year, color=Quantiles)) +        # data
+#     geom_point(aes(y=max2d[max2d > quantile(max2d,probs=c(0.50))], color="Points"))+
+#     geom_line(aes(y=m50, color="50%")) +
+#     geom_line(aes(y=m75, color="75%")) +
+#     geom_line(aes(y=m90, color="90%")) +
+#     geom_line(aes(y=m95, color="95%")) +
+#     geom_line(aes(y=m99, color="99%")) +
+#     geom_line(aes(y=m99.9, color="99.9%")) +
+#     #ggtitle("Quantile regression") + # title
+#     #ylim(y1,y2) +
+#     #scale_y_log10(name='2-Day max intensity (mm/hr)', breaks=c(0.1,0.5,1,5,10,25,50))+
+#     scale_color_manual(values=c("Points"="gray","50%"="black", "75%"="purple", "90%"="blue" ,"95%"="green","99%"="orange","99.9%"="red" )) +
+#     xlab("Time") + ylab("2-Day max intensity (mm/hr)")+ # x and y-axis label
+#     theme_bw()
 
 # ymax = 15
 # plot1 <- QR_plotting2(data=B_table, title="De Bilt",ymax)
