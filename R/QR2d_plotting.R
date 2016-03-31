@@ -1,13 +1,13 @@
-# Plotting quantile regression fits for multiple stations and quantiles
+# Plotting quantile regression fits on max 2day prec, for multiple stations and quantiles
 #
 #' Function to obtain complex ggplots
 
 #' @import ggplot2
 #'
 #' @export
-QR_plotting <- function(data,title,ymax=15){
+QR2d_plotting<- function(data,title){
   ggplot(data, aes(x = Year)) +        # data
-    geom_point(data=data[RH > quantile(RH,probs=0.999)],aes(y=RH),color="gray",size=0.3)+
+    geom_point(data=data[max2d > quantile(RH,probs=0.999)],aes(y=max2d),color="gray",size=0.3)+
     geom_line(aes(y=m50), color="black") +
     geom_line(aes(y=m75), color="purple") +
     geom_line(aes(y=m90), color="blue") +
@@ -16,7 +16,6 @@ QR_plotting <- function(data,title,ymax=15){
     geom_line(aes(y=m999), color="red") +
     #color="Points", scale_color_manual(values=c("Points"="gray","50%"="black", "75%"="purple", "90%"="blue" ,"95%"="green","99%"="orange","99.9%"="red" )) +
     ggtitle(title) + # title
-    ylim(0,ymax) +
     xlab("Time") + ylab("Intensity (mm/hr)")+ # x and y-axis label
     theme_bw()
 }
