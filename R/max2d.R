@@ -22,8 +22,8 @@ max2d <- function(data,STN1=235,STN2=260,STN3=280,STN4=310,STN5=380){
   tmp[STN == STN5]$d2 <- tmp[STN == STN1]$d2
 
   tmp$YM <- format(tmp$Date,format="%Y-%m")
-  tmp2 <- tmp[,.(Year=Year,YM=YM, month=round(mean(month),digits=0),day=mean(day), max2d=max(RH)),by=d2]
-  tmp2 <- tmp2[, list(max2d=unique(max2d), Year=unique(Year),YM=unique(YM),month=unique(month)),by=d2]
+  tmp2 <- tmp[,.(Year=Year,YM=YM, month=round(mean(month),digits=0),day=mean(day), max2d=max(RH)),by=.(d2,STN)]
+  tmp2 <- tmp2[, list(max2d=unique(max2d), Year=unique(Year),YM=unique(YM),month=unique(month)),by= list(d2,STN)]
   return(tmp2)
 }
 
