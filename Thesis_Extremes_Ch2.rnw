@@ -117,18 +117,18 @@ The following figures show the autocorrelation plots for the hourly datasets of 
 \begin{figure}[H]
   \centering
   \textbf{Autocorrelation all hours}\par\medskip
-  \begin{minipage}{0.48\textwidth}
-    \vspace{-1cm}
+  \vspace{-0.5cm}
+  \begin{minipage}[0.15\textheight]{0.48\textwidth}
     \centering
 <<label=K_autocor>>=
 acf(hrKNMI[STN==235]$RH,lag.max=80,main=NA)
   @
+    \vspace{-0.5cm}
     \subcaption{De Kooy}
     \label{fig:K_autocor}
   \end{minipage}
   \hfill
-  \vspace{-1cm}
-  \begin{minipage}{0.48\textwidth}
+  \begin{minipage}[0.15\textheight]{0.48\textwidth}
     \centering
 <<label=B_autocor>>=
 acf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
@@ -139,7 +139,7 @@ acf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
   \end{minipage}
   \hfill
   \vspace{-1cm}
-  \begin{minipage}{0.48\textwidth}
+  \begin{minipage}[0.15\textheight]{0.48\textwidth}
     \centering
 <<label=E_autocor>>=
 acf(hrKNMI[STN==280]$RH,lag.max=80,main=NA)
@@ -149,8 +149,7 @@ acf(hrKNMI[STN==280]$RH,lag.max=80,main=NA)
     \label{fig:E_autocor}
   \end{minipage}
   \hfill
-  \vspace{-1cm}
-  \begin{minipage}{0.48\textwidth}
+  \begin{minipage}[0.15\textheight]{0.48\textwidth}
     \centering
 <<label=V_autocor>>=
 acf(hrKNMI[STN==310]$RH,lag.max=80,main=NA)
@@ -160,8 +159,8 @@ acf(hrKNMI[STN==310]$RH,lag.max=80,main=NA)
     \label{fig:V_autocor}
   \end{minipage}
   \hfill
-  \vspace{-0.5cm}
-  \begin{minipage}{0.48\textwidth}
+  \vspace{-1cm}
+  \begin{minipage}[0.15\textheight]{0.48\textwidth}
     \centering
 <<label=M_autocor>>=
 acf(hrKNMI[STN==380]$RH,lag.max=80,main=NA)
@@ -173,12 +172,12 @@ acf(hrKNMI[STN==380]$RH,lag.max=80,main=NA)
  \caption{Autocorrelation}
 \end{figure}
 
-
 The partial autocorrelation for hourly data and all stations is shown in the following figure.
 \begin{figure}[H]
  \centering
  \textbf{Partial autocorrelation all hours}\par\medskip
- \begin{minipage}{0.48\textwidth}
+ \vspace{-0.5cm}
+ \begin{minipage}[0.15\textheight]{0.48\textwidth}
    \centering
 <<label=K_pautocor>>=
 pacf(hrKNMI[STN==235]$RH,lag.max=80,main=NA)
@@ -188,7 +187,7 @@ pacf(hrKNMI[STN==235]$RH,lag.max=80,main=NA)
    \label{fig:K_pautocor}
  \end{minipage}
  \hfill
- \begin{minipage}{0.48\textwidth}
+ \begin{minipage}[0.15\textheight]{0.48\textwidth}
    \centering
 <<label=B_pautocor>>=
 pacf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
@@ -199,7 +198,7 @@ pacf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
  \end{minipage}
  \hfill
  \vspace{-1cm}
- \begin{minipage}{0.48\textwidth}
+ \begin{minipage}[0.15\textheight]{0.48\textwidth}
    \centering
 <<label=E_pautocor>>=
 pacf(hrKNMI[STN==280]$RH,lag.max=80,main=NA)
@@ -209,7 +208,7 @@ pacf(hrKNMI[STN==280]$RH,lag.max=80,main=NA)
    \label{fig:E_pautocor}
  \end{minipage}
  \hfill
-  \begin{minipage}{0.48\textwidth}
+  \begin{minipage}[0.15\textheight]{0.48\textwidth}
    \centering
 <<label=V_pautocor>>=
 pacf(hrKNMI[STN==310]$RH,lag.max=80,main=NA)
@@ -220,12 +219,12 @@ pacf(hrKNMI[STN==310]$RH,lag.max=80,main=NA)
  \end{minipage}
  \hfill
  \vspace{-0.5cm}
-  \begin{minipage}{0.48\textwidth}
+  \begin{minipage}[0.15\textheight]{0.48\textwidth}
    \centering
 <<label=M_pautocor>>=
 pacf(hrKNMI[STN==380]$RH,lag.max=80,main=NA)
  @
-   \vspace{-0.5cm}
+   \vspace{-1cm}
     \subcaption{Maastricht}
    \label{fig:M_pautocor}
  \end{minipage}
@@ -234,17 +233,19 @@ pacf(hrKNMI[STN==380]$RH,lag.max=80,main=NA)
 
 For lags till 48 hours the autocorrelation and partial autocorrelation values are significant (<0.05). Moreover, a winter depression will not last for longer than 2 days (and summer rain events are mainly on the scale of several hours). Therefore, we will now apply quantile regression on the maximum value for 2 day periods.
 
+% TEST LAST PART OF FUNCTION
 
 <<label=setupmax2d,cache=TRUE>>=
 max2d <- max2d(hrKNMI)
 save(QR_hrKNMI, file="./inst/tussenStap/max2d.rda")
 @
 
-% Load QR-fitted data
+% Load QR-fitted data on max 2d
 <<loading3, cache=FALSE>>=
 load("./inst/tussenStap/max2d.rda")
 @
 
+% REMOVE Q50, Q75
 \begin{figure}[H]
   \centering
   \textbf{Quantile regression on 2 day max. hourly intensities}\par\medskip
@@ -261,6 +262,20 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
 hourly precipitation intensities (mm/hr), for De Bilt.}
   \label{fig:QR_max2d}
 \end{figure}
+
+% IMPROVE MC data table
+
+<<label=setupMC,cache=TRUE>>=
+MCperm[1] <- MC_coefperm(x=max2d$d2, y=max2d$max2d,tau=)
+save(QR_hrKNMI, file="./inst/tussenStap/max2d.rda")
+@
+
+% Load QR-fitted data
+<<loading3, cache=FALSE>>=
+load("./inst/tussenStap/max2d.rda")
+@
+
+
 
 
 \end{document}
