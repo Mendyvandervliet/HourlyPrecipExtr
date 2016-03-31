@@ -123,17 +123,18 @@ The following figures show the autocorrelation plots for the hourly datasets of 
 <<label=K_autocor>>=
 acf(hrKNMI[STN==235]$RH,lag.max=80,main=NA)
   @
-    \subcaption{Autocorrelation all hours}
+    \subcaption{De Kooy}
     \label{fig:K_autocor}
   \end{minipage}
   \hfill
+  \vspace{-1cm}
   \begin{minipage}{0.48\textwidth}
     \centering
 <<label=B_autocor>>=
 acf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
  @
     \vspace{-0.5cm}
-    \subcaption{Autocorrelation all hours}
+    \subcaption{De Bilt}
     \label{fig:B_autocor}
   \end{minipage}
   \hfill
@@ -144,17 +145,18 @@ acf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
 acf(hrKNMI[STN==280]$RH,lag.max=80,main=NA)
 @
     \vspace{-0.5cm}
-    \subcaption{Autocorrelation all hours}
+    \subcaption{Eelde}
     \label{fig:E_autocor}
   \end{minipage}
   \hfill
+  \vspace{-1cm}
   \begin{minipage}{0.48\textwidth}
     \centering
 <<label=V_autocor>>=
 acf(hrKNMI[STN==310]$RH,lag.max=80,main=NA)
  @
     \vspace{-0.5cm}
-    \subcaption{Autocorrelation all hours}
+    \subcaption{Vlissingen}
     \label{fig:V_autocor}
   \end{minipage}
   \hfill
@@ -165,7 +167,7 @@ acf(hrKNMI[STN==310]$RH,lag.max=80,main=NA)
 acf(hrKNMI[STN==380]$RH,lag.max=80,main=NA)
  @
     \vspace{-0.5cm}
-    \subcaption{Autocorrelation all hours}
+    \subcaption{Maastricht}
     \label{fig:M_autocor}
  \end{minipage}
  \caption{Autocorrelation}
@@ -182,7 +184,7 @@ The partial autocorrelation for hourly data and all stations is shown in the fol
 pacf(hrKNMI[STN==235]$RH,lag.max=80,main=NA)
  @
    \vspace{-0.5cm}
-   \subcaption{Autocorrelation all hours}
+   \subcaption{De Kooy}
    \label{fig:K_pautocor}
  \end{minipage}
  \hfill
@@ -192,7 +194,7 @@ pacf(hrKNMI[STN==235]$RH,lag.max=80,main=NA)
 pacf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
  @
    \vspace{-0.5cm}
-   \subcaption{Autocorrelation all hours}
+   \subcaption{De Bilt}
    \label{fig:B_pautocor}
  \end{minipage}
  \hfill
@@ -203,7 +205,7 @@ pacf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
 pacf(hrKNMI[STN==280]$RH,lag.max=80,main=NA)
  @
    \vspace{-0.5cm}
-   \subcaption{Autocorrelation all hours}
+   \subcaption{Eelde}
    \label{fig:E_pautocor}
  \end{minipage}
  \hfill
@@ -213,7 +215,7 @@ pacf(hrKNMI[STN==280]$RH,lag.max=80,main=NA)
 pacf(hrKNMI[STN==310]$RH,lag.max=80,main=NA)
  @
    \vspace{-0.5cm}
-   \subcaption{Autocorrelation all hours}
+   \subcaption{Vlissingen}
    \label{fig:V_pautocor}
  \end{minipage}
  \hfill
@@ -224,7 +226,7 @@ pacf(hrKNMI[STN==310]$RH,lag.max=80,main=NA)
 pacf(hrKNMI[STN==380]$RH,lag.max=80,main=NA)
  @
    \vspace{-0.5cm}
-   \subcaption{Autocorrelation all hours}
+    \subcaption{Maastricht}
    \label{fig:M_pautocor}
  \end{minipage}
 \caption{Partial autocorrelation}
