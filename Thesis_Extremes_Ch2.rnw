@@ -25,15 +25,13 @@ library(knitr)
 library(data.table)
 library(quantreg)
 library(plyr)
-library(grid)
+library(gridExtra)
 library(HourlyPrecipExtr)
 # set global chunk options
 opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
                echo=FALSE, fig.height=5, fig.width=5, #message=FALSE,
                fig.pos="!ht", fig.align='center') #,tidy=TRUE
 @
-
-
 
 \title{Generic Report\\
         Trends in extreme hourly precipitation}
@@ -76,7 +74,10 @@ This chapter focusses on linear trends in hourly precipitation extremes. Whether
 <<setup_trends,cache=TRUE>>=
 QR_hrKNMI <- QR_all(data=hrKNMI,STN1=235,STN2=260,STN3=280,STN4=310,STN5=380)
 save(QR_hrKNMI, file="./inst/tussenStap/QR_hrKNMI.rda")
+@
 
+
+<<legend>>=
 Legendgrob2 <- legendGrob(c("50%","75%", "90%","95%","99%","99.9%"), pch=15,
                           gp=gpar(col=c("black","gray", "blue" ,"green","orange","red"),cex=1), ncol=3)
 @
@@ -229,7 +230,53 @@ pacf(hrKNMI[STN==380]$RH,lag.max=80,main=NA)
 \caption{Partial autocorrelation}
 \end{figure}
 
+For lags till 48 hours the autocorrelation and partial autocorrelation values are significant (<0.05). Moreover, a winter depression will not last for longer than 2 days (and summer rain events are mainly on the scale of several hours). Therefore, we will now apply quantile regression on the maximum value for 2 day periods.
 
+
+<<label=setupmax2d,cache=TRUE>>=
+max2d <- max2d(hrKNMI)
+save(QR_hrKNMI, file="./inst/tussenStap/max2d.rda")
+@
+
+% Load QR-fitted data
+<<loading3, cache=FALSE>>=
+load("./inst/tussenStap/max2d.rda")
+@
+
+\begin{figure}[H]
+  \centering
+  \textbf{Quantile regression on 2 day max. hourly intensities}\par\medskip
+<<label=QR_max2d,cache=TRUE>>=
+ggplot(max2d, aes(x = Year, color=Quantiles)) +        # data
+    geom_point(aes(y=max2d[max2d > quantile(max2d,probs=c(0.50))], color="Points"))+
+    geom_line(aes(y=m50, color="50%")) +
+    geom_line(aes(y=m75, color="75%")) +
+    geom_line(aes(y=m90, color="90%")) +
+    geom_line(aes(y=m95, color="95%")) +
+    geom_line(aes(y=m99, color="99%")) +
+    geom_line(aes(y=m99.9, color="99.9%")) +
+    #ggtitle("Quantile regression") + # title
+    #ylim(y1,y2) +
+    #scale_y_log10(name='2-Day max intensity (mm/hr)', breaks=c(0.1,0.5,1,5,10,25,50))+
+    scale_color_manual(values=c("Points"="gray","50%"="black", "75%"="purple", "90%"="blue" ,"95%"="green","99%"="orange","99.9%"="red" )) +
+    xlab("Time") + ylab("2-Day max intensity (mm/hr)")+ # x and y-axis label
+    theme_bw()
+
+# ymax = 15
+# plot1 <- QR_plotting2(data=B_table, title="De Bilt",ymax)
+# plot2 <- QR_plotting2(data=K_table, title="De Kooy",ymax)
+# plot3 <- QR_plotting2(data=E_table, title="Eelde",ymax)
+# plot4 <- QR_plotting2(data=V_table, title="Vlissingen",ymax)
+# plot5 <- QR_plotting2(data=M_table, title="Maastricht",ymax)
+# grid.arrange(arrangeGrob(plot4, plot2, plot1, plot3,plot5, Legendgrob2, ncol=2),
+#              #widths = unit.c(unit(1, "npc") - Legendgrob$width, Legendgrob$width),
+#              top = textGrob("Quantile regression", vjust=1, gp=gpar(fontface = "bold", cex=1.5)),
+#              ncol= 1)
+@
+  \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on 2 day maxima in
+hourly precipitation intensities (mm/hr), for De Bilt.}
+  \label{fig:QR_max2d}
+\end{figure}
 
 
 \end{document}
