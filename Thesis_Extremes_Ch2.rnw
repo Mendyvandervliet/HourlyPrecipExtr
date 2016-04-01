@@ -89,12 +89,11 @@ load("./inst/tussenStap/QR_hrKNMI.rda")
 @
 
 \subsubsection{Intensity}
-\paragraph{All hours}
+\paragraph{All hours} \par\medskip
 
 \begin{figure}[H]
   \centering
   \textbf{Quantile regression on all hourly intensities}\par\medskip
-  \vspace{-1cm}
 <<label=QR_allhr>>=
 #,out.width='450px'
 plot1 <- QR_plotting(data=QR_hrKNMI[STN == 235], title="De Kooy")
@@ -218,13 +217,13 @@ pacf(hrKNMI[STN==310]$RH,lag.max=80,main=NA)
    \label{fig:V_pautocor}
  \end{minipage}
  \hfill
- \vspace{-0.5cm}
+ \vspace{-1cm}
   \begin{minipage}[0.15\textheight]{0.48\textwidth}
    \centering
 <<label=M_pautocor>>=
 pacf(hrKNMI[STN==380]$RH,lag.max=80,main=NA)
  @
-   \vspace{-1cm}
+   %\vspace{-1cm}
     \subcaption{Maastricht}
    \label{fig:M_pautocor}
  \end{minipage}
@@ -235,13 +234,26 @@ For lags till 48 hours the autocorrelation and partial autocorrelation values ar
 
 % TEST LAST PART OF FUNCTION
 
-<<label=setupmax2d,cache=TRUE>>=
-max2d <- max2d(hrKNMI)
-save(QR_hrKNMI, file="./inst/tussenStap/max2d.rda")
+<<label=setupdata2d,cache=TRUE>>=
+data2d <- data2d(hrKNMI)
+save(data2d, file="./inst/tussenStap/max2d.rda")
 @
 
 % Load QR-fitted data on max 2d
 <<loading3, cache=FALSE>>=
+load("./inst/tussenStap/data2d.rda")
+@
+
+<<label=setupmax2d,cache=TRUE>>=
+data2d$YM <- format(max2d$Date,format="%Y-%m")
+data2d[,":="(Year=Year,YM=YM, month=round(mean(Month),digits=0),day=mean(Day), max2d=max(RH)),by=list(d2,STN)]
+max2d <- data2d[, list(max2d=unique(max2d), Year=unique(Year),YM=unique(YM),month=unique(month)),by= list(d2,STN)]
+save(max2d, file="./inst/tussenStap/max2d.rda")
+@
+
+% Load QR-fitted data on max 2d
+<<loading4, cache=FALSE>>=
+rm(data2d)
 load("./inst/tussenStap/max2d.rda")
 @
 
@@ -266,13 +278,13 @@ hourly precipitation intensities (mm/hr), for De Bilt.}
 % IMPROVE MC data table
 
 <<label=setupMC,cache=TRUE>>=
-MCperm[1] <- MC_coefperm(x=max2d$d2, y=max2d$max2d,tau=)
-save(QR_hrKNMI, file="./inst/tussenStap/max2d.rda")
+# MCperm[1] <- MC_coefperm(x=max2d$d2, y=max2d$max2d,tau=)
+# save(MCperm, file="./inst/tussenStap/MCperm.rda")
 @
 
 % Load QR-fitted data
-<<loading3, cache=FALSE>>=
-load("./inst/tussenStap/max2d.rda")
+<<loading4, cache=FALSE>>=
+# load("./inst/tussenStap/MCperm.rda")
 @
 
 
