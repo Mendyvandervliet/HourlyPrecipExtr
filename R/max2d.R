@@ -5,7 +5,7 @@
 #' @import data.table
 #'
 #' @export
-max2d <- function(data,STN1=235,STN2=260,STN3=280,STN4=310,STN5=380){
+data2d <- function(data,STN1=235,STN2=260,STN3=280,STN4=310,STN5=380){
   tmp <- data
   tmp$d2 <- 0
   tmp$d2[1] <- 1
