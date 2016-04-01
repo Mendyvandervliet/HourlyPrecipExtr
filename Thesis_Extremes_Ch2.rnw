@@ -10,6 +10,8 @@
 \usepackage{subcaption}
 \usepackage{a4wide}
 
+\overfullrule=2cm             %To spot overfull hboxes
+
 %------------------------------------------------------------------------------------------------------------------------
 
 % install.packages("PCICt")
@@ -45,8 +47,8 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 
 \chapter{Data}
 
-<<getdata,cache=TRUE>>=
-
+<<getdata,cache=TRUE,results='markup'>>=
+getwd()
 # How to get right file?
 # Go to http://projects.knmi.nl/klimatologie/uurgegevens/selectie.cgi
 # Select period: 1-1-1958 till 21-12-2015 (1-24 hrs)
@@ -73,7 +75,8 @@ This chapter focusses on linear trends in hourly precipitation extremes. Whether
 
 % Fit data via quantile regression
 <<setup_trends,cache=TRUE>>=
-QR_hrKNMI <- QR_all(data=hrKNMI,STN1=235,STN2=260,STN3=280,STN4=310,STN5=380)
+tmp <- subset(hrKNMI,select=c("STN", "YYYYMMDD","Date","date","Year","Day","RH"))
+QR_hrKNMI <- QR_all(data=tmp,var="RH")
 save(QR_hrKNMI, file="./inst/tussenStap/QR_hrKNMI.rda")
 @
 
@@ -91,6 +94,11 @@ load("./inst/tussenStap/QR_hrKNMI.rda")
 \subsubsection{Intensity}
 \paragraph{All hours} \par\medskip
 
+% Make 10 figures, for every station 1 plot showing the quantile fits (ymax=10)
+% and 1 plot showing the points corresponding to the 99.9 % fit.
+
+% Or show 1 plot for ex De Bilt giving with colours the points corresponding to a certain quantile
+% and 5 plots for every station the quantile fits, with ymax = 10
 \begin{figure}[H]
   \centering
   \textbf{Quantile regression on all hourly intensities}\par\medskip
@@ -109,6 +117,8 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
 hourly precipitation intensities (mm/hr), for all stations. Note that the upper limit in intensity is set on 15 mm/hr.}
   \label{fig:QR_allhr}
 \end{figure}
+
+As the data consist of dry hours for ~88\% of the time, the quantile values corresponding to the 50\% and 75\% fits are always zero, and will not show a significant trend.
 
 However, trends can be biased when autocorrelation or partial autocorrelation is present. The assumption of independence of errors is violated by time series with a autocorrelation nature. Type I error rates may increase considerably for these time series and inherent pattern can dampen or enhance the effect of an intervention. Therefore, we now investigate whether there is any autocorrelation and partial autocorrelation present in the hourly data.
 
@@ -236,7 +246,7 @@ For lags till 48 hours the autocorrelation and partial autocorrelation values ar
 
 <<label=setupdata2d,cache=TRUE>>=
 data2d <- data2d(hrKNMI)
-save(data2d, file="./inst/tussenStap/max2d.rda")
+save(data2d, file="./inst/tussenStap/data2d.rda")
 @
 
 % Load QR-fitted data on max 2d
@@ -245,9 +255,11 @@ load("./inst/tussenStap/data2d.rda")
 @
 
 <<label=setupmax2d,cache=TRUE>>=
-data2d$YM <- format(max2d$Date,format="%Y-%m")
+data2d$YM <- format(data2d$Date,format="%Y-%m")
 data2d[,":="(Year=Year,YM=YM, month=round(mean(Month),digits=0),day=mean(Day), max2d=max(RH)),by=list(d2,STN)]
 max2d <- data2d[, list(max2d=unique(max2d), Year=unique(Year),YM=unique(YM),month=unique(month)),by= list(d2,STN)]
+#max2d[,mon_mean := mean(max2d),by=month]
+max2d[,yr_mean := mean(max2d),by=Year]
 save(max2d, file="./inst/tussenStap/max2d.rda")
 @
 
@@ -257,6 +269,14 @@ rm(data2d)
 load("./inst/tussenStap/max2d.rda")
 @
 
+<<setup_trendsmax2d,cache=TRUE>>=
+QR_max2d <- QR_all(data=max2d,var="max2d")
+save(QR_max2d, file="./inst/tussenStap/QR_max2dKNMI.rda")
+@
+
+<<loading5, cache=FALSE>>=
+load("./inst/tussenStap/QR_max2d.rda")
+@
 % REMOVE Q50, Q75
 \begin{figure}[H]
   \centering
@@ -270,24 +290,91 @@ plot5 <- QR2d_plotting(data=max2d[STN == 380], title="Maastricht")
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
              ncol= 1)
 @
-  \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on 2 day maxima in
-hourly precipitation intensities (mm/hr), for De Bilt.}
+  \caption{Quantile regression fits with $\tau = 75, 90, 95, 99, 99.9$ \% on 2 day maxima in
+hourly precipitation intensities (mm/hr) and a line giving the yearly means, for all stations.}
   \label{fig:QR_max2d}
 \end{figure}
 
-% IMPROVE MC data table
-
-<<label=setupMC,cache=TRUE>>=
-# MCperm[1] <- MC_coefperm(x=max2d$d2, y=max2d$max2d,tau=)
-# save(MCperm, file="./inst/tussenStap/MCperm.rda")
-@
-
-% Load QR-fitted data
-<<loading4, cache=FALSE>>=
-# load("./inst/tussenStap/MCperm.rda")
-@
+Figure \ref{fig:QR_max2d} suggest that particularly (the 99 and 99 \% ) quantiles for De Bilt regress in time. Whether the 99 and 99.9 \% trends for de Bilt are significant is investigated by a Monte Carlo 9999 permutation test of the linear regression coefficient. The corresponding distribution plot of the permuted slopes is shown in the following figure.
 
 
+% % IMPROVE MC data table
+%
+% <<label=setupMC,cache=TRUE>>=
+% # list <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.99)
+% permdist99 <- MC_coefperm(x=max_2d_B$d2, y=max_2d_B$max2d,tau=0.99)
+% permdist999 <- MC_coefperm(x=max_2d_B$d2, y=max_2d_B$max2d,tau=0.999)
+%
+% # save(MCperm, file="./inst/tussenStap/MCperm.rda")
+% @
+%
+% % Load QR-fitted data
+% <<loading5, cache=FALSE>>=
+% # load("./inst/tussenStap/MCperm.rda")
+% @
+%
+% \begin{figure}[H]
+%   \centering
+%   \textbf{Monte Carlo permutation test on 2 day max. hourly intensities}\par\medskip
+%   \vspace{-0.5cm}
+%   \begin{minipage}{0.48\textwidth}
+%     \centering
+% <<label=MC_99,out.width='245px',cache=TRUE>>=
+% plot_permdist()
+%
+% result <- paste("P(B >",0,") =",
+%                 signif(unique(permdist99$area), digits=3))
+% mtext(result,3)
+% d <- density(permdist99$reps)
+% plot(d, type='l', col='blue', lwd=3, main=NA,          # main="#Distribution of permuted slopes(99% QR fit)"
+%      xlab="Slope (increase per 2days)", ylab="Density")
+% i <- d$x >= p05 & d$x <= p95
+% lines(d$x, d$y)
+% p05 <- quantile(reps, probs=c(0.05))
+% polygon(c(p05,d$x[i],p95), c(0,d$y[i],0), col="red")
+% abline(v=obs, col="black")
+% #Confidence levels
+% p95 <- quantile(reps, probs=c(0.95))
+% abline(v=p95,col="purple")
+% p99 <- quantile(reps, probs=c(0.99))
+% abline(v=p99,col="darkgray")
+% text(x=p95, y=2625,"95%",pos=2, col="purple", font=2)
+% text(x=p99, y=2625, "99%", col="darkgray", font=2)
+% text(x=obs, y=2625, "Observed",pos=4,col="black", font=2)
+% mtext(result,3)
+% @
+%     \subcaption{99\% fit}
+%     \label{fig:MC_fit99}
+%   \end{minipage}
+%   \hfill
+%   \begin{minipage}{0.48\textwidth}
+%     \centering
+% <<label=MC_999,out.width='245px',cache=TRUE>>=
+% p05_999 <- quantile(reps999, probs=c(0.05))
+% p95_999 <- quantile(reps999, probs=c(0.95))
+% d <- density(reps999)
+% plot(d, type='l', col='blue', lwd=3, main=NA,           # main="#Distribution of permuted slopes(99.9% QR fit)"
+%       xlab="Slope (increase per 2days)", ylab="Density")
+% i <- d$x >= p05_999 & d$x <= p95_999
+% lines(d$x, d$y)
+% polygon(c(p05_999,d$x[i],p95_999), c(0,d$y[i],0), col="red")
+% abline(v=obs999, col="black")
+% #Confidence levels
+% abline(v=p95_999,col="purple")
+% p99_999 <- quantile(reps999, probs=c(0.99))
+% abline(v=p99_999,col="darkgray")
+% text(x=p95_999, y=600,"95%", col="purple", font=2)
+% text(x=p99_999, y=600, "99%",pos=4, col="darkgray", font=2)
+% text(x=obs999, y=600, "Observed",pos=2,col="black", font=2)
+% mtext(result,3)
+% @
+%     \subcaption{99.9\% fit}
+%     \label{fig:MC_fit999}
+%   \end{minipage}
+%   \caption{Density distribution for a 9999MC Permutation for the $\tau = 99$(upper), $99.9$\%(bottom)-fits on 2 day maxima in hourly precipitation intensities (mm/hr) for De Bilt. The purple (black) line gives the upper-tail slope at the 95\% (99\%) confidence level. The pink line gives the 90\% confidence level and the red line indicates the observed regression coefficient of the 99\% and 99.9\% quantile regression fits.}
+%   \label{fig:MC_max2d}
+% \end{figure}
+%
 
 
 \end{document}
