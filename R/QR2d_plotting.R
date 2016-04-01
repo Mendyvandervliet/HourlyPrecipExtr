@@ -16,6 +16,6 @@ QR2d_plotting<- function(data,title){
     geom_line(aes(y=m999), color="red") +
     #color="Points", scale_color_manual(values=c("Points"="gray","50%"="black", "75%"="purple", "90%"="blue" ,"95%"="green","99%"="orange","99.9%"="red" )) +
     ggtitle(title) + # title
-    xlab("Time") + ylab("Intensity (mm/hr)")+ # x and y-axis label
+    xlab("Time") + ylab("Int. (mm/hr)")+ # x and y-axis label
     theme_bw()
 }
