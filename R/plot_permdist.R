@@ -23,8 +23,15 @@ polygon(c(p05,d$x[i],p95), c(0,d$y[i],0), col="red")
 abline(v=p95,col="purple")
 abline(v=data$obs, col="black")
 abline(v=p99,col="darkgray")
-text(x=p95, y=2625,"95%",pos=2, col="purple", font=2)
-text(x=p99, y=2625, "99%", col="darkgray", font=2)
-text(x=data$obs, y=2625, "Observed",pos=4,col="black")
+if(data$obs[1] > p99){
+text(x=p95, y=max(d$y),"95%",col="purple", font=2)
+text(x=p99, y=max(d$y), "99%", col="darkgray", font=2)
+text(x=data$obs[1], y=max(d$y), "Observed",pos=4,col="black")
+}
+else{
+text(x=p95, y=max(d$y),"95%",col="purple", font=2)
+text(x=p99, y=max(d$y), "99%", col="darkgray", font=2)
+text(x=data$obs[1]-(0.75*p95), y=max(d$y), "Observed",pos=4,col="black")
+}
 mtext(result,3)
 }
