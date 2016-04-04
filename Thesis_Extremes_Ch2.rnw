@@ -47,6 +47,11 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 
 \chapter{Data}
 
+<<showWD,results='markup'>>=
+getwd()
+setwd("~/Documents/HourlyPrecipExtr")
+@
+
 <<getdata,cache=TRUE>>=
 getwd()
 # How to get right file?
@@ -74,12 +79,11 @@ load("./inst/tussenStap/hrKNMI.rda")
 This chapter focusses on linear trends in hourly precipitation extremes. Whether the hourly intensity of extremes regresses linearly in time or not is investigated for the period 1958 to 2014. Next to intensity, trends in the frequency of hourly extremes are considered (and compared to the proportional change by studying the regression of the mean hourly intensity in time as well).
 
 % Fit data via quantile regression
-<<setup_trends,cache=TRUE>>=
-tmp <- subset(hrKNMI,select=c("STN", "YYYYMMDD","Date","date","Year","Day","RH"))
-QR_hrKNMI <- QR_all(data=tmp,var="RH")
-save(QR_hrKNMI, file="./inst/tussenStap/QR_hrKNMI.rda")
-@
-
+%<<setup_trends,cache=TRUE>>=
+%tmp <- subset(hrKNMI,select=c("STN", "YYYYMMDD","Date","date","Year","Day","RH"))
+%QR_hrKNMI <- QR_stn(data=tmp)
+%save(QR_hrKNMI, file="./inst/tussenStap/QR_hrKNMI.rda")
+%@
 
 <<legend, cache=TRUE>>=
 Legendgrob2 <- legendGrob(c("50%","75%", "90%","95%","99%","99.9%"), pch=15,
@@ -102,7 +106,7 @@ load("./inst/tussenStap/QR_hrKNMI.rda")
 \begin{figure}[H]
   \centering
   \textbf{Quantile regression on all hourly intensities}\par\medskip
-<<label=QR_allhr>>=
+<<label=QR_allhr,cache=TRUE>>=
 #,out.width='450px'
 plot1 <- QR_plotting(data=QR_hrKNMI[STN == 235], title="De Kooy")
 plot2 <- QR_plotting(data=QR_hrKNMI[STN == 260], title="De Bilt")
@@ -270,7 +274,7 @@ load("./inst/tussenStap/max2d.rda")
 @
 
 <<setup_trendsmax2d,cache=TRUE>>=
-QR_max2d <- QR_all(data=max2d,var="max2d")
+QR_max2d <- QR_all(data=max2d)
 save(QR_max2d, file="./inst/tussenStap/QR_max2dKNMI.rda")
 @
 
