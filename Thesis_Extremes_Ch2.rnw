@@ -49,7 +49,7 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 
 <<showWD,results='markup'>>=
 getwd()
-#setwd("~/Documents/HourlyPrecipExtr")
+setwd("~/Documents/HourlyPrecipExtr")
 @
 
 <<getdata,cache=TRUE>>=
@@ -286,11 +286,11 @@ load("./inst/tussenStap/QR_max2d.rda")
   \centering
   \textbf{Quantile regression on 2 day max. hourly intensities}\par\medskip
 <<label=QR_max2d,cache=TRUE>>=
-plot1 <- QR2d_plotting(data=max2d[STN == 235], title="De Kooy")
-plot2 <- QR2d_plotting(data=max2d[STN == 260], title="De Bilt")
-plot3 <- QR2d_plotting(data=max2d[STN == 280], title="Eelde")
-plot4 <- QR2d_plotting(data=max2d[STN == 310], title="Vlissingen")
-plot5 <- QR2d_plotting(data=max2d[STN == 380], title="Maastricht")
+plot1 <- QR2d_plotting(data=QR_max2d[STN == 235], title="De Kooy")
+plot2 <- QR2d_plotting(data=QR_max2d[STN == 260], title="De Bilt")
+plot3 <- QR2d_plotting(data=QR_max2d[STN == 280], title="Eelde")
+plot4 <- QR2d_plotting(data=QR_max2d[STN == 310], title="Vlissingen")
+plot5 <- QR2d_plotting(data=QR_max2d[STN == 380], title="Maastricht")
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
              ncol= 1)
 @
@@ -301,27 +301,24 @@ hourly precipitation intensities (mm/hr) and a line giving the yearly means, for
 
 Figure \ref{fig:QR_max2d} suggest that particularly (the 99 and 99 \% ) quantiles for De Bilt regress in time. Whether the 99 and 99.9 \% trends for de Bilt are significant is investigated by a Monte Carlo 9999 permutation test of the linear regression coefficient. The corresponding distribution plot of the permuted slopes is shown in the following figure.
 
+% IMPROVE MC data table
 
-% % IMPROVE MC data table
-%
-% <<label=setupMC,cache=TRUE>>=
+ <<label=setupMC,cache=TRUE>>=
+ # list <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.99)
+permdist99 <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.99)
+# list <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.999)
+permdist999 <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.999)
+#rm(list)
+save(permdist99, file="./inst/tussenStap/permdist99.rda")
+save(permdist999, file="./inst/tussenStap/permdist999.rda")
+@
 
+% Load QR-fitted data
+<<loading6, cache=FALSE>>=
+load("./inst/tussenStap/permdist99.rda")
+load("./inst/tussenStap/permdist999.rda")
+@
 
-% # list <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.99)
-% permdist99 <- MC_coefperm(x=max_2d_B$d2, y=max_2d_B$max2d,tau=0.99)
-% # list <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.999)
-% permdist999 <- MC_coefperm(x=max_2d_B$d2, y=max_2d_B$max2d,tau=0.999)
-% rm(list)
-% # save(permdist99, file="./inst/tussenStap/permdist99.rda")
-% # save(permdist999, file="./inst/tussenStap/permdist999.rda")
-% @
-%
-% % Load QR-fitted data
-% <<loading5, cache=FALSE>>=
-% # load("./inst/tussenStap/permdist99.rda")
-% # load("./inst/tussenStap/permdist999.rda")
-% @
-%
 % \begin{figure}[H]
 %   \centering
 %   \textbf{Monte Carlo permutation test on 2 day max. hourly intensities}\par\medskip
