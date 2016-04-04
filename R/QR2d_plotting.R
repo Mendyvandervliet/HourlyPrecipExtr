@@ -7,7 +7,7 @@
 #' @export
 QR2d_plotting<- function(data,title){
   ggplot(data, aes(x = Year)) +        # data
-    #geom_point(data=data[max2d > quantile(max2d,probs=0.999)],aes(y=max2d),color="gray",size=0.3)+
+    geom_point(data=data[max2d > quantile(max2d,probs=0.999)],aes(y=max2d),color="gray",size=0.3)+
     geom_line(aes(y=yr_mean), color="black") +
     geom_line(aes(y=m75), color="purple") +
     geom_line(aes(y=m90), color="blue") +
