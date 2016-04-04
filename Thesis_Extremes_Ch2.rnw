@@ -319,68 +319,31 @@ load("./inst/tussenStap/permdist99.rda")
 load("./inst/tussenStap/permdist999.rda")
 @
 
-% \begin{figure}[H]
-%   \centering
-%   \textbf{Monte Carlo permutation test on 2 day max. hourly intensities}\par\medskip
-%   \vspace{-0.5cm}
-%   \begin{minipage}{0.48\textwidth}
-%     \centering
-% <<label=MC_99,cache=TRUE>>=
-% plot_permdist()
-%
-% result <- paste("P(B >",0,") =",
-%                 signif(unique(permdist99$area), digits=3))
-% mtext(result,3)
-% d <- density(permdist99$reps)
-% plot(d, type='l', col='blue', lwd=3, main=NA,          # main="#Distribution of permuted slopes(99% QR fit)"
-%      xlab="Slope (increase per 2days)", ylab="Density")
-% i <- d$x >= p05 & d$x <= p95
-% lines(d$x, d$y)
-% p05 <- quantile(reps, probs=c(0.05))
-% polygon(c(p05,d$x[i],p95), c(0,d$y[i],0), col="red")
-% abline(v=obs, col="black")
-% #Confidence levels
-% p95 <- quantile(reps, probs=c(0.95))
-% abline(v=p95,col="purple")
-% p99 <- quantile(reps, probs=c(0.99))
-% abline(v=p99,col="darkgray")
-% text(x=p95, y=2625,"95%",pos=2, col="purple", font=2)
-% text(x=p99, y=2625, "99%", col="darkgray", font=2)
-% text(x=obs, y=2625, "Observed",pos=4,col="black", font=2)
-% mtext(result,3)
-% @
-%     \subcaption{99\% fit}
-%     \label{fig:MC_fit99}
-%   \end{minipage}
-%   \hfill
-%   \begin{minipage}{0.48\textwidth}
-%     \centering
-% <<label=MC_999,out.width='245px',cache=TRUE>>=
-% p05_999 <- quantile(reps999, probs=c(0.05))
-% p95_999 <- quantile(reps999, probs=c(0.95))
-% d <- density(reps999)
-% plot(d, type='l', col='blue', lwd=3, main=NA,           # main="#Distribution of permuted slopes(99.9% QR fit)"
-%       xlab="Slope (increase per 2days)", ylab="Density")
-% i <- d$x >= p05_999 & d$x <= p95_999
-% lines(d$x, d$y)
-% polygon(c(p05_999,d$x[i],p95_999), c(0,d$y[i],0), col="red")
-% abline(v=obs999, col="black")
-% #Confidence levels
-% abline(v=p95_999,col="purple")
-% p99_999 <- quantile(reps999, probs=c(0.99))
-% abline(v=p99_999,col="darkgray")
-% text(x=p95_999, y=600,"95%", col="purple", font=2)
-% text(x=p99_999, y=600, "99%",pos=4, col="darkgray", font=2)
-% text(x=obs999, y=600, "Observed",pos=2,col="black", font=2)
-% mtext(result,3)
-% @
-%     \subcaption{99.9\% fit}
-%     \label{fig:MC_fit999}
-%   \end{minipage}
-%   \caption{Density distribution for a 9999MC Permutation for the $\tau = 99$(upper), $99.9$\%(bottom)-fits on 2 day maxima in hourly precipitation intensities (mm/hr) for De Bilt. The purple (black) line gives the upper-tail slope at the 95\% (99\%) confidence level. The pink line gives the 90\% confidence level and the red line indicates the observed regression coefficient of the 99\% and 99.9\% quantile regression fits.}
-%   \label{fig:MC_max2d}
-% \end{figure}
-%
+\begin{figure}[H]
+  \centering
+  \textbf{Monte Carlo permutation test on 2 day max. hourly intensities}\par\medskip
+  \vspace{-0.5cm}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+<<label=MC_99,cache=TRUE>>=
+plot_permdist(permdist99)
+@
+    \subcaption{99\fit}
+    \label{fig:MC_fit99}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+<<label=MC_999,out.width='245px',cache=TRUE>>=
+plot_permdist(permdist999)
+@
+    \subcaption{99.9\fit}
+    \label{fig:MC_fit999}
+  \end{minipage}
+  \caption{Density distribution for a 9999MC Permutation for the $\tau = 99$(upper), $99.9$\%(bottom)-fits on 2 day maxima in hourly precipitation intensities (mm/hr) for De Bilt. The purple (black) line gives the upper-tail slope at the 95\(99\%) confidence level. The pink line gives the 90\confidence level and the red line indicates the observed regression coefficient of the 99\% and 99.9\% quantile regression fits.}
+  \label{fig:MC_max2d}
+\end{figure}
+
 
 
 \end{document}
