@@ -49,7 +49,7 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 
 <<showWD,results='markup'>>=
 getwd()
-setwd("~/Documents/HourlyPrecipExtr")
+#setwd("~/Documents/HourlyPrecipExtr")
 @
 
 <<getdata,cache=TRUE>>=
@@ -275,7 +275,7 @@ load("./inst/tussenStap/max2d.rda")
 
 <<setup_trendsmax2d,cache=TRUE>>=
 QR_max2d <- QR_all(data=max2d)
-save(QR_max2d, file="./inst/tussenStap/QR_max2dKNMI.rda")
+save(QR_max2d, file="./inst/tussenStap/QR_max2d.rda")
 @
 
 <<loading5, cache=FALSE>>=
