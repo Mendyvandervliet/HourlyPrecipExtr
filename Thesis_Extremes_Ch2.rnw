@@ -491,13 +491,13 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
 <<label=>>=
 
 @
-  \subcaption{Impact > 10 mm/hr}
+  \subcaption{Impact $>$ 10 mm/hr}
   \label{fig:impact}
   \end{minipage}
   \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on counts of wet hours a year, for all hours (a) and .., for all stations.}
   \label{fig:QR_freq}
 \end{figure}
-\vspace{-1cm}
+\hfill
 \begin{figure}[H]
   \begin{minipage}{0.48\textwidth}
     \flushleft
@@ -532,6 +532,33 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
   \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on counts of wet hours a year, for only Winter (a) and only Summer (b) data, for all stations.}
   \label{fig:QR_freqWS}
 \end{figure}
+
+
+To investigate the frequency of extreme events, we will look at the frequency of wet hours with an intensity between 5-10, 10-15, 15-20 and $>$ 20 mm/hr.
+
+ <<label=freqthreshold,cache=TRUE>>=
+freq_5 <-    hrKNMI[RH > 5 & RH <10][ , ':='(f = .N),by = list(Year,STN)]
+freq_5 <- QR_freqall(freq_5)
+freq_10 <-  hrKNMI[RH > 10 & RH <15][ , ':='(f = .N),by = list(Year,STN)]
+freq_10 <- QR_freqall(freq_10)
+freq_15 <-  hrKNMI[RH > 15 & RH <20][ , ':='(f = .N),by = list(Year,STN)]
+freq_15 <- QR_freqall(freq_15)
+freq_20 <-  hrKNMI[RH > 20][ , ':='(f = .N),by = list(Year,STN)]
+freq_15 <- QR_freqall(freq_15)
+
+save(freq_5, file="./inst/tussenStap/freq_5.rda")
+save(freq_10, file="./inst/tussenStap/freq_10.rda")
+save(freq_15, file="./inst/tussenStap/freq_15.rda")
+save(freq_20, file="./inst/tussenStap/freq_20.rda")
+
+@
+
+ <<label=loading11,cache=FALSE>>=
+load("./inst/tussenStap/freq_5.rda")
+load("./inst/tussenStap/freq_10.rda")
+load("./inst/tussenStap/freq_15.rda")
+load("./inst/tussenStap/freq_20.rda")
+@
 
 
 
