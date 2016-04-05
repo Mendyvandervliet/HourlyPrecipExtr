@@ -6,13 +6,24 @@
 #' @import quantreg
 #'
 #' @export
-QR_freqall <- function(data){
+QR_freqall <- function(data,STN=TRUE){
+  if(STN==TRUE){
   tmp <- data
-  tmp[, ":="(f50 = -1, f75 = -1, f90 = -1)]
+  tmp[, ":="(f25= -1, f50 = -1, f75 = -1, f90 = -1)]
   setkey(tmp,STN)
   tmp[, f25 := as.numeric(fitted.values(rq(f ~ Year, tau =0.25))),by=STN]
   tmp[, f50 := as.numeric(fitted.values(rq(f ~ Year, tau =0.5))),by=STN]
   tmp[, f75 := as.numeric(fitted.values(rq(f ~ Year, tau =0.75))),by=STN]
   tmp[, f90 := as.numeric(fitted.values(rq(f ~ Year, tau =0.90))),by=STN]
   return(tmp)
+  }
+  else{
+  tmp <- data
+  tmp[, ":="(f25= -1,f50 = -1, f75 = -1, f90 = -1)]
+  tmp[, f25 := as.numeric(fitted.values(rq(f ~ Year, tau =0.25)))]
+  tmp[, f50 := as.numeric(fitted.values(rq(f ~ Year, tau =0.5)))]
+  tmp[, f75 := as.numeric(fitted.values(rq(f ~ Year, tau =0.75)))]
+  tmp[, f90 := as.numeric(fitted.values(rq(f ~ Year, tau =0.90)))]
+  return(tmp)
+  }
 }
