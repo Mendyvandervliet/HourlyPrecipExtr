@@ -491,10 +491,10 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
 <<label=>>=
 
 @
-  \subcaption{Impact $>$ 10 mm/hr}
-  \label{fig:impact}
+    \subcaption{Impact $>$ 10 mm/hr}
+    \label{fig:impact}
   \end{minipage}
-  \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on counts of wet hours a year, for all hours (a) and .., for all stations.}
+  \caption{Quantile regression fits with $\tau = 25, 50, 75, 90$ \% on counts of wet hours a year, for all hours (a) and .., for all stations.}
   \label{fig:QR_freq}
 \end{figure}
 \hfill
@@ -526,10 +526,10 @@ plot5 <- QR_freqplotting(data=QR_Sfreq[STN == 380], title="Maastricht")
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
              ncol= 1)
 @
-  \subcaption{Summer}
-  \label{fig:Qfreq_sum}
+    \subcaption{Summer}
+    \label{fig:Qfreq_sum}
   \end{minipage}
-  \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on counts of wet hours a year, for only Winter (a) and only Summer (b) data, for all stations.}
+  \caption{Quantile regression fits with $\tau = 25, 50, 75, 90$ \% on counts of wet hours a year, for only Winter (a) and only Summer (b) data, for all stations.}
   \label{fig:QR_freqWS}
 \end{figure}
 
@@ -544,7 +544,7 @@ freq_10 <- QR_freqall(freq_10)
 freq_15 <-  hrKNMI[RH > 15 & RH <20][ , ':='(f = .N),by = list(Year,STN)]
 freq_15 <- QR_freqall(freq_15)
 freq_20 <-  hrKNMI[RH > 20][ , ':='(f = .N),by = list(Year,STN)]
-freq_15 <- QR_freqall(freq_15)
+freq_20 <- QR_freqall(freq_20)
 
 save(freq_5, file="./inst/tussenStap/freq_5.rda")
 save(freq_10, file="./inst/tussenStap/freq_10.rda")
@@ -560,6 +560,73 @@ load("./inst/tussenStap/freq_15.rda")
 load("./inst/tussenStap/freq_20.rda")
 @
 
+\begin{figure}[H]
+  \hspace{-1cm}
+  \centering
+  \textbf{Quantile regression on threshold based frequency data}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+    \flushleft
+<<label=threshold1,cache=TRUE>>=
+plot1 <- QR_freqplotting(data=freq_5[STN == 235], title="De Kooy")
+plot2 <- QR_freqplotting(data=freq_5[STN == 260], title="De Bilt")
+plot3 <- QR_freqplotting(data=freq_5[STN == 280], title="Eelde")
+plot4 <- QR_freqplotting(data=freq_5[STN == 310], title="Vlissingen")
+plot5 <- QR_freqplotting(data=freq_5[STN == 380], title="Maastricht")
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+             ncol= 1)
+@
+    \subcaption{Hours with intensity 5-10 mm/hr}
+    \label{fig:threshold1}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \flushleft
+<<label=threshold2,cache=TRUE>>=
+plot1 <- QR_freqplotting(data=freq_10[STN == 235], title="De Kooy")
+plot2 <- QR_freqplotting(data=freq_10[STN == 260], title="De Bilt")
+plot3 <- QR_freqplotting(data=freq_10[STN == 280], title="Eelde")
+plot4 <- QR_freqplotting(data=freq_10[STN == 310], title="Vlissingen")
+plot5 <- QR_freqplotting(data=freq_10[STN == 380], title="Maastricht")
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+             ncol= 1)
+@
+    \subcaption{Hours with intensity 10-15 mm/hr}
+    \label{fig:threshold2}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \flushleft
+<<label=threshold3,cache=TRUE>>=
+plot1 <- QR_freqplotting(data=freq_15[STN == 235], title="De Kooy")
+plot2 <- QR_freqplotting(data=freq_15[STN == 260], title="De Bilt")
+plot3 <- QR_freqplotting(data=freq_15[STN == 280], title="Eelde")
+plot4 <- QR_freqplotting(data=freq_15[STN == 310], title="Vlissingen")
+plot5 <- QR_freqplotting(data=freq_15[STN == 380], title="Maastricht")
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+             ncol= 1)
+@
+    \subcaption{Hours with intensity 15-20 mm/hr}
+    \label{fig:threshold3}
+  \end{minipage}
+  \hfill
+  \hspace{-0.5cm}
+    \begin{minipage}{0.48\textwidth}
+    \flushleft
+<<label=threshold4,cache=TRUE>>=
+plot1 <- QR_freqplotting(data=freq_20[STN == 235], title="De Kooy")
+plot2 <- QR_freqplotting(data=freq_20[STN == 260], title="De Bilt")
+plot3 <- QR_freqplotting(data=freq_20[STN == 280], title="Eelde")
+plot4 <- QR_freqplotting(data=freq_20[STN == 310], title="Vlissingen")
+plot5 <- QR_freqplotting(data=freq_20[STN == 380], title="Maastricht")
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+             ncol= 1)
+@
+    \subcaption{Hours with intensity $> 20$ mm/hr}
+    \label{fig:threshold4}
+  \end{minipage}
+  \caption{Quantile regression fits with $\tau = 25, 50, 75, 90$ \% on counts of wet hours a year, of intensity 5-10 (a), 10-15 (b), 15-20, and $> 20$ mm/hr, for all stations.}
+  \label{fig:QR_freqthreshold}
+\end{figure}
 
 
 
