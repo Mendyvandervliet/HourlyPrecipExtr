@@ -463,7 +463,57 @@ load("./inst/tussenStap/QR_Sfreq.rda")
 load("./inst/tussenStap/QR_Wfreq.rda")
 @
 
-
+\begin{figure}[H]
+  \hspace{-1cm}
+  \centering
+  \textbf{Quantile regression on frequency data}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+    \flushleft
+<<label=QR_max2d,cache=TRUE>>=
+plot1 <- QR2d_plotting(data=QR_freq[STN == 235], title="De Kooy")
+plot2 <- QR2d_plotting(data=QR_freq[STN == 260], title="De Bilt")
+plot3 <- QR2d_plotting(data=QR_freq[STN == 280], title="Eelde")
+plot4 <- QR2d_plotting(data=QR_freq[STN == 310], title="Vlissingen")
+plot5 <- QR2d_plotting(data=QR_freq[STN == 380], title="Maastricht")
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+             ncol= 1)
+@
+  \subcaption{All wet hours}
+  \label{fig:Qfreq}
+  \end{minipage}
+  \begin{minipage}{0.48\textwidth}
+    \flushleft
+<<label=QRW_max2d>>=
+plot1 <- QR2d_plotting(data=QR_Wfreq[STN == 235], title="De Kooy",point=FALSE)
+plot2 <- QR2d_plotting(data=QR_Wfreq[STN == 260], title="De Bilt",point=FALSE)
+plot3 <- QR2d_plotting(data=QR_Wfreq[STN == 280], title="Eelde",point=FALSE)
+plot4 <- QR2d_plotting(data=QR_Wfreq[STN == 310], title="Vlissingen",point=FALSE)
+plot5 <- QR2d_plotting(data=QR_Wfreq[STN == 380], title="Maastricht",point=FALSE)
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+             ncol= 1)
+@
+  \subcaption{Winter}
+  \label{fig:Qfreq_win}
+  \end{minipage}
+  \hfill
+  \hspace{-0.5cm}
+    \begin{minipage}{0.48\textwidth}
+    \flushleft
+<<label=QRS_max2d>>=
+plot1 <- QR2d_plotting(data=QR_Sfreq[STN == 235], title="De Kooy",point=FALSE)
+plot2 <- QR2d_plotting(data=QR_Sfreq[STN == 260], title="De Bilt",point=FALSE)
+plot3 <- QR2d_plotting(data=QR_Sfreq[STN == 280], title="Eelde",point=FALSE)
+plot4 <- QR2d_plotting(data=QR_Sfreq[STN == 310], title="Vlissingen",point=FALSE)
+plot5 <- QR2d_plotting(data=QR_Sfreq[STN == 380], title="Maastricht",point=FALSE)
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+             ncol= 1)
+@
+  \subcaption{Summer}
+  \label{fig:Qfreq_sum}
+  \end{minipage}
+  \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on 2 day Winter (left) and Summer (right) maxima in hourly precipitation intensities (mm/hr), for all stations.}
+  \label{fig:QR_freq}
+\end{figure}
 
 
 

@@ -1,0 +1,18 @@
+# Plotting quantile regression fits of frequency data for multiple stations and quantiles
+#
+#' Function to obtain complex ggplots
+
+#' @import ggplot2
+#'
+#' @export
+QR_freqplotting <- function(data,title){
+  ggplot(data, aes(x = Year)) +        # data
+    geom_point(data=data,aes(y=f),color="gray",size=0.3)+
+    geom_line(aes(y=f25), color="black") +
+    geom_line(aes(y=f50), color="blue") +
+    geom_line(aes(y=f75), color="green") +
+    geom_line(aes(y=f90), color="orange") +
+    ggtitle(title) + # title
+    xlab("Time") + ylab("Intensity (mm/hr)")+ # x and y-axis label
+    theme_bw()
+}
