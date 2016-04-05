@@ -5,17 +5,30 @@
 #' @import ggplot2
 #'
 #' @export
-QR2d_plotting<- function(data,title){
-  ggplot(data, aes(x = Year)) +        # data
-    geom_point(data=data[max2d > quantile(max2d,probs=0.999)],aes(y=max2d),color="gray",size=0.3)+
+QR2d_plotting<- function(data,title,point=TRUE){
+  if(point==TRUE){
+  ggplot(data, aes(x = Year))+        # data
+    geom_point(data=data[max2d > quantile(max2d,probs=0.999)],aes(y=max2d),color="gray",size=0.3) +
     geom_line(aes(y=yr_mean), color="black") +
     geom_line(aes(y=m75), color="purple") +
     geom_line(aes(y=m90), color="blue") +
     geom_line(aes(y=m95), color="green") +
     geom_line(aes(y=m99), color="orange") +
     geom_line(aes(y=m999), color="red") +
-    #color="Points", scale_color_manual(values=c("Points"="gray","50%"="black", "75%"="purple", "90%"="blue" ,"95%"="green","99%"="orange","99.9%"="red" )) +
     ggtitle(title) + # title
     xlab("Time") + ylab("Int. (mm/hr)")+ # x and y-axis label
     theme_bw()
+  }
+  else{
+    ggplot(data, aes(x = Year))+        # data
+      geom_line(aes(y=yr_mean), color="black") +
+      geom_line(aes(y=m75), color="purple") +
+      geom_line(aes(y=m90), color="blue") +
+      geom_line(aes(y=m95), color="green") +
+      geom_line(aes(y=m99), color="orange") +
+      geom_line(aes(y=m999), color="red") +
+      ggtitle(title) + # title
+      xlab("Time") + ylab("Int. (mm/hr)")+ # x and y-axis label
+      theme_bw()
+  }
 }
