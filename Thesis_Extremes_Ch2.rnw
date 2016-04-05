@@ -416,7 +416,7 @@ yearlyMax <- hrKNMI[, list(RHmax = max(RH)), by = list(STN, Year)]
 \begin{figure}[H]
   \centering
   \textbf{Trends in quantiles of yearly maxima}\par\medskip
-<<QuantileTrends>>=
+<<Yearlymax>>=
 ggplot(yearlyMax, aes(x = Year, y = RHmax)) + geom_point() +
   geom_quantile(formula = y ~ x) +
   geom_quantile(formula = y ~ x,quantiles=0.90) +
@@ -424,16 +424,17 @@ ggplot(yearlyMax, aes(x = Year, y = RHmax)) + geom_point() +
   xlab("") + ylab("Annual max mm/hr")
 @
   \caption{The 25, 50, 75 and 90 percentile of annual maximum hourly rainfall for every station}
+  \label{fig:Yearlymax}
 \end{figure}
 
-Figure \ref{fig:QuantileTrends} shows the trend in the 25, 50, 75 and 90 percentile of annual maximum hourly rainfall.
+Figure \ref{fig:Yearlymax} shows the trend in the 25, 50, 75 and 90 percentile of annual maximum hourly rainfall.
 
 \subsubsection{Frequency}
 
  <<label=freq,cache=TRUE>>=
 freq_wet <-  hrKNMI[RH > 0][ , ':='(f = .N),by = list(Year,STN)]
-freq_Swet <- hrKNMI[RH > 0][month==6| month==7 | month==8][ , ':='(f = .N),by = list(Year,STN)]
-freq_Wwet <- hrKNMI[RH > 0][month==12| month==1 | month==2][ , ':='(f = .N),by = list(Year,STN)]
+freq_Swet <- hrKNMI[RH > 0][Month==6| Month==7 | Month==8][ , ':='(f = .N),by = list(Year,STN)]
+freq_Wwet <- hrKNMI[RH > 0][Month==12| Month==1 | Month==2][ , ':='(f = .N),by = list(Year,STN)]
 
 save(freq_wet, file="./inst/tussenStap/freq_wet.rda")
 save(freq_Swet, file="./inst/tussenStap/freq_Swet.rda")
@@ -457,7 +458,7 @@ Legendgrob2 <- legendGrob(c("25%","50%","75%", "90%"), pch=15,
 
 save(QR_freq, file="./inst/tussenStap/QR_freq.rda")
 save(QR_Sfreq, file="./inst/tussenStap/QR_Sfreq.rda")
-save(freq_Wwet, file="./inst/tussenStap/QR_Wfreq.rda")
+save(QR_Wfreq, file="./inst/tussenStap/QR_Wfreq.rda")
 @
 
  <<label=loading10,cache=FALSE>>=
@@ -465,6 +466,72 @@ load("./inst/tussenStap/QR_freq.rda")
 load("./inst/tussenStap/QR_Sfreq.rda")
 load("./inst/tussenStap/QR_Wfreq.rda")
 @
+
+\begin{figure}[H]
+  \hspace{-1cm}
+  \centering
+  \textbf{Quantile regression on frequency data}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+    \flushleft
+<<label=QR_freqplotting,cache=TRUE>>=
+plot1 <- QR_freqplotting(data=QR_freq[STN == 235], title="De Kooy")
+plot2 <- QR_freqplotting(data=QR_freq[STN == 260], title="De Bilt")
+plot3 <- QR_freqplotting(data=QR_freq[STN == 280], title="Eelde")
+plot4 <- QR_freqplotting(data=QR_freq[STN == 310], title="Vlissingen")
+plot5 <- QR_freqplotting(data=QR_freq[STN == 380], title="Maastricht")
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+             ncol= 1)
+@
+  \subcaption{All wet hours}
+  \label{fig:Qfreq}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \flushleft
+<<label=>>=
+
+@
+  \subcaption{Impact > 10 mm/hr}
+  \label{fig:impact}
+  \end{minipage}
+  \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on counts of wet hours a year, for all hours (a) and .., for all stations.}
+  \label{fig:QR_freq}
+\end{figure}
+\vspace{-1cm}
+\begin{figure}[H]
+  \begin{minipage}{0.48\textwidth}
+    \flushleft
+<<label=QRW_freqplotting>>=
+plot1 <- QR_freqplotting(data=QR_Wfreq[STN == 235], title="De Kooy")
+plot2 <- QR_freqplotting(data=QR_Wfreq[STN == 260], title="De Bilt")
+plot3 <- QR_freqplotting(data=QR_Wfreq[STN == 280], title="Eelde")
+plot4 <- QR_freqplotting(data=QR_Wfreq[STN == 310], title="Vlissingen")
+plot5 <- QR_freqplotting(data=QR_Wfreq[STN == 380], title="Maastricht")
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+             ncol= 1)
+@
+  \subcaption{Winter}
+  \label{fig:Qfreq_win}
+  \end{minipage}
+  \hfill
+  \hspace{-0.5cm}
+    \begin{minipage}{0.48\textwidth}
+    \flushleft
+<<label=QRS_freqplotting>>=
+plot1 <- QR_freqplotting(data=QR_Sfreq[STN == 235], title="De Kooy")
+plot2 <- QR_freqplotting(data=QR_Sfreq[STN == 260], title="De Bilt")
+plot3 <- QR_freqplotting(data=QR_Sfreq[STN == 280], title="Eelde")
+plot4 <- QR_freqplotting(data=QR_Sfreq[STN == 310], title="Vlissingen")
+plot5 <- QR_freqplotting(data=QR_Sfreq[STN == 380], title="Maastricht")
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+             ncol= 1)
+@
+  \subcaption{Summer}
+  \label{fig:Qfreq_sum}
+  \end{minipage}
+  \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on counts of wet hours a year, for only Winter (a) and only Summer (b) data, for all stations.}
+  \label{fig:QR_freqWS}
+\end{figure}
 
 
 
