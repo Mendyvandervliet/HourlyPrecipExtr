@@ -3,6 +3,7 @@
 export(MC_coefperm)
 export(QR2d_plotting)
 export(QR_all)
+export(QR_freqall)
 export(QR_plotting)
 export(QR_stn)
 export(bxdata)
