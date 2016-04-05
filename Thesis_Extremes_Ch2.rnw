@@ -303,11 +303,8 @@ Figure \ref{fig:QR_max2d} suggest that particularly (the 99 and 99 \% ) quantile
 % IMPROVE MC data table
 
  <<label=setupMC,cache=TRUE>>=
- # list <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.99)
 permdist99 <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.99)
-# list <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.999)
 permdist999 <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.999)
-#rm(list)
 save(permdist99, file="./inst/tussenStap/permdist99.rda")
 save(permdist999, file="./inst/tussenStap/permdist999.rda")
 @
@@ -409,8 +406,8 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
 \end{figure}
 
 %-------------------------
-\paragraph{Yearly maximum}
-
+\paragraph{Yearly maximum}\par\medskip
+Impact events; order of 5-50 mm/hr  (15,5 mm/hr as mean) . Above 90 (and 75) quantile can impact sewage (from 20 mm/hr) or traffic problems (>30 mm/hr)
 
 <<AggregateByYear>>=
 yearlyMax <- hrKNMI[, list(RHmax = max(RH)), by = list(STN, Year)]
@@ -433,7 +430,38 @@ Figure \ref{fig:QuantileTrends} shows the trend in the 25, 50, 75 and 90 percent
 
 \subsubsection{Frequency}
 
+ <<label=freq,cache=TRUE>>=
+freq_wet <-  hrKNMI[RH > 0][ , ':='(f = .N),by = list(Year,STN)]
+freq_Swet <- hrKNMI[RH > 0][month==6| month==7 | month==8][ , ':='(f = .N),by = list(Year,STN)]
+freq_Wwet <- hrKNMI[RH > 0][month==12| month==1 | month==2][ , ':='(f = .N),by = list(Year,STN)]
+
+save(freq_wet, file="./inst/tussenStap/freq_wet.rda")
+save(freq_Swet, file="./inst/tussenStap/freq_Swet.rda")
+save(freq_Wwet, file="./inst/tussenStap/freq_Wwet.rda")
+@
+
+ <<label=loading9,cache=FALSE>>=
+load("./inst/tussenStap/freq_wet.rda")
+load("./inst/tussenStap/freq_Swet.rda")
+load("./inst/tussenStap/freq_Wwet.rda")
+@
 
 
+
+
+
+summer
+winter
+yearly max
+
+
+All stations; from 1 day max,  count events higher > 10  and > 20 mm/hr
+As winter maxima do not exceed 10 mm/hr, we can take max a day as independent variable.
+Summer events are more local (do no last longer than a couple of hours).
+
+Count > 10 mm/hr
+Count > 20 mm/hr
+
+\subsubsection{Rain events}
 
 \end{document}
