@@ -416,20 +416,20 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
 yearlyMax <- hrKNMI[, list(RHmax = max(RH)), by = list(STN, Year)]
 @
 
-<<SpatialComparisonViaViolinPlots, fig.cap="Violin plots of annual maximum hourly rainfall">>=
-ggplot(yearlyMax, aes(x = as.factor(STN), y = RHmax)) + geom_violin() +
-  xlab("Station number") + ylab("Annual max mm/hr")
-@
-Figure \ref{fig:SpatialComparisonViaViolinPlots} shows violin plots of annual maximum hourly rainfall at each station.
-
-<<QuantileTrends, fig.cap="Trend in quantiles of annual maximum hourly rainfall">>=
+\begin{figure}[H]
+  \centering
+  \textbf{Trends in quantiles of yearly maxima}\par\medskip
+<<QuantileTrends>>=
 ggplot(yearlyMax, aes(x = Year, y = RHmax)) + geom_point() +
   geom_quantile(formula = y ~ x) +
+  geom_quantile(formula = y ~ x,quantiles=0.90) +
   facet_wrap(~STN) +
   xlab("") + ylab("Annual max mm/hr")
 @
-Figure \ref{fig:QuantileTrends} shows the trend in the 25, 50, and 75 percentile of annual maximum hourly rainfall.
+  \caption{The 25, 50, 75 and 90 percentile of annual maximum hourly rainfall for every station}
+\end{figure}
 
+Figure \ref{fig:QuantileTrends} shows the trend in the 25, 50, 75 and 90 percentile of annual maximum hourly rainfall.
 
 \subsubsection{Frequency}
 
