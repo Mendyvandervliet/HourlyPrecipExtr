@@ -99,15 +99,14 @@ load("./inst/tussenStap/QR_hrKNMI.rda")
 \paragraph{All hours} \par\medskip
 
 % Make 10 figures, for every station 1 plot showing the quantile fits (ymax=10)
-% and 1 plot showing the points corresponding to the 99.9 % fit.
+% and 1 plot showing the plots corresponding to the 99.9 % fit.
 
-% Or show 1 plot for ex De Bilt giving with colours the points corresponding to a certain quantile
+% Or show 1 plot for ex De Bilt giving with colours the plots corresponding to a certain quantile
 % and 5 plots for every station the quantile fits, with ymax = 10
 \begin{figure}[H]
   \centering
   \textbf{Quantile regression on all hourly intensities}\par\medskip
 <<label=QR_allhr,cache=TRUE>>=
-#,out.width='450px'
 plot1 <- QR_plotting(data=QR_hrKNMI[STN == 235], title="De Kooy")
 plot2 <- QR_plotting(data=QR_hrKNMI[STN == 260], title="De Bilt")
 plot3 <- QR_plotting(data=QR_hrKNMI[STN == 280], title="Eelde")
@@ -372,16 +371,17 @@ load("./inst/tussenStap/QRW_max2d.rda")
 
 \begin{figure}[H]
   \hspace{-1cm}
+  \centering
   \textbf{Seasonal quantile regression on 2 day max. hourly intensities}\par\medskip
   \begin{minipage}{0.48\textwidth}
     %\hspace{-1cm}
     \flushleft
 <<label=QRW_max2d>>=
-plot1 <- QR2d_plotting(data=QRW_max2d[STN == 235], title="De Kooy")
-plot2 <- QR2d_plotting(data=QRW_max2d[STN == 260], title="De Bilt")
-plot3 <- QR2d_plotting(data=QRW_max2d[STN == 280], title="Eelde")
-plot4 <- QR2d_plotting(data=QRW_max2d[STN == 310], title="Vlissingen")
-plot5 <- QR2d_plotting(data=QRW_max2d[STN == 380], title="Maastricht")
+plot1 <- QR2d_plotting(data=QRW_max2d[STN == 235], title="De Kooy",point=FALSE)
+plot2 <- QR2d_plotting(data=QRW_max2d[STN == 260], title="De Bilt",point=FALSE)
+plot3 <- QR2d_plotting(data=QRW_max2d[STN == 280], title="Eelde",point=FALSE)
+plot4 <- QR2d_plotting(data=QRW_max2d[STN == 310], title="Vlissingen",point=FALSE)
+plot5 <- QR2d_plotting(data=QRW_max2d[STN == 380], title="Maastricht",point=FALSE)
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
              ncol= 1)
 @
@@ -393,11 +393,11 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
     \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=QRS_max2d>>=
-plot1 <- QR2d_plotting(data=QRS_max2d[STN == 235], title="De Kooy")
-plot2 <- QR2d_plotting(data=QRS_max2d[STN == 260], title="De Bilt")
-plot3 <- QR2d_plotting(data=QRS_max2d[STN == 280], title="Eelde")
-plot4 <- QR2d_plotting(data=QRS_max2d[STN == 310], title="Vlissingen")
-plot5 <- QR2d_plotting(data=QRS_max2d[STN == 380], title="Maastricht")
+plot1 <- QR2d_plotting(data=QRS_max2d[STN == 235], title="De Kooy",point=FALSE)
+plot2 <- QR2d_plotting(data=QRS_max2d[STN == 260], title="De Bilt",point=FALSE)
+plot3 <- QR2d_plotting(data=QRS_max2d[STN == 280], title="Eelde",point=FALSE)
+plot4 <- QR2d_plotting(data=QRS_max2d[STN == 310], title="Vlissingen",point=FALSE)
+plot5 <- QR2d_plotting(data=QRS_max2d[STN == 380], title="Maastricht",point=FALSE)
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
              ncol= 1)
 @
@@ -407,6 +407,31 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
   \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on 2 day Winter (left) and Summer (right) maxima in hourly precipitation intensities (mm/hr), for all stations.}
   \label{fig:QR_int_WvsS}
 \end{figure}
+
+%-------------------------
+\paragraph{Yearly maximum}
+
+
+<<AggregateByYear>>=
+yearlyMax <- hrKNMI[, list(RHmax = max(RH)), by = list(STN, Year)]
+@
+
+<<SpatialComparisonViaViolinPlots, fig.cap="Violin plots of annual maximum hourly rainfall">>=
+ggplot(yearlyMax, aes(x = as.factor(STN), y = RHmax)) + geom_violin() +
+  xlab("Station number") + ylab("Annual max mm/hr")
+@
+Figure \ref{fig:SpatialComparisonViaViolinPlots} shows violin plots of annual maximum hourly rainfall at each station.
+
+<<QuantileTrends, fig.cap="Trend in quantiles of annual maximum hourly rainfall">>=
+ggplot(yearlyMax, aes(x = Year, y = RHmax)) + geom_point() +
+  geom_quantile(formula = y ~ x) +
+  facet_wrap(~STN) +
+  xlab("") + ylab("Annual max mm/hr")
+@
+Figure \ref{fig:QuantileTrends} shows the trend in the 25, 50, and 75 percentile of annual maximum hourly rainfall.
+
+
+\subsubsection{Frequency}
 
 
 
