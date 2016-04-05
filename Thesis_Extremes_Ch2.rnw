@@ -447,12 +447,25 @@ load("./inst/tussenStap/freq_Wwet.rda")
 @
 
 
+ <<label=QRfreq,cache=TRUE>>=
+QR_freq <- QR_freqall(freq_wet)
+QR_Sfreq <- QR_freqall(freq_Swet)
+QR_Wfreq <- QR_freqall(freq_Wwet)
+
+save(QR_freq, file="./inst/tussenStap/QR_freq.rda")
+save(QR_Sfreq, file="./inst/tussenStap/QR_Sfreq.rda")
+save(freq_Wwet, file="./inst/tussenStap/QR_Wfreq.rda")
+@
+
+ <<label=loading10,cache=FALSE>>=
+load("./inst/tussenStap/QR_freq.rda")
+load("./inst/tussenStap/QR_Sfreq.rda")
+load("./inst/tussenStap/QR_Wfreq.rda")
+@
 
 
 
-summer
-winter
-yearly max
+
 
 
 All stations; from 1 day max,  count events higher > 10  and > 20 mm/hr
