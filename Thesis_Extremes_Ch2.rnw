@@ -86,8 +86,8 @@ This chapter focusses on linear trends in hourly precipitation extremes. Whether
 %@
 
 <<legend, cache=TRUE>>=
-Legendgrob2 <- legendGrob(c("50%","75%", "90%","95%","99%","99.9%"), pch=15,
-                          gp=gpar(col=c("black","gray", "blue" ,"green","orange","red"),cex=1), ncol=3)
+Legendgrob1 <- legendGrob(c("50%","75%", "90%","95%","99%","99.9%"), pch=15,
+                          gp=gpar(col=c("black","purple", "blue" ,"green","orange","red"),cex=1), ncol=3)
 @
 
 % Load QR-fitted data
@@ -112,7 +112,7 @@ plot2 <- QR_plotting(data=QR_hrKNMI[STN == 260], title="De Bilt")
 plot3 <- QR_plotting(data=QR_hrKNMI[STN == 280], title="Eelde")
 plot4 <- QR_plotting(data=QR_hrKNMI[STN == 310], title="Vlissingen")
 plot5 <- QR_plotting(data=QR_hrKNMI[STN == 380], title="Maastricht")
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob1, ncol=2),
              ncol= 1)
 @
   \vspace{-0.5cm}
@@ -290,7 +290,7 @@ plot2 <- QR2d_plotting(data=QR_max2d[STN == 260], title="De Bilt")
 plot3 <- QR2d_plotting(data=QR_max2d[STN == 280], title="Eelde")
 plot4 <- QR2d_plotting(data=QR_max2d[STN == 310], title="Vlissingen")
 plot5 <- QR2d_plotting(data=QR_max2d[STN == 380], title="Maastricht")
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob1, ncol=2),
              ncol= 1)
 @
   \caption{Quantile regression fits with $\tau = 75, 90, 95, 99, 99.9$ \% on 2 day maxima in
@@ -379,7 +379,7 @@ plot2 <- QR2d_plotting(data=QRW_max2d[STN == 260], title="De Bilt",point=FALSE)
 plot3 <- QR2d_plotting(data=QRW_max2d[STN == 280], title="Eelde",point=FALSE)
 plot4 <- QR2d_plotting(data=QRW_max2d[STN == 310], title="Vlissingen",point=FALSE)
 plot5 <- QR2d_plotting(data=QRW_max2d[STN == 380], title="Maastricht",point=FALSE)
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob1, ncol=2),
              ncol= 1)
 @
   \subcaption{Winter}
@@ -395,7 +395,7 @@ plot2 <- QR2d_plotting(data=QRS_max2d[STN == 260], title="De Bilt",point=FALSE)
 plot3 <- QR2d_plotting(data=QRS_max2d[STN == 280], title="Eelde",point=FALSE)
 plot4 <- QR2d_plotting(data=QRS_max2d[STN == 310], title="Vlissingen",point=FALSE)
 plot5 <- QR2d_plotting(data=QRS_max2d[STN == 380], title="Maastricht",point=FALSE)
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob1, ncol=2),
              ncol= 1)
 @
   \subcaption{Summer}
@@ -452,6 +452,9 @@ QR_freq <- QR_freqall(freq_wet)
 QR_Sfreq <- QR_freqall(freq_Swet)
 QR_Wfreq <- QR_freqall(freq_Wwet)
 
+Legendgrob2 <- legendGrob(c("25%","50%","75%", "90%"), pch=15,
+                          gp=gpar(col=c("black","blue","green","orange"),cex=1), ncol=2)
+
 save(QR_freq, file="./inst/tussenStap/QR_freq.rda")
 save(QR_Sfreq, file="./inst/tussenStap/QR_Sfreq.rda")
 save(freq_Wwet, file="./inst/tussenStap/QR_Wfreq.rda")
@@ -463,67 +466,15 @@ load("./inst/tussenStap/QR_Sfreq.rda")
 load("./inst/tussenStap/QR_Wfreq.rda")
 @
 
-\begin{figure}[H]
-  \hspace{-1cm}
-  \centering
-  \textbf{Quantile regression on frequency data}\par\medskip
-  \begin{minipage}{0.48\textwidth}
-    \flushleft
-<<label=QR_max2d,cache=TRUE>>=
-plot1 <- QR2d_plotting(data=QR_freq[STN == 235], title="De Kooy")
-plot2 <- QR2d_plotting(data=QR_freq[STN == 260], title="De Bilt")
-plot3 <- QR2d_plotting(data=QR_freq[STN == 280], title="Eelde")
-plot4 <- QR2d_plotting(data=QR_freq[STN == 310], title="Vlissingen")
-plot5 <- QR2d_plotting(data=QR_freq[STN == 380], title="Maastricht")
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
-             ncol= 1)
-@
-  \subcaption{All wet hours}
-  \label{fig:Qfreq}
-  \end{minipage}
-  \begin{minipage}{0.48\textwidth}
-    \flushleft
-<<label=QRW_max2d>>=
-plot1 <- QR2d_plotting(data=QR_Wfreq[STN == 235], title="De Kooy",point=FALSE)
-plot2 <- QR2d_plotting(data=QR_Wfreq[STN == 260], title="De Bilt",point=FALSE)
-plot3 <- QR2d_plotting(data=QR_Wfreq[STN == 280], title="Eelde",point=FALSE)
-plot4 <- QR2d_plotting(data=QR_Wfreq[STN == 310], title="Vlissingen",point=FALSE)
-plot5 <- QR2d_plotting(data=QR_Wfreq[STN == 380], title="Maastricht",point=FALSE)
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
-             ncol= 1)
-@
-  \subcaption{Winter}
-  \label{fig:Qfreq_win}
-  \end{minipage}
-  \hfill
-  \hspace{-0.5cm}
-    \begin{minipage}{0.48\textwidth}
-    \flushleft
-<<label=QRS_max2d>>=
-plot1 <- QR2d_plotting(data=QR_Sfreq[STN == 235], title="De Kooy",point=FALSE)
-plot2 <- QR2d_plotting(data=QR_Sfreq[STN == 260], title="De Bilt",point=FALSE)
-plot3 <- QR2d_plotting(data=QR_Sfreq[STN == 280], title="Eelde",point=FALSE)
-plot4 <- QR2d_plotting(data=QR_Sfreq[STN == 310], title="Vlissingen",point=FALSE)
-plot5 <- QR2d_plotting(data=QR_Sfreq[STN == 380], title="Maastricht",point=FALSE)
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
-             ncol= 1)
-@
-  \subcaption{Summer}
-  \label{fig:Qfreq_sum}
-  \end{minipage}
-  \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on 2 day Winter (left) and Summer (right) maxima in hourly precipitation intensities (mm/hr), for all stations.}
-  \label{fig:QR_freq}
-\end{figure}
 
 
 
-
-All stations; from 1 day max,  count events higher > 10  and > 20 mm/hr
-As winter maxima do not exceed 10 mm/hr, we can take max a day as independent variable.
-Summer events are more local (do no last longer than a couple of hours).
-
-Count > 10 mm/hr
-Count > 20 mm/hr
+% All stations; from 1 day max,  count events higher > 10  and > 20 mm/hr
+% As winter maxima do not exceed 10 mm/hr, we can take max a day as independent variable.
+% Summer events are more local (do no last longer than a couple of hours).
+%
+% Count > 10 mm/hr
+% Count > 20 mm/hr
 
 \subsubsection{Rain events}
 
