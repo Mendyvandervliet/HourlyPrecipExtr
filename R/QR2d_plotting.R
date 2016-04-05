@@ -16,7 +16,7 @@ QR2d_plotting<- function(data,title,point=TRUE){
     geom_line(aes(y=m99), color="orange") +
     geom_line(aes(y=m999), color="red") +
     ggtitle(title) + # title
-    xlab("Time") + ylab("Int. (mm/hr)")+ # x and y-axis label
+    xlab("Time") + ylab("I (mm/hr)")+ # x and y-axis label
     theme_bw()
   }
   else{
@@ -28,7 +28,7 @@ QR2d_plotting<- function(data,title,point=TRUE){
       geom_line(aes(y=m99), color="orange") +
       geom_line(aes(y=m999), color="red") +
       ggtitle(title) + # title
-      xlab("Time") + ylab("Int. (mm/hr)")+ # x and y-axis label
+      xlab("Time") + ylab("I (mm/hr)")+ # x and y-axis label
       theme_bw()
   }
 }

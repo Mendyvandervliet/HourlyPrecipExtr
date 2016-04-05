@@ -17,6 +17,6 @@ QR_plotting <- function(data,title){
     #color="Points", scale_color_manual(values=c("Points"="gray","50%"="black", "75%"="purple", "90%"="blue" ,"95%"="green","99%"="orange","99.9%"="red" )) +
     ggtitle(title) + # title
     #ylim(0,ymax) +
-    xlab("Time") + ylab("Intensity (mm/hr)")+ # x and y-axis label
+    xlab("Time") + ylab("I (mm/hr)")+ # x and y-axis label
     theme_bw()
 }

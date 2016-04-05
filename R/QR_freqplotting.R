@@ -13,6 +13,6 @@ QR_freqplotting <- function(data,title){
     geom_line(aes(y=f75), color="green") +
     geom_line(aes(y=f90), color="orange") +
     ggtitle(title) + # title
-    xlab("Time") + ylab("Intensity (mm/hr)")+ # x and y-axis label
+    xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
     theme_bw()
 }
