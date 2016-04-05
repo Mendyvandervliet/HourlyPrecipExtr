@@ -351,7 +351,6 @@ plot_permdist(permdist999)
 In this paragraph we will distinquish between trends in 2-day maxima between summer and winter season. For the summer extremes, which have a local, short-lasting character, we could probably take shorter periods for sampling maxima's based on the autocorrelation and partial autocorrelation. This would increase the amount of data and thereby improve the significance of any trends present. However, as we want to compare the trends between summer and winter season, we do not want to have 2 different approaches of data selection as this could induce seasonal differences without physical basis.
 
 
-
 <<setup_Strends,cache=TRUE>>=
 QRS_max2d <- QR_all(data=max2d[month==6| month==7 | month==8])
 save(QRS_max2d, file="./inst/tussenStap/QRS_max2d.rda")
@@ -371,7 +370,43 @@ load("./inst/tussenStap/QRS_max2d.rda")
 load("./inst/tussenStap/QRW_max2d.rda")
 @
 
-
+\begin{figure}[H]
+  \hspace{-1cm}
+  \textbf{Seasonal quantile regression on 2 day max. hourly intensities}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+    %\hspace{-1cm}
+    \flushleft
+<<label=QRW_max2d>>=
+plot1 <- QR2d_plotting(data=QRW_max2d[STN == 235], title="De Kooy")
+plot2 <- QR2d_plotting(data=QRW_max2d[STN == 260], title="De Bilt")
+plot3 <- QR2d_plotting(data=QRW_max2d[STN == 280], title="Eelde")
+plot4 <- QR2d_plotting(data=QRW_max2d[STN == 310], title="Vlissingen")
+plot5 <- QR2d_plotting(data=QRW_max2d[STN == 380], title="Maastricht")
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+             ncol= 1)
+@
+  \subcaption{Winter}
+  \label{fig:Qint_win}
+  \end{minipage}
+  \hfill
+  \hspace{-0.5cm}
+    \begin{minipage}{0.48\textwidth}
+    \flushleft
+<<label=QRS_max2d>>=
+plot1 <- QR2d_plotting(data=QRS_max2d[STN == 235], title="De Kooy")
+plot2 <- QR2d_plotting(data=QRS_max2d[STN == 260], title="De Bilt")
+plot3 <- QR2d_plotting(data=QRS_max2d[STN == 280], title="Eelde")
+plot4 <- QR2d_plotting(data=QRS_max2d[STN == 310], title="Vlissingen")
+plot5 <- QR2d_plotting(data=QRS_max2d[STN == 380], title="Maastricht")
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+             ncol= 1)
+@
+  \subcaption{Summer}
+  \label{fig:Qint_sum}
+  \end{minipage}
+  \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on 2 day Winter (left) and Summer (right) maxima in hourly precipitation intensities (mm/hr), for all stations.}
+  \label{fig:QR_int_WvsS}
+\end{figure}
 
 
 
