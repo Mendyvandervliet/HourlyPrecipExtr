@@ -345,5 +345,35 @@ plot_permdist(permdist999)
 \end{figure}
 
 
+%-------------------------
+\paragraph{Summer vs winter}
+
+In this paragraph we will distinquish between trends in 2-day maxima between summer and winter season. For the summer extremes, which have a local, short-lasting character, we could probably take shorter periods for sampling maxima's based on the autocorrelation and partial autocorrelation. This would increase the amount of data and thereby improve the significance of any trends present. However, as we want to compare the trends between summer and winter season, we do not want to have 2 different approaches of data selection as this could induce seasonal differences without physical basis.
+
+
+
+<<setup_Strends,cache=TRUE>>=
+QRS_max2d <- QR_all(data=max2d[month==6| month==7 | month==8])
+save(QRS_max2d, file="./inst/tussenStap/QRS_max2d.rda")
+@
+
+<<setup_Wtrends,cache=TRUE>>=
+QRW_max2d <- QR_all(data=max2d[month==12| month==1 | month==2])
+save(QRW_max2d, file="./inst/tussenStap/QRW_max2d.rda")
+@
+
+
+<<loading7, cache=FALSE>>=
+load("./inst/tussenStap/QRS_max2d.rda")
+@
+
+<<loading8, cache=FALSE>>=
+load("./inst/tussenStap/QRW_max2d.rda")
+@
+
+
+
+
+
 
 \end{document}
