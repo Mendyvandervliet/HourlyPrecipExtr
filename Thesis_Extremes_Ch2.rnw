@@ -48,12 +48,11 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 \chapter{Data}
 
 <<showWD,results='markup'>>=
-getwd()
-setwd("~/Documents/HourlyPrecipExtr")
+#getwd()
+#setwd("~/Documents/HourlyPrecipExtr")
 @
 
 <<getdata,cache=TRUE>>=
-getwd()
 # How to get right file?
 # Go to http://projects.knmi.nl/klimatologie/uurgegevens/selectie.cgi
 # Select period: 1-1-1958 till 21-12-2015 (1-24 hrs)
@@ -245,8 +244,6 @@ pacf(hrKNMI[STN==380]$RH,lag.max=80,main=NA)
 
 For lags till 48 hours the autocorrelation and partial autocorrelation values are significant (<0.05). Moreover, a winter depression will not last for longer than 2 days (and summer rain events are mainly on the scale of several hours). Therefore, we will now apply quantile regression on the maximum value for 2 day periods.
 
-% TEST LAST PART OF FUNCTION
-
 <<label=setupdata2d,cache=TRUE>>=
 data2d <- data2d(hrKNMI)
 save(data2d, file="./inst/tussenStap/data2d.rda")
@@ -300,9 +297,7 @@ hourly precipitation intensities (mm/hr) and a line giving the yearly means, for
 
 Figure \ref{fig:QR_max2d} suggest that particularly (the 99 and 99 \% ) quantiles for De Bilt regress in time. Whether the 99 and 99.9 \% trends for de Bilt are significant is investigated by a Monte Carlo 9999 permutation test of the linear regression coefficient. The corresponding distribution plot of the permuted slopes is shown in the following figure.
 
-% IMPROVE MC data table
-
- <<label=setupMC,cache=TRUE>>=
+<<label=setupMC,cache=TRUE>>=
 permdist99 <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.99)
 permdist999 <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.999)
 save(permdist99, file="./inst/tussenStap/permdist99.rda")
@@ -339,6 +334,28 @@ plot_permdist(permdist999)
   \caption{Density distribution for a 9999MC Permutation for the $\tau = 99$(upper), $99.9$\%(bottom)-fits on 2 day maxima in hourly precipitation intensities (mm/hr) for De Bilt. The purple (black) line gives the upper-tail slope at the 95\%(99\%) confidence level. The pink line gives the 90\% confidence level and the red line indicates the observed regression coefficient of the 99\% and 99.9\% quantile regression fits.}
   \label{fig:MC_max2d}
 \end{figure}
+
+\begin{table}[h!]
+  \centering
+  \caption{Significance table for all fits}
+  \begin{tabular}{l|r|r|r|r|r|r}
+  \hline\hline
+   & \multicolumn{6}{c}{Quantiles of fit}\\
+  \hline
+  Station & 50\% & 75\% & 90\% & 95\% & 99\% & 99.9\% \\
+  \hline
+  De Kooy (235) &  &  &  &  &  & \\
+  De Bilt (260) &  &  &  &  &  & \\
+  Eelde (280)&  &  &  &  &  & \\
+  Vlissingen (320) &  &  &  &  &  & \\
+  Maastricht (380) &  &  &  &  &  & \\
+  \hline
+  \end{tabular}
+  \label{tab:sig}
+\end{table}
+
+
+
 
 
 %-------------------------
@@ -662,5 +679,9 @@ ggplot(freq_20, aes(x = Year, color=Quantiles)) +        # data
 % Count > 20 mm/hr
 
 \subsubsection{Rain events}
+
+
+
+
 
 \end{document}
