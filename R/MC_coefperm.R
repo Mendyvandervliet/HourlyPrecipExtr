@@ -9,7 +9,7 @@ MC_coefperm <- function(data=max2d,x, y, tau, N=9999, plot=TRUE){
   #tmp <- subset(max2d,select=c("STN","d2","max2d"))
   #tmp <- data.table(STN=c(235,260,280,310,380))
   reps <- replicate(N, round(as.numeric(coef(rq(sample(y) ~ x, tau=tau))[2]),digits=7))
-  obs <- round(as.numeric(coef(rq(y ~ x, tau=tau))[2]),digits=7)
+  obs <- round(as.numeric(coef(rq(y ~ x, tau=tau,method="fn"))[2]),digits=7)
   p <- (1+sum(obs > reps))/(N+1)   #p <- mean(reps > obs)
   mean <- mean(reps)
   sd <- sd(reps)
