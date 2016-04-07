@@ -1,6 +1,6 @@
 # P-test on coefficients of QR-fits
 #
-#' Function computing significance of a tau-quantile (f.e. tau=99%) fit (in 9999 MC permutation test)
+#' Function computing significance of a tau-quantile (f.e. tau) fit (in 9999 MC permutation test)
 #'
 #' @import data.table
 #'
