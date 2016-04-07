@@ -27,8 +27,7 @@ if(data$obs[1] > p99){
 text(x=p95, y=max(d$y),"95%",col="purple", font=2)
 text(x=p99, y=max(d$y), "99%", col="darkgray", font=2)
 text(x=data$obs[1], y=max(d$y), "Observed",pos=4,col="black")
-}
-else{
+} else{
 text(x=p95, y=max(d$y),"95%",col="purple", font=2)
 text(x=p99, y=max(d$y), "99%", col="darkgray", font=2)
 text(x=data$obs[1]-(0.75*p95), y=max(d$y), "Observed",pos=4,col="black")
