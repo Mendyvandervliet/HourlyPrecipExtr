@@ -337,7 +337,6 @@ plot_permdist(permdist999)
 \end{figure}
 
 
-
 <<p_test,cache=TRUE>>=
 p <- p_test(data=max2d,tau=0.50)
 setnames(p,c("STN","Q50"))
@@ -346,31 +345,33 @@ p[, ":="(Q95 = p_test(data=max2d,tau=0.95)$V1, Q99 = p_test(data=max2d,tau=0.99)
          Q999 = p_test(data=max2d,tau=0.999)$V1)]
 @
 
-<<p_table_max2d>>=
+<<>>=
+save(p, file="./inst/tussenStap/p.rda")
+@
+
+<<p_tbl>>=
+setnames(p, c("Station","50%","75%","90%","95","99%","99.9%"))
 tbl <- xtable(p)
 print(tbl,
     only.contents=TRUE,
     include.rownames=FALSE,
     type="latex", #digits(tbl) <- c(0,1,1)
-    file="p_max2d.tex")
+    file="p_tbl.tex")
 @
-
 
 \begin{table}[h!]
   \centering
   \caption{Significance table for all fits}
   \begin{tabular}{l|r|r|r|r|r|r}
   \hline\hline
-   & \multicolumn{6}{c}{Quantiles of fit}\\
+     & \multicolumn{1}{c}{Station}
+     & \multicolumn{6}{c}{Quantiles of fit}\\
   \hline
-  Station & 50\% & 75\% & 90\% & 95\% & 99\% & 99.9\% \\
-  \hline
-  \input{p_max2d}
+  \input{p_tbl}
   \hline
   \end{tabular}
-  \label{tab:sig}
+  \label{tab:p_tbl}
 \end{table}
-
 
 
 
@@ -443,29 +444,58 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob1, ncol=2)
 \end{figure}
 
 
-% Change into summer and winter factor
+% Significance test
 <<p_test_S,cache=TRUE>>=
-# p <- p_test(data=QRS_max2d,tau=0.50)
-# setnames(p,c("STN","Q50"))
-# p[, ":="(Q75 = p_test(data=max2d,tau=0.75)$V1, Q90 = p_test(data=max2d,tau=0.90)$V1)]
-# p[, ":="(Q95 = p_test(data=max2d,tau=0.95)$V1, Q99 = p_test(data=max2d,tau=0.99)$V1,
-#          Q999 = p_test(data=max2d,tau=0.999)$V1)]
+p <- p_test(data=QRS_max2d,tau=0.50)
+setnames(p,c("STN","Q50s"))
+p[, ":="(Q75s = p_test(data=max2d,tau=0.75)$V1, Q90s = p_test(data=max2d,tau=0.90)$V1)]
+p[, ":="(Q95s = p_test(data=max2d,tau=0.95)$V1, Q99s = p_test(data=max2d,tau=0.99)$V1,
+         Q999s = p_test(data=max2d,tau=0.999)$V1)]
 @
 
 
 <<p_test_W,cache=TRUE>>=
-# p <- p_test(data=QRW_max2d,tau=0.50)
-# setnames(p,c("STN","Q50"))
-# p[, ":="(Q75 = p_test(data=max2d,tau=0.75)$V1, Q90 = p_test(data=max2d,tau=0.90)$V1)]
-# p[, ":="(Q95 = p_test(data=max2d,tau=0.95)$V1, Q99 = p_test(data=max2d,tau=0.99)$V1,
-#          Q999 = p_test(data=max2d,tau=0.999)$V1)]
+p[, ":="(Q50w = p_test(data=max2d,tau=0.50)$V1,Q75w = p_test(data=max2d,tau=0.75)$V1,
+         Q90w = p_test(data=max2d,tau=0.90)$V1)]
+p[, ":="(Q95w = p_test(data=max2d,tau=0.95)$V1, Q99w = p_test(data=max2d,tau=0.99)$V1,
+         Q999w = p_test(data=max2d,tau=0.999)$V1)]
 @
 
+<<>>=
+save(p, file="./inst/tussenStap/p_SW.rda")
+@
+
+<<p_tbl>>=
+# setnames(p, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
+# tbl <- xtable(p)
+# print(tbl,
+#     only.contents=TRUE,
+#     include.rownames=FALSE,
+#     type="latex", #digits(tbl) <- c(0,1,1)
+#     file="p_SWtbl.tex")
+@
+
+% \begin{table}[h!]
+%   \centering
+%   \caption{Significance table for all fits}
+%   \begin{tabular}{l|r|r|r|r|r|r}
+%   \hline\hline
+%      & \multicolumn{13}{c}{Quantiles of fit}\\
+%      & \multicolumn{1}{c}{Station}
+%      & \multicolumn{6}{c}{Summer}
+%      & \multicolumn{6}{c}{Winter}\\
+%      \\
+%   \hline
+%   \input{p_SWtbl}
+%   \hline
+%   \end{tabular}
+%   \label{tab:p_SWtbl}
+% \end{table}
 
 
 %-------------------------
 \paragraph{Yearly maximum}\par\medskip
-Impact events; order of 5-50 mm/hr  (15,5 mm/hr as mean) . Above 90 (and 75) quantile can impact sewage (from 20 mm/hr) or traffic problems (>30 mm/hr)
+Impact events; order of 5-50 mm/hr  (15,5 mm/hr as mean) . Above 90 (and 75) quantile can impact sewage (from 20 mm/hr) or traffic problems ($\> 30$ mm/hr)
 
 <<AggregateByYear>>=
 yearlyMax <- hrKNMI[, list(RHmax = max(RH)), by = list(STN, Year)]
@@ -592,6 +622,67 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
 \end{figure}
 
 
+% Significance test
+<<p_testfreq,cache=TRUE>>=
+p <- p_test(data=QR_freq,tau=0.50,freq==TRUE)
+setnames(p,c("STN","Q50"))
+p[, ":="(Q75 = p_test(data=QR_freq,tau=0.75,freq==TRUE)$V1, Q90 = p_test(data=QR_freq,tau=0.90,freq==TRUE)$V1)]
+p[, ":="(Q95 = p_test(data=QR_freq,tau=0.95,freq==TRUE)$V1, Q99 = p_test(data=QR_freq,tau=0.99,freq==TRUE)$V1,
+         Q999 = p_test(data=QR_freq,tau=0.999,freq==TRUE)$V1)]
+@
+
+<<p_test_freqS,cache=TRUE>>=
+p[, ":="(Q50s = p_test(data=QR_Sfreq,tau=0.50,freq==TRUE)$V1,
+         Q75s = p_test(data=QR_Sfreq,tau=0.75,freq==TRUE)$V1,
+         Q90s = p_test(data=QR_Sfreq,tau=0.90,freq==TRUE)$V1)]
+p[, ":="(Q95s = p_test(data=QR_Sfreq,tau=0.95,freq==TRUE)$V1,
+         Q99s = p_test(data=QR_Sfreq,tau=0.99,freq==TRUE)$V1,
+         Q999s = p_test(data=QR_Sfreq,tau=0.999,freq==TRUE)$V1)]
+@
+
+<<p_test_freqW,cache=TRUE>>=
+p[, ":="(Q50w = p_test(data=QR_Wfreq,tau=0.50,freq==TRUE)$V1,
+         Q75w = p_test(data=QR_Wfreq,tau=0.75,freq==TRUE)$V1,
+         Q90w = p_test(data=QR_Wfreq,tau=0.90,freq==TRUE)$V1)]
+p[, ":="(Q95w = p_test(data=QR_Wfreq,tau=0.95,freq==TRUE)$V1,
+         Q99w = p_test(data=QR_Wfreq,tau=0.99,freq==TRUE)$V1,
+         Q999w = p_test(data=QR_Wfreq,tau=0.999,freq==TRUE)$V1)]
+@
+
+<<>>=
+save(p, file="./inst/tussenStap/p_freq.rda")
+@
+
+<<p_freqtbl>>=
+# setnames(p, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
+# tbl <- xtable(p)
+# print(tbl,
+#     only.contents=TRUE,
+#     include.rownames=FALSE,
+#     type="latex", #digits(tbl) <- c(0,1,1)
+#     file="p_freqtbl.tex")
+@
+
+% \begin{table}[h!]
+%   \centering
+%   \caption{Significance table for all fits on yearly frequency data of wet hours}
+%   \begin{tabular}{l|r|r|r|r|r|r}
+%   \hline\hline
+%      & \multicolumn{19}{c}{Quantiles of fit}\\
+%      & \multicolumn{1}{c}{Station}
+%      & \multicolumn{3}{c}{All wet hours}
+%      & \multicolumn{3}{c}{Summer}
+%      & \multicolumn{3}{c}{Winter}\\
+%      \\
+%   \hline
+%   \input{p_freqtbl}
+%   \hline
+%   \end{tabular}
+%   \label{tab:p_freqtbl}
+% \end{table}
+
+
+
 To investigate the frequency of extreme events, we will look at the frequency of wet hours with an intensity between 5-10, and $>$ 10 mm/hr. For more intense hourly values there is to little data.
 
  <<label=freqthreshold,cache=TRUE>>=
@@ -710,6 +801,78 @@ ggplot(freq_20, aes(x = Year, color=Quantiles)) +        # data
   \caption{Quantile regression fits with $\tau = 25, 50, 75, 90$ \% on counts of wet hours a year, with intensity 5-10 (a) and $>$ 10 mm/hr (b). The data of the different staton are combined.}
   \label{QR_thres_combined}
 \end{figure}
+
+% Significance test
+<<p_test5thres,cache=TRUE>>=
+p <- p_test(data=freq_5,tau=0.50,freq==TRUE
+setnames(p,c("STN","Q50_5"))
+p[, ":="(Q75_5 = p_test(data=freq_5,tau=0.75,freq==TRUE)$V1,
+         Q90_5 = p_test(data=freq_5,tau=0.90,freq==TRUE)$V1)]
+p[, ":="(Q95_5 = p_test(data=freq_5,tau=0.95,freq==TRUE)$V1,
+         Q99_5 = p_test(data=freq_5,tau=0.99,freq==TRUE)$V1,
+         Q999_5 = p_test(data=freq_5,tau=0.999,freq==TRUE)$V1)]
+@
+
+<<p_test10thres,cache=TRUE>>=
+p[, ":="(Q50_10 = p_test(data=freq_10,tau=0.50,freq==TRUE)$V1,
+         Q75_10 = p_test(data=freq_10,tau=0.75,freq==TRUE)$V1,
+         Q90_10 = p_test(data=freq_10,tau=0.90,freq==TRUE)$V1)]
+p[, ":="(Q95_10 = p_test(data=freq_10,tau=0.95,freq==TRUE)$V1,
+         Q99_10 = p_test(data=freq_10,tau=0.99,freq==TRUE)$V1,
+         Q999_10 = p_test(data=freq_10,tau=0.999,freq==TRUE)$V1)]
+@
+
+
+<<p_test15thres,cache=TRUE>>=
+p[, ":="(Q50_15 = p_test(data=freq_15,tau=0.50,freq==TRUE, STN=FALSE)$V1,
+          Q75_15 = p_test(data=freq_15,tau=0.75,freq==TRUE, STN=FALSE)$V1,
+          Q90_15 = p_test(data=freq_15,tau=0.90,freq==TRUE, STN=FALSE)$V1)]
+p[, ":="(Q95_15 = p_test(data=freq_15,tau=0.95,freq==TRUE, STN=FALSE)$V1,
+          Q99_15 = p_test(data=freq_15,tau=0.99,freq==TRUE, STN=FALSE)$V1,
+          Q999_15 = p_test(data=freq_15,tau=0.999,freq==TRUE, STN=FALSE)$V1)]
+@
+
+
+<<p_test20thres,cache=TRUE>>=
+p[, ":="(Q50_20 = p_test(data=freq_20,tau=0.50,freq==TRUE, STN=FALSE)$V1
+          Q75_20 = p_test(data=freq_20,tau=0.75,freq==TRUE, STN=FALSE)$V1,
+          Q90_20 = p_test(data=freq_20,tau=0.90,freq==TRUE, STN=FALSE)$V1)]
+p[, ":="(Q95_20 = p_test(data=freq_20,tau=0.95,freq==TRUE, STN=FALSE)$V1,
+          Q99_20 = p_test(data=freq_20,tau=0.99,freq==TRUE, STN=FALSE)$V1,
+          Q999_20 = p_test(data=freq_20,tau=0.999,freq==TRUE, STN=FALSE)$V1)]
+@
+
+<<>>=
+save(p, file="./inst/tussenStap/p_thres.rda")
+@
+
+<<p_threstbl>>=
+# setnames(p, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
+# tbl <- xtable(p)
+# print(tbl,
+#     only.contents=TRUE,
+#     include.rownames=FALSE,
+#     type="latex", #digits(tbl) <- c(0,1,1)
+#     file="p_freqtbl.tex")
+@
+
+% \begin{table}[h!]
+%   \centering
+%   \caption{Significance table for all fits on yearly frequency data of wet hours}
+%   \begin{tabular}{l|r|r|r|r|r|r}
+%   \hline\hline
+%      & \multicolumn{19}{c}{Quantiles of fit}\\
+%      & \multicolumn{1}{c}{Station}
+%      & \multicolumn{3}{c}{All wet hours}
+%      & \multicolumn{3}{c}{Summer}
+%      & \multicolumn{3}{c}{Winter}\\
+%      \\
+%   \hline
+%   \input{p_freqtbl}
+%   \hline
+%   \end{tabular}
+%   \label{tab:p_freqtbl}
+% \end{table}
 
 
 % All stations; from 1 day max,  count events higher > 10  and > 20 mm/hr
