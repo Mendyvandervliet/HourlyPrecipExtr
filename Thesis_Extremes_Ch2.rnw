@@ -770,7 +770,7 @@ load("./inst/tussenStap/freq_20.rda")
 <<label=threshold3,cache=TRUE>>=
 ggplot(freq_15, aes(x = Year, color=Quantiles)) +        # data
     geom_point(aes(y=f, color="Points"))+
-    geom_line(aes(y=f25, color="50%")) +
+    geom_line(aes(y=f25, color="25%")) +
     geom_line(aes(y=f50, color="50%")) +
     geom_line(aes(y=f75, color="75%")) +
     geom_line(aes(y=f90, color="90%")) +
@@ -787,7 +787,7 @@ ggplot(freq_15, aes(x = Year, color=Quantiles)) +        # data
 <<label=threshold4,cache=TRUE>>=
 ggplot(freq_20, aes(x = Year, color=Quantiles)) +        # data
     geom_point(aes(y=f, color="Points"))+
-    geom_line(aes(y=f25, color="50%")) +
+    geom_line(aes(y=f25, color="25%")) +
     geom_line(aes(y=f50, color="50%")) +
     geom_line(aes(y=f75, color="75%")) +
     geom_line(aes(y=f90, color="90%")) +
