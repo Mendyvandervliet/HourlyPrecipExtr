@@ -2,7 +2,6 @@
 #
 #' Function computing coefficients of 9999 random permuted tau-quantile (f.e. 99%) fits
 #' To make histogram of distribution of coefficients and eventuelly test the significance of a fit
-#' @import plyr
 #'
 #' @export
 MC_coefperm <- function(data=max2d,x, y, tau, N=9999, plot=TRUE){
