@@ -47,6 +47,19 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 
 \maketitle
 
+\chapter{Method}
+<<Example_QR>>=
+ggplot(dt,aes(x=x,y=y)) +
+  geom_point(data=dt[(y < quantile(y,probs=0.50)) & (y > (quantile(y,probs=0.25)))],aes(x,y),color="black") +
+  geom_point(data=dt[(y < quantile(y,probs=0.75)) & (y > (quantile(y,probs=0.50)))],aes(x,y),color="blue") +
+  geom_point(data=dt[y > (quantile(y,probs=0.75))],aes(x,y),color="green") +
+   stat_quantile(formula= y~x,quantiles=0.25, aes(colour='black'))+
+   stat_quantile(formula= y~x,quantiles=0.50, aes(colour='blue'))+
+   stat_quantile(formula= y~x,quantiles=0.75, aes(colour='green'))+
+   scale_colour_manual(name = 'Quantiles', values=c('black','blue','green'),labels = c('25%','50%','75%'))+
+    theme_bw()
+@
+
 \chapter{Data}
 
 <<showWD,results='markup'>>=
@@ -87,8 +100,8 @@ save(QR_hrKNMI, file="./inst/tussenStap/QR_hrKNMI.rda")
 @
 
 <<legend, cache=TRUE>>=
-Legendgrob1 <- legendGrob(c("50%","75%", "90%","95%","99%","99.9%"), pch=15,
-                          gp=gpar(col=c("black","purple", "blue" ,"green","orange","red"),cex=1), ncol=3)
+Legendgrob1 <- legendGrob(c("90%","95%","99%","99.9%"), pch=15,
+                          gp=gpar(col=c("blue" ,"green","orange","red"),cex=1), ncol=3)
 @
 
 % Load QR-fitted data
@@ -107,7 +120,7 @@ load("./inst/tussenStap/QR_hrKNMI.rda")
 \begin{figure}[H]
   \centering
   \textbf{Quantile regression on all hourly intensities}\par\medskip
-<<label=QR_allhr,cache=TRUE>>=
+<<label=QR_allhr,cache=FALSE>>=
 plot1 <- QR_plotting(data=QR_hrKNMI[STN == 235], title="De Kooy")
 plot2 <- QR_plotting(data=QR_hrKNMI[STN == 260], title="De Bilt")
 plot3 <- QR_plotting(data=QR_hrKNMI[STN == 280], title="Eelde")
@@ -117,12 +130,12 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob1, ncol=2)
              ncol= 1)
 @
   \vspace{-0.5cm}
-  \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on all
+  \caption{Quantile regression fits with $\tau = 90, 95, 99, 99.9$ \% on all
 hourly precipitation intensities (mm/hr), for all stations. Note that the upper limit in intensity is set on 15 mm/hr.}
   \label{fig:QR_allhr}
 \end{figure}
 
-As the data consist of dry hours for ~88\% of the time, the quantile values corresponding to the 50\% and 75\% fits are always zero, and will not show a significant trend.
+As the data consist of dry hours for ~88\% of the time, the quantile values corresponding to the 50\% and 75\% fits are always zero, therefore they are not included in the figure.
 
 However, trends can be biased when autocorrelation or partial autocorrelation is present. The assumption of independence of errors is violated by time series with a autocorrelation nature. Type I error rates may increase considerably for these time series and inherent pattern can dampen or enhance the effect of an intervention. Therefore, we now investigate whether there is any autocorrelation and partial autocorrelation present in the hourly data.
 
@@ -283,7 +296,7 @@ load("./inst/tussenStap/QR_max2d.rda")
 \begin{figure}[H]
   \centering
   \textbf{Quantile regression on 2 day max. hourly intensities}\par\medskip
-<<label=QR_max2d,cache=TRUE>>=
+<<label=QR_max2d,cache=FALSE>>=
 plot1 <- QR2d_plotting(data=QR_max2d[STN == 235], title="De Kooy")
 plot2 <- QR2d_plotting(data=QR_max2d[STN == 260], title="De Bilt")
 plot3 <- QR2d_plotting(data=QR_max2d[STN == 280], title="Eelde")
@@ -450,29 +463,34 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob1, ncol=2)
 % Significance test
 <<p_test_S,cache=TRUE>>=
 max2dS <- max2d[month==6| month==7 | month==8]
-p <- p_test(data=QRS_max2d,tau=0.50)
-setnames(p,c("STN","Q50s"))
-p[, ":="(Q75s = p_test(data=max2dS,tau=0.75)$V1, Q90s = p_test(data=max2dS,tau=0.90)$V1)]
-p[, ":="(Q95s = p_test(data=max2dS,tau=0.95)$V1, Q99s = p_test(data=max2dS,tau=0.99)$V1,
+p_SW <- p_test(data=QRS_max2d,tau=0.50)
+setnames(p_SW,c("STN","Q50s"))
+p_SW[, ":="(Q75s = p_test(data=max2dS,tau=0.75)$V1, Q90s = p_test(data=max2dS,tau=0.90)$V1)]
+p_SW[, ":="(Q95s = p_test(data=max2dS,tau=0.95)$V1, Q99s = p_test(data=max2dS,tau=0.99)$V1,
          Q999s = p_test(data=max2dS,tau=0.999)$V1)]
 @
 
 
 <<p_test_W,cache=TRUE>>=
 max2dW <- max2d[month==12| month==1| month==2]
-p[, ":="(Q50w = p_test(data=max2dW,tau=0.50)$V1,Q75w = p_test(data=max2dW,tau=0.75)$V1,
+p_SW[, ":="(Q50w = p_test(data=max2dW,tau=0.50)$V1,Q75w = p_test(data=max2dW,tau=0.75)$V1,
          Q90w = p_test(data=max2dW,tau=0.90)$V1)]
-p[, ":="(Q95w = p_test(data=max2dW,tau=0.95)$V1, Q99w = p_test(data=max2dW,tau=0.99)$V1,
+p_SW[, ":="(Q95w = p_test(data=max2dW,tau=0.95)$V1, Q99w = p_test(data=max2dW,tau=0.99)$V1,
          Q999w = p_test(data=max2dW,tau=0.999)$V1)]
 @
 
-<<>>=
-save(p, file="./inst/tussenStap/p_SW.rda")
+<<cache=TRUE>>=
+save(p_SW, file="./inst/tussenStap/p_SW.rda")
 @
 
+<<cache=FALSE>>=
+load("./inst/tussenStap/p_SW.rda")
+@
+
+
 <<p_SWtbl>>=
-# setnames(p, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
-# tbl <- xtable(p)
+setnames(p_SW, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
+#tbl <- xtable(p_SW)
 # print(tbl,
 #     only.contents=TRUE,
 #     include.rownames=FALSE,
@@ -516,7 +534,7 @@ ggplot(yearlyMax, aes(x = Year, y = RHmax)) + geom_point() +
   geom_quantile(formula = y ~ x) +
   geom_quantile(formula = y ~ x,quantiles=0.90) +
   facet_wrap(~STN) +
-  xlab("") + ylab("Annual max mm/hr")
+  xlab("Year") + ylab("Annual max mm/hr")
 @
   \caption{The 25, 50, 75 and 90 percentile of annual maximum hourly rainfall for every station}
   \label{fig:Yearlymax}
@@ -568,7 +586,7 @@ load("./inst/tussenStap/QR_Wfreq.rda")
   \textbf{Quantile regression on frequency data}\par\medskip
   \begin{minipage}{0.48\textwidth}
     \flushleft
-<<label=QR_freqplotting,cache=TRUE>>=
+<<label=QR_freqplotting,cache=FALSE>>=
 plot1 <- QR_freqplotting(data=QR_freq[STN == 235], title="De Kooy")
 plot2 <- QR_freqplotting(data=QR_freq[STN == 260], title="De Bilt")
 plot3 <- QR_freqplotting(data=QR_freq[STN == 280], title="Eelde")
@@ -631,30 +649,30 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
 
 % Significance test
 <<p_testfreq,cache=TRUE>>=
-p <- p_test(data=QR_freq,tau=0.50,freq=TRUE)
-setnames(p,c("STN","Q50"))
-p[, ":="(Q75 = p_test(data=QR_freq,tau=0.75,freq=TRUE)$V1, Q90 = p_test(data=QR_freq,tau=0.90,freq=TRUE)$V1)]
-p[, ":="(Q95 = p_test(data=QR_freq,tau=0.95,freq=TRUE)$V1, Q99 = p_test(data=QR_freq,tau=0.99,freq=TRUE)$V1,
+p_freq <- p_test(data=QR_freq,tau=0.50,freq=TRUE)
+setnames(p_freq,c("STN","Q50"))
+p_freq[, ":="(Q75 = p_test(data=QR_freq,tau=0.75,freq=TRUE)$V1, Q90 = p_test(data=QR_freq,tau=0.90,freq=TRUE)$V1)]
+p_freq[, ":="(Q95 = p_test(data=QR_freq,tau=0.95,freq=TRUE)$V1, Q99 = p_test(data=QR_freq,tau=0.99,freq=TRUE)$V1,
          Q999 = p_test(data=QR_freq,tau=0.999,freq=TRUE)$V1)]
 @
 
 <<p_test_freqS,cache=TRUE>>=
-p[, ":="(Q50s = p_test(data=QR_Sfreq,tau=0.50,freq=TRUE)$V1,
+p_freq[, ":="(Q50s = p_test(data=QR_Sfreq,tau=0.50,freq=TRUE)$V1,
          Q75s = p_test(data=QR_Sfreq,tau=0.75,freq=TRUE)$V1,
          Q90s = p_test(data=QR_Sfreq,tau=0.90,freq=TRUE)$V1)]
-p[, ":="(Q95s = p_test(data=QR_Sfreq,tau=0.95,freq=TRUE)$V1,
+p_freq[, ":="(Q95s = p_test(data=QR_Sfreq,tau=0.95,freq=TRUE)$V1,
          Q99s = p_test(data=QR_Sfreq,tau=0.99,freq=TRUE)$V1,
          Q999s = p_test(data=QR_Sfreq,tau=0.999,freq=TRUE)$V1)]
 @
 
 <<p_test_freqW,cache=TRUE>>=
-p[, ":="(Q50w = p_test(data=QR_Wfreq,tau=0.50,freq=TRUE)$V1,
+p_freq[, ":="(Q50w = p_test(data=QR_Wfreq,tau=0.50,freq=TRUE)$V1,
          Q75w = p_test(data=QR_Wfreq,tau=0.75,freq=TRUE)$V1,
          Q90w = p_test(data=QR_Wfreq,tau=0.90,freq=TRUE)$V1)]
-p[, ":="(Q95w = p_test(data=QR_Wfreq,tau=0.95,freq=TRUE)$V1,
+p_freq[, ":="(Q95w = p_test(data=QR_Wfreq,tau=0.95,freq=TRUE)$V1,
          Q99w = p_test(data=QR_Wfreq,tau=0.99,freq=TRUE)$V1,
          Q999w = p_test(data=QR_Wfreq,tau=0.999,freq=TRUE)$V1)]
-save(p, file="./inst/tussenStap/p_freq.rda")
+save(p_freq, file="./inst/tussenStap/p_freq.rda")
 @
 
 <<cache=FALSE>>=
@@ -812,56 +830,51 @@ ggplot(freq_20, aes(x = Year, color=Quantiles)) +        # data
 
 % Significance test
 <<p_5thres,cache=TRUE>>=
-p <- p_test(data=freq_5,tau=0.50,freq=TRUE)
-setnames(p,c("STN","Q50_5"))
-p[, ":="(Q75_5 = p_test(data=freq_5,tau=0.75,freq=TRUE)$V1,
+p_thres <- p_test(data=freq_5,tau=0.50,freq=TRUE)
+setnames(p_thres,c("STN","Q50_5"))
+p_thres[, ":="(Q75_5 = p_test(data=freq_5,tau=0.75,freq=TRUE)$V1,
          Q90_5 = p_test(data=freq_5,tau=0.90,freq=TRUE)$V1)]
-p[, ":="(Q95_5 = p_test(data=freq_5,tau=0.95,freq=TRUE)$V1,
+p_thres[, ":="(Q95_5 = p_test(data=freq_5,tau=0.95,freq=TRUE)$V1,
          Q99_5 = p_test(data=freq_5,tau=0.99,freq=TRUE)$V1,
          Q999_5 = p_test(data=freq_5,tau=0.999,freq=TRUE)$V1)]
 @
 
 <<p_10thres,cache=TRUE>>=
-p[, ":="(Q50_10 = p_test(data=freq_10,tau=0.50,freq=TRUE)$V1,
+p_thres[, ":="(Q50_10 = p_test(data=freq_10,tau=0.50,freq=TRUE)$V1,
          Q75_10 = p_test(data=freq_10,tau=0.75,freq=TRUE)$V1,
          Q90_10 = p_test(data=freq_10,tau=0.90,freq=TRUE)$V1)]
-p[, ":="(Q95_10 = p_test(data=freq_10,tau=0.95,freq=TRUE)$V1,
+p_thres[, ":="(Q95_10 = p_test(data=freq_10,tau=0.95,freq=TRUE)$V1,
          Q99_10 = p_test(data=freq_10,tau=0.99,freq=TRUE)$V1,
          Q999_10 = p_test(data=freq_10,tau=0.999,freq=TRUE)$V1)]
 @
 
 
 <<p_15thres,cache=TRUE>>=
-p[, ":="(Q50_15 = p_test(data=freq_15,tau=0.50,freq=TRUE, STN=FALSE)$V1,
+p_thres[, ":="(Q50_15 = p_test(data=freq_15,tau=0.50,freq=TRUE, STN=FALSE)$V1,
           Q75_15 = p_test(data=freq_15,tau=0.75,freq=TRUE, STN=FALSE)$V1,
           Q90_15 = p_test(data=freq_15,tau=0.90,freq=TRUE, STN=FALSE)$V1)]
-p[, ":="(Q95_15 = p_test(data=freq_15,tau=0.95,freq=TRUE, STN=FALSE)$V1,
+p_thres[, ":="(Q95_15 = p_test(data=freq_15,tau=0.95,freq=TRUE, STN=FALSE)$V1,
           Q99_15 = p_test(data=freq_15,tau=0.99,freq=TRUE, STN=FALSE)$V1,
           Q999_15 = p_test(data=freq_15,tau=0.999,freq=TRUE, STN=FALSE)$V1)]
 @
 
 
 <<p_20thres,cache=TRUE>>=
-p[, ":="(Q50_20 = p_test(data=freq_20,tau=0.50,freq=TRUE, STN=FALSE)$V1,
+p_thres[, ":="(Q50_20 = p_test(data=freq_20,tau=0.50,freq=TRUE, STN=FALSE)$V1,
           Q75_20 = p_test(data=freq_20,tau=0.75,freq=TRUE, STN=FALSE)$V1,
           Q90_20 = p_test(data=freq_20,tau=0.90,freq=TRUE, STN=FALSE)$V1)]
-p[, ":="(Q95_20 = p_test(data=freq_20,tau=0.95,freq=TRUE, STN=FALSE)$V1,
+p_thres[, ":="(Q95_20 = p_test(data=freq_20,tau=0.95,freq=TRUE, STN=FALSE)$V1,
           Q99_20 = p_test(data=freq_20,tau=0.99,freq=TRUE, STN=FALSE)$V1,
           Q999_20 = p_test(data=freq_20,tau=0.999,freq=TRUE, STN=FALSE)$V1)]
 @
 
 <<>>=
-save(p, file="./inst/tussenStap/p_thres.rda")
+save(p_thres, file="./inst/tussenStap/p_thres.rda")
 @
 
 <<p_threstbl>>=
-setnames(p, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
-tbl <- xtable(p)
-print(tbl,
-    only.contents=TRUE,
-    include.rownames=FALSE,
-    type="latex", #digits(tbl) <- c(0,1,1)
-    file="p_freqtbl.tex")
+setnames(p_thres, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
+#tbl <- xtable(p_thres)
 @
 
 % \begin{table}[h!]
