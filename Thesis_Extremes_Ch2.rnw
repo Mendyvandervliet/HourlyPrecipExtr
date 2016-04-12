@@ -337,7 +337,7 @@ plot_permdist(permdist999)
 \end{figure}
 
 
-<<p_test,cache=FALSE>>=
+<<p_test,cache=TRUE>>=
 p <- p_test(data=max2d,tau=0.50)
 setnames(p,c("STN","Q50"))
 p[, ":="(Q75 = p_test(data=max2d,tau=0.75)$V1, Q90 = p_test(data=max2d,tau=0.90)$V1)]
@@ -345,32 +345,34 @@ p[, ":="(Q95 = p_test(data=max2d,tau=0.95)$V1, Q99 = p_test(data=max2d,tau=0.99)
          Q999 = p_test(data=max2d,tau=0.999)$V1)]
 @
 
-<<>>=
+<<cache=FALSE>>=
 save(p, file="./inst/tussenStap/p.rda")
 @
 
 <<p_tbl>>=
-setnames(p, c("Station","50%","75%","90%","95","99%","99.9%"))
-tbl <- xtable(p)
-print(tbl,
-    only.contents=TRUE,
-    include.rownames=FALSE,
-    type="latex", #digits(tbl) <- c(0,1,1)
-    file="p_tbl.tex")
+#setnames(p, c("Station","50%","75%","90%","95","99%","99.9%"))
+#tbl <- xtable(p)  --> to print latex format
 @
 
 \begin{table}[h!]
   \centering
   \caption{Significance table for all fits}
-  \begin{tabular}{l|r|r|r|r|r|r}
+  \begin{tabular}{l|r|r|r|r|r|r|r}
   \hline\hline
-     & \multicolumn{1}{c}{Station}
-     & \multicolumn{6}{c}{Quantiles of fit}\\
-  \hline
-  \input{p_tbl}
-  \hline
+    \multicolumn{2}{c}{Location}
+    %\multicolumn{1}{c}{STN} &
+    \vline
+    & \multicolumn{6}{c}{Quantiles of fit} \\
+    \hline
+    Station   & STN & 50\% & 75\% & 90\% & 95\% & Q99\% & 99.9\% \\
+    \hline
+    De Kooy   & 235 & 0.13                 & 0.06                   & \cellcolor{green} 0.97 & \cellcolor{green} 1.00 & 0.84                   & 0.16 \\
+    De Bilt   & 260 & \cellcolor{red} 0.05 & \cellcolor{green} 0.99 & \cellcolor{green} 1.00 &                   0.93 & 0.92                   & 0.87 \\
+    Eelde     & 280 & \cellcolor{red} 0.01 & \cellcolor{green} 0.96 &                   0.92 &                   0.91 & 0.77                   & 0.33 \\
+    Vlissingen& 310 & 0.92                 &                   0.07 &                   0.27 & \cellcolor{green} 0.96 & 0.81 & 0.38 \\
+    Maastricht& 380 & 0.16                 &                   0.13 & \cellcolor{green} 0.98 & 0.94                   & 0.49 & 0.67 \\
+     \hline
   \end{tabular}
-  \label{tab:p_tbl}
 \end{table}
 
 
@@ -501,6 +503,8 @@ Impact events; order of 5-50 mm/hr  (15,5 mm/hr as mean) . Above 90 (and 75) qua
 
 <<AggregateByYear>>=
 yearlyMax <- hrKNMI[, list(RHmax = max(RH)), by = list(STN, Year)]
+#yearlyMax <- hrKNMI[, list(DD= unique(DD), T = unique(T), TD = unique(TD), RHmax = max(RH)), by = list(STN, Year)]
+#yearlyMax[, list(RHmax=unique(RHmax)), by=list(Year,STN)]
 @
 
 \begin{figure}[H]
