@@ -9,7 +9,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{a4wide}
-
+\usepackage{colortbl}
 \overfullrule=2cm             %To spot overfull hboxes
 
 %------------------------------------------------------------------------------------------------------------------------
@@ -29,7 +29,8 @@ library(quantreg)
 library(plyr)
 library(grid)
 library(gridExtra)
-library(xtable)
+#library(xtable)
+library(Hmisc)
 library(HourlyPrecipExtr)
 # set global chunk options
 opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
@@ -337,7 +338,7 @@ plot_permdist(permdist999)
 \end{figure}
 
 
-<<p_test,cache=TRUE>>=
+<<p_test,cache=FALSE>>=
 p <- p_test(data=max2d,tau=0.50)
 setnames(p,c("STN","Q50"))
 p[, ":="(Q75 = p_test(data=max2d,tau=0.75)$V1, Q90 = p_test(data=max2d,tau=0.90)$V1)]
@@ -630,29 +631,29 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
 
 % Significance test
 <<p_testfreq,cache=TRUE>>=
-p <- p_test(data=QR_freq,tau=0.50,freq==TRUE)
+p <- p_test(data=QR_freq,tau=0.50,freq=TRUE)
 setnames(p,c("STN","Q50"))
-p[, ":="(Q75 = p_test(data=QR_freq,tau=0.75,freq==TRUE)$V1, Q90 = p_test(data=QR_freq,tau=0.90,freq==TRUE)$V1)]
-p[, ":="(Q95 = p_test(data=QR_freq,tau=0.95,freq==TRUE)$V1, Q99 = p_test(data=QR_freq,tau=0.99,freq==TRUE)$V1,
-         Q999 = p_test(data=QR_freq,tau=0.999,freq==TRUE)$V1)]
+p[, ":="(Q75 = p_test(data=QR_freq,tau=0.75,freq=TRUE)$V1, Q90 = p_test(data=QR_freq,tau=0.90,freq=TRUE)$V1)]
+p[, ":="(Q95 = p_test(data=QR_freq,tau=0.95,freq=TRUE)$V1, Q99 = p_test(data=QR_freq,tau=0.99,freq=TRUE)$V1,
+         Q999 = p_test(data=QR_freq,tau=0.999,freq=TRUE)$V1)]
 @
 
 <<p_test_freqS,cache=TRUE>>=
-p[, ":="(Q50s = p_test(data=QR_Sfreq,tau=0.50,freq==TRUE)$V1,
-         Q75s = p_test(data=QR_Sfreq,tau=0.75,freq==TRUE)$V1,
-         Q90s = p_test(data=QR_Sfreq,tau=0.90,freq==TRUE)$V1)]
-p[, ":="(Q95s = p_test(data=QR_Sfreq,tau=0.95,freq==TRUE)$V1,
-         Q99s = p_test(data=QR_Sfreq,tau=0.99,freq==TRUE)$V1,
-         Q999s = p_test(data=QR_Sfreq,tau=0.999,freq==TRUE)$V1)]
+p[, ":="(Q50s = p_test(data=QR_Sfreq,tau=0.50,freq=TRUE)$V1,
+         Q75s = p_test(data=QR_Sfreq,tau=0.75,freq=TRUE)$V1,
+         Q90s = p_test(data=QR_Sfreq,tau=0.90,freq=TRUE)$V1)]
+p[, ":="(Q95s = p_test(data=QR_Sfreq,tau=0.95,freq=TRUE)$V1,
+         Q99s = p_test(data=QR_Sfreq,tau=0.99,freq=TRUE)$V1,
+         Q999s = p_test(data=QR_Sfreq,tau=0.999,freq=TRUE)$V1)]
 @
 
 <<p_test_freqW,cache=TRUE>>=
-p[, ":="(Q50w = p_test(data=QR_Wfreq,tau=0.50,freq==TRUE)$V1,
-         Q75w = p_test(data=QR_Wfreq,tau=0.75,freq==TRUE)$V1,
-         Q90w = p_test(data=QR_Wfreq,tau=0.90,freq==TRUE)$V1)]
-p[, ":="(Q95w = p_test(data=QR_Wfreq,tau=0.95,freq==TRUE)$V1,
-         Q99w = p_test(data=QR_Wfreq,tau=0.99,freq==TRUE)$V1,
-         Q999w = p_test(data=QR_Wfreq,tau=0.999,freq==TRUE)$V1)]
+p[, ":="(Q50w = p_test(data=QR_Wfreq,tau=0.50,freq=TRUE)$V1,
+         Q75w = p_test(data=QR_Wfreq,tau=0.75,freq=TRUE)$V1,
+         Q90w = p_test(data=QR_Wfreq,tau=0.90,freq=TRUE)$V1)]
+p[, ":="(Q95w = p_test(data=QR_Wfreq,tau=0.95,freq=TRUE)$V1,
+         Q99w = p_test(data=QR_Wfreq,tau=0.99,freq=TRUE)$V1,
+         Q999w = p_test(data=QR_Wfreq,tau=0.999,freq=TRUE)$V1)]
 save(p, file="./inst/tussenStap/p_freq.rda")
 @
 
@@ -811,42 +812,42 @@ ggplot(freq_20, aes(x = Year, color=Quantiles)) +        # data
 
 % Significance test
 <<p_5thres,cache=TRUE>>=
-p <- p_test(data=freq_5,tau=0.50,freq==TRUE)
+p <- p_test(data=freq_5,tau=0.50,freq=TRUE)
 setnames(p,c("STN","Q50_5"))
-p[, ":="(Q75_5 = p_test(data=freq_5,tau=0.75,freq==TRUE)$V1,
-         Q90_5 = p_test(data=freq_5,tau=0.90,freq==TRUE)$V1)]
-p[, ":="(Q95_5 = p_test(data=freq_5,tau=0.95,freq==TRUE)$V1,
-         Q99_5 = p_test(data=freq_5,tau=0.99,freq==TRUE)$V1,
-         Q999_5 = p_test(data=freq_5,tau=0.999,freq==TRUE)$V1)]
+p[, ":="(Q75_5 = p_test(data=freq_5,tau=0.75,freq=TRUE)$V1,
+         Q90_5 = p_test(data=freq_5,tau=0.90,freq=TRUE)$V1)]
+p[, ":="(Q95_5 = p_test(data=freq_5,tau=0.95,freq=TRUE)$V1,
+         Q99_5 = p_test(data=freq_5,tau=0.99,freq=TRUE)$V1,
+         Q999_5 = p_test(data=freq_5,tau=0.999,freq=TRUE)$V1)]
 @
 
 <<p_10thres,cache=TRUE>>=
-p[, ":="(Q50_10 = p_test(data=freq_10,tau=0.50,freq==TRUE)$V1,
-         Q75_10 = p_test(data=freq_10,tau=0.75,freq==TRUE)$V1,
-         Q90_10 = p_test(data=freq_10,tau=0.90,freq==TRUE)$V1)]
-p[, ":="(Q95_10 = p_test(data=freq_10,tau=0.95,freq==TRUE)$V1,
-         Q99_10 = p_test(data=freq_10,tau=0.99,freq==TRUE)$V1,
-         Q999_10 = p_test(data=freq_10,tau=0.999,freq==TRUE)$V1)]
+p[, ":="(Q50_10 = p_test(data=freq_10,tau=0.50,freq=TRUE)$V1,
+         Q75_10 = p_test(data=freq_10,tau=0.75,freq=TRUE)$V1,
+         Q90_10 = p_test(data=freq_10,tau=0.90,freq=TRUE)$V1)]
+p[, ":="(Q95_10 = p_test(data=freq_10,tau=0.95,freq=TRUE)$V1,
+         Q99_10 = p_test(data=freq_10,tau=0.99,freq=TRUE)$V1,
+         Q999_10 = p_test(data=freq_10,tau=0.999,freq=TRUE)$V1)]
 @
 
 
 <<p_15thres,cache=TRUE>>=
-p[, ":="(Q50_15 = p_test(data=freq_15,tau=0.50,freq==TRUE, STN=FALSE)$V1,
-          Q75_15 = p_test(data=freq_15,tau=0.75,freq==TRUE, STN=FALSE)$V1,
-          Q90_15 = p_test(data=freq_15,tau=0.90,freq==TRUE, STN=FALSE)$V1)]
-p[, ":="(Q95_15 = p_test(data=freq_15,tau=0.95,freq==TRUE, STN=FALSE)$V1,
-          Q99_15 = p_test(data=freq_15,tau=0.99,freq==TRUE, STN=FALSE)$V1,
-          Q999_15 = p_test(data=freq_15,tau=0.999,freq==TRUE, STN=FALSE)$V1)]
+p[, ":="(Q50_15 = p_test(data=freq_15,tau=0.50,freq=TRUE, STN=FALSE)$V1,
+          Q75_15 = p_test(data=freq_15,tau=0.75,freq=TRUE, STN=FALSE)$V1,
+          Q90_15 = p_test(data=freq_15,tau=0.90,freq=TRUE, STN=FALSE)$V1)]
+p[, ":="(Q95_15 = p_test(data=freq_15,tau=0.95,freq=TRUE, STN=FALSE)$V1,
+          Q99_15 = p_test(data=freq_15,tau=0.99,freq=TRUE, STN=FALSE)$V1,
+          Q999_15 = p_test(data=freq_15,tau=0.999,freq=TRUE, STN=FALSE)$V1)]
 @
 
 
 <<p_20thres,cache=TRUE>>=
-p[, ":="(Q50_20 = p_test(data=freq_20,tau=0.50,freq==TRUE, STN=FALSE)$V1,
-          Q75_20 = p_test(data=freq_20,tau=0.75,freq==TRUE, STN=FALSE)$V1,
-          Q90_20 = p_test(data=freq_20,tau=0.90,freq==TRUE, STN=FALSE)$V1)]
-p[, ":="(Q95_20 = p_test(data=freq_20,tau=0.95,freq==TRUE, STN=FALSE)$V1,
-          Q99_20 = p_test(data=freq_20,tau=0.99,freq==TRUE, STN=FALSE)$V1,
-          Q999_20 = p_test(data=freq_20,tau=0.999,freq==TRUE, STN=FALSE)$V1)]
+p[, ":="(Q50_20 = p_test(data=freq_20,tau=0.50,freq=TRUE, STN=FALSE)$V1,
+          Q75_20 = p_test(data=freq_20,tau=0.75,freq=TRUE, STN=FALSE)$V1,
+          Q90_20 = p_test(data=freq_20,tau=0.90,freq=TRUE, STN=FALSE)$V1)]
+p[, ":="(Q95_20 = p_test(data=freq_20,tau=0.95,freq=TRUE, STN=FALSE)$V1,
+          Q99_20 = p_test(data=freq_20,tau=0.99,freq=TRUE, STN=FALSE)$V1,
+          Q999_20 = p_test(data=freq_20,tau=0.999,freq=TRUE, STN=FALSE)$V1)]
 @
 
 <<>>=
@@ -863,23 +864,22 @@ print(tbl,
     file="p_freqtbl.tex")
 @
 
-\begin{table}[h!]
-  \centering
-  \caption{Significance table for all fits on yearly frequency data of wet hours}
-  \begin{tabular}{l|r|r|r|r|r|r}
-  \hline\hline
-     & \multicolumn{19}{c}{Quantiles of fit}\\
-     & \multicolumn{1}{c}{Station}
-     & \multicolumn{3}{c}{All wet hours}
-     & \multicolumn{3}{c}{Summer}
-     & \multicolumn{3}{c}{Winter}\\
-     \\
-  \hline
-  \input{p_freqtbl}
-  \hline
-  \end{tabular}
-  \label{tab:p_freqtbl}
-\end{table}
+% \begin{table}[h!]
+%   \centering
+%   \caption{Significance table for all fits on yearly frequency data of wet hours}
+%   \begin{tabular}{l|r|r|r|r|r|r}
+%   \hline\hline
+%   \multicolumn{19}{c}{Quantiles of fit}\\
+%   \multicolumn{1}{c}{Station}
+%   & \multicolumn{3}{c}{All wet hours}
+%   & \multicolumn{3}{c}{Summer}
+%   & \multicolumn{3}{c}{Winter}\\
+%   \hline
+%   \input{p_freqtbl}
+%   \hline
+%   \end{tabular}
+%   \label{tab:p_freqtbl}
+% \end{table}
 
 
 % All stations; from 1 day max,  count events higher > 10  and > 20 mm/hr
