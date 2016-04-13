@@ -100,6 +100,8 @@ save(QR_hrKNMI, file="./inst/tussenStap/QR_hrKNMI.rda")
 @
 
 <<legend, cache=TRUE>>=
+QR_hrKNMI[, list(yr_mean = mean(RH)), by = list(STN, Year)]
+
 Legendgrob1 <- legendGrob(c("90%","95%","99%","99.9%"), pch=15,
                           gp=gpar(col=c("blue" ,"green","orange","red"),cex=1), ncol=3)
 @
@@ -121,6 +123,7 @@ load("./inst/tussenStap/QR_hrKNMI.rda")
   \centering
   \textbf{Quantile regression on all hourly intensities}\par\medskip
 <<label=QR_allhr,cache=FALSE>>=
+ymax <- 30
 plot1 <- QR_plotting(data=QR_hrKNMI[STN == 235], title="De Kooy")
 plot2 <- QR_plotting(data=QR_hrKNMI[STN == 260], title="De Bilt")
 plot3 <- QR_plotting(data=QR_hrKNMI[STN == 280], title="Eelde")
@@ -131,7 +134,7 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob1, ncol=2)
 @
   \vspace{-0.5cm}
   \caption{Quantile regression fits with $\tau = 90, 95, 99, 99.9$ \% on all
-hourly precipitation intensities (mm/hr), for all stations. Note that the upper limit in intensity is set on 15 mm/hr.}
+hourly precipitation intensities (mm/hr), for all stations.}
   \label{fig:QR_allhr}
 \end{figure}
 
@@ -146,16 +149,6 @@ The following figures show the autocorrelation plots for the hourly datasets of 
   \vspace{-0.5cm}
   \begin{minipage}[0.15\textheight]{0.48\textwidth}
     \centering
-<<label=K_autocor>>=
-acf(hrKNMI[STN==235]$RH,lag.max=80,main=NA)
-  @
-    \vspace{-0.5cm}
-    \subcaption{De Kooy}
-    \label{fig:K_autocor}
-  \end{minipage}
-  \hfill
-  \begin{minipage}[0.15\textheight]{0.48\textwidth}
-    \centering
 <<label=B_autocor>>=
 acf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
  @
@@ -165,54 +158,6 @@ acf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
   \end{minipage}
   \hfill
   \vspace{-1cm}
-  \begin{minipage}[0.15\textheight]{0.48\textwidth}
-    \centering
-<<label=E_autocor>>=
-acf(hrKNMI[STN==280]$RH,lag.max=80,main=NA)
-@
-    \vspace{-0.5cm}
-    \subcaption{Eelde}
-    \label{fig:E_autocor}
-  \end{minipage}
-  \hfill
-  \begin{minipage}[0.15\textheight]{0.48\textwidth}
-    \centering
-<<label=V_autocor>>=
-acf(hrKNMI[STN==310]$RH,lag.max=80,main=NA)
- @
-    \vspace{-0.5cm}
-    \subcaption{Vlissingen}
-    \label{fig:V_autocor}
-  \end{minipage}
-  \hfill
-  \vspace{-1cm}
-  \begin{minipage}[0.15\textheight]{0.48\textwidth}
-    \centering
-<<label=M_autocor>>=
-acf(hrKNMI[STN==380]$RH,lag.max=80,main=NA)
- @
-    \vspace{-0.5cm}
-    \subcaption{Maastricht}
-    \label{fig:M_autocor}
- \end{minipage}
- \caption{Autocorrelation}
-\end{figure}
-
-The partial autocorrelation for hourly data and all stations is shown in the following figure.
-\begin{figure}[H]
- \centering
- \textbf{Partial autocorrelation all hours}\par\medskip
- \vspace{-0.5cm}
- \begin{minipage}[0.15\textheight]{0.48\textwidth}
-   \centering
-<<label=K_pautocor>>=
-pacf(hrKNMI[STN==235]$RH,lag.max=80,main=NA)
- @
-   \vspace{-0.5cm}
-   \subcaption{De Kooy}
-   \label{fig:K_pautocor}
- \end{minipage}
- \hfill
  \begin{minipage}[0.15\textheight]{0.48\textwidth}
    \centering
 <<label=B_pautocor>>=
@@ -222,40 +167,9 @@ pacf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
    \subcaption{De Bilt}
    \label{fig:B_pautocor}
  \end{minipage}
- \hfill
- \vspace{-1cm}
- \begin{minipage}[0.15\textheight]{0.48\textwidth}
-   \centering
-<<label=E_pautocor>>=
-pacf(hrKNMI[STN==280]$RH,lag.max=80,main=NA)
- @
-   \vspace{-0.5cm}
-   \subcaption{Eelde}
-   \label{fig:E_pautocor}
- \end{minipage}
- \hfill
-  \begin{minipage}[0.15\textheight]{0.48\textwidth}
-   \centering
-<<label=V_pautocor>>=
-pacf(hrKNMI[STN==310]$RH,lag.max=80,main=NA)
- @
-   \vspace{-0.5cm}
-   \subcaption{Vlissingen}
-   \label{fig:V_pautocor}
- \end{minipage}
- \hfill
- \vspace{-1cm}
-  \begin{minipage}[0.15\textheight]{0.48\textwidth}
-   \centering
-<<label=M_pautocor>>=
-pacf(hrKNMI[STN==380]$RH,lag.max=80,main=NA)
- @
-   %\vspace{-1cm}
-    \subcaption{Maastricht}
-   \label{fig:M_pautocor}
- \end{minipage}
-\caption{Partial autocorrelation}
+\caption{Autocorrelation and partial autocorrelation for all hour precipitation data of station De Bilt. For the other stations we did not include the same figures as there are no significant differences between the stations in these two parameters.}
 \end{figure}
+
 
 For lags till 48 hours the autocorrelation and partial autocorrelation values are significant (<0.05). Moreover, a winter depression will not last for longer than 2 days (and summer rain events are mainly on the scale of several hours). Therefore, we will now apply quantile regression on the maximum value for 2 day periods.
 
@@ -292,17 +206,23 @@ save(QR_max2d, file="./inst/tussenStap/QR_max2d.rda")
 <<loading5, cache=FALSE>>=
 load("./inst/tussenStap/QR_max2d.rda")
 @
-% REMOVE Q50, Q75
+
+<<legend2, cache=TRUE>>=
+Legendgrob2 <- legendGrob(c("mean","75%","90%","95%","99%","99.9%"), pch=15,
+                          gp=gpar(col=c("black","purple","blue","green","orange","red"),cex=1), ncol=3)
+@
+
 \begin{figure}[H]
   \centering
   \textbf{Quantile regression on 2 day max. hourly intensities}\par\medskip
 <<label=QR_max2d,cache=FALSE>>=
-plot1 <- QR2d_plotting(data=QR_max2d[STN == 235], title="De Kooy")
-plot2 <- QR2d_plotting(data=QR_max2d[STN == 260], title="De Bilt")
-plot3 <- QR2d_plotting(data=QR_max2d[STN == 280], title="Eelde")
-plot4 <- QR2d_plotting(data=QR_max2d[STN == 310], title="Vlissingen")
-plot5 <- QR2d_plotting(data=QR_max2d[STN == 380], title="Maastricht")
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob1, ncol=2),
+ymax <- 30
+plot1 <- QR2d_plotting(data=QR_max2d[STN == 235], title="De Kooy",point=FALSE)
+plot2 <- QR2d_plotting(data=QR_max2d[STN == 260], title="De Bilt",point=FALSE)
+plot3 <- QR2d_plotting(data=QR_max2d[STN == 280], title="Eelde",point=FALSE)
+plot4 <- QR2d_plotting(data=QR_max2d[STN == 310], title="Vlissingen",point=FALSE)
+plot5 <- QR2d_plotting(data=QR_max2d[STN == 380], title="Maastricht",point=FALSE)
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
              ncol= 1)
 @
   \caption{Quantile regression fits with $\tau = 75, 90, 95, 99, 99.9$ \% on 2 day maxima in
@@ -428,12 +348,13 @@ load("./inst/tussenStap/QRW_max2d.rda")
     %\hspace{-1cm}
     \flushleft
 <<label=QRW_max2d>>=
+ymax <- 9
 plot1 <- QR2d_plotting(data=QRW_max2d[STN == 235], title="De Kooy",point=FALSE)
 plot2 <- QR2d_plotting(data=QRW_max2d[STN == 260], title="De Bilt",point=FALSE)
 plot3 <- QR2d_plotting(data=QRW_max2d[STN == 280], title="Eelde",point=FALSE)
 plot4 <- QR2d_plotting(data=QRW_max2d[STN == 310], title="Vlissingen",point=FALSE)
 plot5 <- QR2d_plotting(data=QRW_max2d[STN == 380], title="Maastricht",point=FALSE)
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob1, ncol=2),
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
              ncol= 1)
 @
   \subcaption{Winter}
@@ -444,12 +365,13 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob1, ncol=2)
     \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=QRS_max2d>>=
+ymax <- 50
 plot1 <- QR2d_plotting(data=QRS_max2d[STN == 235], title="De Kooy",point=FALSE)
 plot2 <- QR2d_plotting(data=QRS_max2d[STN == 260], title="De Bilt",point=FALSE)
 plot3 <- QR2d_plotting(data=QRS_max2d[STN == 280], title="Eelde",point=FALSE)
 plot4 <- QR2d_plotting(data=QRS_max2d[STN == 310], title="Vlissingen",point=FALSE)
 plot5 <- QR2d_plotting(data=QRS_max2d[STN == 380], title="Maastricht",point=FALSE)
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob1, ncol=2),
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
              ncol= 1)
 @
   \subcaption{Summer}
@@ -521,29 +443,53 @@ setnames(p_SW, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","90%
 Impact events; order of 5-50 mm/hr  (15,5 mm/hr as mean) . Above 90 (and 75) quantile can impact sewage (from 20 mm/hr) or traffic problems ($\> 30$ mm/hr)
 
 <<AggregateByYear>>=
-yearlyMax <- hrKNMI[, list(RHmax = max(RH)), by = list(STN, Year)]
+yearlyMax <- hrKNMI[, list(RHmax = max(RH),yr_mean = mean(RH)), by = list(STN, Year)]
 #yearlyMax <- hrKNMI[, list(DD= unique(DD), T = unique(T), TD = unique(TD), RHmax = max(RH)), by = list(STN, Year)]
 #yearlyMax[, list(RHmax=unique(RHmax)), by=list(Year,STN)]
 @
 
 \begin{figure}[H]
   \centering
-  \textbf{Trends in quantiles of yearly maxima}\par\medskip
+  \textbf{Trends in quantiles of yearly maxima per station}\par\medskip
 <<Yearlymax>>=
+cols <- c("25%"="purple","50%"="blue","75%"="green")
 ggplot(yearlyMax, aes(x = Year, y = RHmax)) + geom_point() +
-  geom_quantile(formula = y ~ x) +
-  geom_quantile(formula = y ~ x,quantiles=0.90) +
+  #geom_smooth(aes(y=yr_mean, colour='black'),method=lm)+
+  geom_quantile(formula= y~x,quantiles=0.25, aes(colour="25%"))+
+  geom_quantile(formula= y~x,quantiles=0.50, aes(colour="50%"))+
+  geom_quantile(formula= y~x,quantiles=0.75, aes(colour="75%"))+
+  #geom_quantile(formula= y~x,quantiles=0.90, aes(colour="90%"))+
   facet_wrap(~STN) +
-  xlab("Year") + ylab("Annual max mm/hr")
+  scale_colour_manual(name = 'Quantiles', values=cols)+
+  xlab("Year") + ylab("Annual max mm/hr") + theme_bw()
 @
   \caption{The 25, 50, 75 and 90 percentile of annual maximum hourly rainfall for every station}
   \label{fig:Yearlymax}
 \end{figure}
 
-Figure \ref{fig:Yearlymax} shows the trend in the 25, 50, 75 and 90 percentile of annual maximum hourly rainfall.
+In the following figure the data of all stations are combined, as this can give a more robust signal.
+
+\begin{figure}[H]
+  \centering
+  \textbf{Trends in quantiles of yearly maxima}\par\medskip
+<<Yearlymax_allcombined>>=
+cols <- c("25%"="purple","50%"="blue","75%"="green","90%"="orange")
+ggplot(yearlyMax, aes(x = Year, y = RHmax)) + geom_point() +
+  #geom_smooth(aes(y=yr_mean, colour='black'),method=lm)+
+  geom_quantile(formula= y~x,quantiles=0.25, aes(colour="25%"))+
+  geom_quantile(formula= y~x,quantiles=0.50, aes(colour="50%"))+
+  geom_quantile(formula= y~x,quantiles=0.75, aes(colour="75%"))+
+  geom_quantile(formula= y~x,quantiles=0.90, aes(colour="90%"))+
+  scale_colour_manual(name = 'Quantiles', values=cols)+
+  xlab("Year") + ylab("Annual max mm/hr") + theme_bw()
+@
+  \caption{The 25, 50, 75 and 90 percentile of annual maximum hourly rainfall for all stations combined}
+  \label{fig:Yearlymax}
+\end{figure}
 
 \subsubsection{Frequency}
 
+Next to changes in intensity of extreme rain events, is it also relevant to study whether precipitation events occur more, equally or less often in time. In this part analysis of frequency data is reported. First, the number of wet hours a year, a summer, a winter are plotted in the figure below.
  <<label=freq,cache=TRUE>>=
 freq_wet <-  hrKNMI[RH > 0][ , ':='(f = .N),by = list(Year,STN)]
 freq_Swet <- hrKNMI[RH > 0][Month==6| Month==7 | Month==8][ , ':='(f = .N),by = list(Year,STN)]
@@ -560,14 +506,13 @@ load("./inst/tussenStap/freq_Swet.rda")
 load("./inst/tussenStap/freq_Wwet.rda")
 @
 
-
  <<label=QRfreq,cache=TRUE>>=
 QR_freq <- QR_freqall(freq_wet)
 QR_Sfreq <- QR_freqall(freq_Swet)
 QR_Wfreq <- QR_freqall(freq_Wwet)
 
-Legendgrob2 <- legendGrob(c("25%","50%","75%", "90%"), pch=15,
-                          gp=gpar(col=c("black","blue","green","orange"),cex=1), ncol=2)
+Legendgrob3 <- legendGrob(c("mean","25%","50%","75%", "90%"), pch=15,
+                          gp=gpar(col=c("black","purple","blue","green","orange"),cex=1), ncol=2)
 
 save(QR_freq, file="./inst/tussenStap/QR_freq.rda")
 save(QR_Sfreq, file="./inst/tussenStap/QR_Sfreq.rda")
@@ -587,12 +532,13 @@ load("./inst/tussenStap/QR_Wfreq.rda")
   \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=QR_freqplotting,cache=FALSE>>=
+ymax <- 1500
 plot1 <- QR_freqplotting(data=QR_freq[STN == 235], title="De Kooy")
 plot2 <- QR_freqplotting(data=QR_freq[STN == 260], title="De Bilt")
 plot3 <- QR_freqplotting(data=QR_freq[STN == 280], title="Eelde")
 plot4 <- QR_freqplotting(data=QR_freq[STN == 310], title="Vlissingen")
 plot5 <- QR_freqplotting(data=QR_freq[STN == 380], title="Maastricht")
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2),
              ncol= 1)
 @
   \subcaption{All wet hours}
@@ -615,12 +561,13 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
   \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=QRW_freqplotting>>=
+ymax <- 500
 plot1 <- QR_freqplotting(data=QR_Wfreq[STN == 235], title="De Kooy")
 plot2 <- QR_freqplotting(data=QR_Wfreq[STN == 260], title="De Bilt")
 plot3 <- QR_freqplotting(data=QR_Wfreq[STN == 280], title="Eelde")
 plot4 <- QR_freqplotting(data=QR_Wfreq[STN == 310], title="Vlissingen")
 plot5 <- QR_freqplotting(data=QR_Wfreq[STN == 380], title="Maastricht")
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2),
              ncol= 1)
 @
   \subcaption{Winter}
@@ -631,12 +578,13 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
     \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=QRS_freqplotting>>=
+ymax <- 350
 plot1 <- QR_freqplotting(data=QR_Sfreq[STN == 235], title="De Kooy")
 plot2 <- QR_freqplotting(data=QR_Sfreq[STN == 260], title="De Bilt")
 plot3 <- QR_freqplotting(data=QR_Sfreq[STN == 280], title="Eelde")
 plot4 <- QR_freqplotting(data=QR_Sfreq[STN == 310], title="Vlissingen")
 plot5 <- QR_freqplotting(data=QR_Sfreq[STN == 380], title="Maastricht")
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2),
              ncol= 1)
 @
     \subcaption{Summer}
@@ -646,6 +594,7 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
   \label{fig:QR_freqWS}
 \end{figure}
 
+All fits, except for De Kooy, show a negative trend for the 50\% wettest years (in the amount of wet hours a year). A positive trend is visible for the very wet (>90\%) years of De Kooy, which is a summer trend as can be seen by comparing Figure \ref{fig:Qfreq_win} and \ref{fig:Qfreq_sum}. To investigate whether these trends are significant a 9999 Monte Carlo permutation is applied.
 
 % Significance test
 <<p_testfreq,cache=TRUE>>=
@@ -709,13 +658,18 @@ load("./inst/tussenStap/p_freq.rda")
 
 
 
-To investigate the frequency of extreme events, we will look at the frequency of wet hours with an intensity between 5-10, and $>$ 10 mm/hr. For more intense hourly values there is to little data.
+To investigate the frequency of extreme events, we will look at the frequency of wet hours with an intensity between 5-10, 10-15, 15-20 and >20 mm/hr. For more intense hourly values there is to little data.
 
  <<label=freqthreshold,cache=TRUE>>=
-freq_5 <- hrKNMI[(RH > 5) & (RH <10)][, ':='(f = .N),by = list(Year,STN)]
-freq_5 <- QR_freqall(freq_5)
-freq_10 <-  hrKNMI[RH > 10][, ':='(f = .N),by = list(Year,STN)]
-freq_10 <- QR_freqall(freq_10)
+freq_5 <- hrKNMI[(RH > 5) & (RH <10)][, ':='(f = .N),by = Year]
+freq_5 <-  freq15[, list(Year=unique(Year)),by = f]
+setkey(freq_5,Year)
+freq_5 <- QR_freqall(freq_5,STN=FALSE)
+
+freq_10 <-  hrKNMI[(RH > 10) & (RH <15)][, ':='(f = .N),by = STN]
+freq_10 <-  freq10[, list(Year=unique(Year)),by = f]
+setkey(freq_10,Year)
+freq_10 <- QR_freqall(freq_10,STN=FALSE)
 
 save(freq_5, file="./inst/tussenStap/freq_5.rda")
 save(freq_10, file="./inst/tussenStap/freq_10.rda")
@@ -724,8 +678,6 @@ save(freq_10, file="./inst/tussenStap/freq_10.rda")
  <<label=loading11,cache=FALSE>>=
 load("./inst/tussenStap/freq_5.rda")
 load("./inst/tussenStap/freq_10.rda")
-load("./inst/tussenStap/freq_15.rda")
-load("./inst/tussenStap/freq_20.rda")
 @
 
 \begin{figure}[H]
@@ -735,13 +687,17 @@ load("./inst/tussenStap/freq_20.rda")
   \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=threshold1,cache=TRUE>>=
-plot1 <- QR_freqplotting(data=freq_5[STN == 235], title="De Kooy")
-plot2 <- QR_freqplotting(data=freq_5[STN == 260], title="De Bilt")
-plot3 <- QR_freqplotting(data=freq_5[STN == 280], title="Eelde")
-plot4 <- QR_freqplotting(data=freq_5[STN == 310], title="Vlissingen")
-plot5 <- QR_freqplotting(data=freq_5[STN == 380], title="Maastricht")
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
-             ncol= 1)
+#ymax <- 20
+ggplot(freq_5, aes(x = Year, color=Quantiles)) +        # data
+    geom_point(aes(y=f, color="Points"))+
+    geom_line(aes(y=f25, color="25%")) +
+    geom_line(aes(y=f50, color="50%")) +
+    geom_line(aes(y=f75, color="75%")) +
+    geom_line(aes(y=f90, color="90%")) +
+    scale_color_manual(values=c("Points"="gray","25%"="black", "50%"="blue" ,"75%"="green","90%"="orange")) +
+    #ylim(0,ymax) +
+    xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
+    theme_bw()
 @
     \subcaption{Hours with intensity 5-10 mm/hr}
     \label{fig:threshold1}
@@ -750,13 +706,16 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
   \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=threshold2,cache=TRUE>>=
-plot1 <- QR_freqplotting(data=freq_10[STN == 235], title="De Kooy")
-plot2 <- QR_freqplotting(data=freq_10[STN == 260], title="De Bilt")
-plot3 <- QR_freqplotting(data=freq_10[STN == 280], title="Eelde")
-plot4 <- QR_freqplotting(data=freq_10[STN == 310], title="Vlissingen")
-plot5 <- QR_freqplotting(data=freq_10[STN == 380], title="Maastricht")
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
-             ncol= 1)
+ggplot(freq_10, aes(x = Year, color=Quantiles)) +        # data
+    geom_point(aes(y=f, color="Points"))+
+    geom_line(aes(y=f25, color="25%")) +
+    geom_line(aes(y=f50, color="50%")) +
+    geom_line(aes(y=f75, color="75%")) +
+    geom_line(aes(y=f90, color="90%")) +
+    scale_color_manual(values=c("Points"="gray","25%"="black", "50%"="blue" ,"75%"="green","90%"="orange")) +
+    #ylim(0,ymax) +
+    xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
+    theme_bw()
 @
     \subcaption{Hours with intensity $> 10$ mm/hr}
     \label{fig:threshold2}
@@ -768,7 +727,7 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
 When the data of the different stations are combined quantile regression on (yearly resolution) frequency data is possible. This allows us to study extremes which can have significant moderate to high impact (hourly intensity of 10-20 mm/hr and >20 mm/hr).
 
  <<label=freqthreshold2,cache=TRUE>>=
-freq_15 <-  hrKNMI[(RH > 10) & (RH <20)][, ':='(f = .N),by = Year]
+freq_15 <-  hrKNMI[(RH > 15) & (RH <20)][, ':='(f = .N),by = Year]
 freq_15 <-  freq_15[, list(Year=unique(Year)),by = f]
 setkey(freq_15,Year)
 freq_15 <- QR_freqall(freq_15,STN=FALSE)
@@ -801,6 +760,7 @@ ggplot(freq_15, aes(x = Year, color=Quantiles)) +        # data
     geom_line(aes(y=f75, color="75%")) +
     geom_line(aes(y=f90, color="90%")) +
     scale_color_manual(values=c("Points"="gray","25%"="black", "50%"="blue" ,"75%"="green","90%"="orange")) +
+    #ylim(0,ymax) +
     xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
     theme_bw()
 @
@@ -818,6 +778,7 @@ ggplot(freq_20, aes(x = Year, color=Quantiles)) +        # data
     geom_line(aes(y=f75, color="75%")) +
     geom_line(aes(y=f90, color="90%")) +
     scale_color_manual(values=c("Points"="gray","25%"="black", "50%"="blue" ,"75%"="green","90%"="orange")) +
+    #ylim(0,ymax) +
     xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
     theme_bw()
 @
