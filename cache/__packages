@@ -9,3 +9,7 @@ PCICt
 plyr
 gridExtra
 xtable
+lattice
+survival
+Formula
+Hmisc
