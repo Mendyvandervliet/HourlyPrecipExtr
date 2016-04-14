@@ -271,7 +271,7 @@ plot_permdist(permdist999)
 \end{figure}
 
 
-<<p_test,cache=FALSE>>=
+<<p_test,cache=TRUE>>=
 p <- p_test(data=max2d,tau=0.50)
 setnames(p,c("STN","Q50"))
 p[, ":="(Q75 = p_test(data=max2d,tau=0.75)$V1, Q90 = p_test(data=max2d,tau=0.90)$V1)]
@@ -495,6 +495,10 @@ freq_wet <-  hrKNMI[RH > 0][ , ':='(f = .N),by = list(Year,STN)]
 freq_Swet <- hrKNMI[RH > 0][Month==6| Month==7 | Month==8][ , ':='(f = .N),by = list(Year,STN)]
 freq_Wwet <- hrKNMI[RH > 0][Month==12| Month==1 | Month==2][ , ':='(f = .N),by = list(Year,STN)]
 
+freq_wet <- freq_wet[, list(f = unique(f),T = mean(T), TD = mean(TD), WD = mean(DD)),by=list(Year,STN)]
+freq_Swet <- freq_Swet[, list(f = unique(f),T = mean(T), TD = mean(TD), WD = mean(DD)),by=list(Year,STN)]
+freq_Wwet <- freq_Wwet[, list(f = unique(f),T = mean(T), TD = mean(TD), WD = mean(DD)),by=list(Year,STN)]
+
 save(freq_wet, file="./inst/tussenStap/freq_wet.rda")
 save(freq_Swet, file="./inst/tussenStap/freq_Swet.rda")
 save(freq_Wwet, file="./inst/tussenStap/freq_Wwet.rda")
@@ -601,8 +605,7 @@ All fits, except for De Kooy, show a negative trend for the 50\% wettest years (
 p_freq <- p_test(data=QR_freq,tau=0.50,freq=TRUE)
 setnames(p_freq,c("STN","Q50"))
 p_freq[, ":="(Q75 = p_test(data=QR_freq,tau=0.75,freq=TRUE)$V1, Q90 = p_test(data=QR_freq,tau=0.90,freq=TRUE)$V1)]
-p_freq[, ":="(Q95 = p_test(data=QR_freq,tau=0.95,freq=TRUE)$V1, Q99 = p_test(data=QR_freq,tau=0.99,freq=TRUE)$V1,
-         Q999 = p_test(data=QR_freq,tau=0.999,freq=TRUE)$V1)]
+p_freq[, ":="(Q95 = p_test(data=QR_freq,tau=0.95,freq=TRUE)$V1, Q99 = p_test(data=QR_freq,tau=0.99,freq=TRUE)$V1, Q999 = p_test(data=QR_freq,tau=0.999,freq=TRUE)$V1)]
 @
 
 <<p_test_freqS,cache=TRUE>>=
