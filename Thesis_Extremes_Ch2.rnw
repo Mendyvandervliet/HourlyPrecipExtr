@@ -48,7 +48,12 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 \maketitle
 
 \chapter{Method}
-<<Example_QR>>=
+
+<<Example_DT,cache=FALSE>>=
+dt <- data.table(x = c(1:100),y = rnorm(100))
+@
+
+<<Example_QR,cache=TRUE>>=
 ggplot(dt,aes(x=x,y=y)) +
   geom_point(data=dt[(y < quantile(y,probs=0.50)) & (y > (quantile(y,probs=0.25)))],aes(x,y),color="black") +
   geom_point(data=dt[(y < quantile(y,probs=0.75)) & (y > (quantile(y,probs=0.50)))],aes(x,y),color="blue") +
@@ -100,8 +105,6 @@ save(QR_hrKNMI, file="./inst/tussenStap/QR_hrKNMI.rda")
 @
 
 <<legend, cache=TRUE>>=
-QR_hrKNMI[, list(yr_mean = mean(RH)), by = list(STN, Year)]
-
 Legendgrob1 <- legendGrob(c("90%","95%","99%","99.9%"), pch=15,
                           gp=gpar(col=c("blue" ,"green","orange","red"),cex=1), ncol=3)
 @
@@ -109,6 +112,7 @@ Legendgrob1 <- legendGrob(c("90%","95%","99%","99.9%"), pch=15,
 % Load QR-fitted data
 <<loading2, cache=FALSE>>=
 load("./inst/tussenStap/QR_hrKNMI.rda")
+QR_hrKNMI[, ":="(yr_mean = mean(RH)), by = list(STN, Year)]
 @
 
 \subsubsection{Intensity}
@@ -124,11 +128,11 @@ load("./inst/tussenStap/QR_hrKNMI.rda")
   \textbf{Quantile regression on all hourly intensities}\par\medskip
 <<label=QR_allhr,cache=FALSE>>=
 ymax <- 30
-plot1 <- QR_plotting(data=QR_hrKNMI[STN == 235], title="De Kooy")
-plot2 <- QR_plotting(data=QR_hrKNMI[STN == 260], title="De Bilt")
-plot3 <- QR_plotting(data=QR_hrKNMI[STN == 280], title="Eelde")
-plot4 <- QR_plotting(data=QR_hrKNMI[STN == 310], title="Vlissingen")
-plot5 <- QR_plotting(data=QR_hrKNMI[STN == 380], title="Maastricht")
+plot1 <- QR_plotting(data=QR_hrKNMI[STN == 235], title="De Kooy",ymax)
+plot2 <- QR_plotting(data=QR_hrKNMI[STN == 260], title="De Bilt",ymax)
+plot3 <- QR_plotting(data=QR_hrKNMI[STN == 280], title="Eelde",ymax)
+plot4 <- QR_plotting(data=QR_hrKNMI[STN == 310], title="Vlissingen",ymax)
+plot5 <- QR_plotting(data=QR_hrKNMI[STN == 380], title="Maastricht",ymax)
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob1, ncol=2),
              ncol= 1)
 @
@@ -167,6 +171,7 @@ pacf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
    \subcaption{De Bilt}
    \label{fig:B_pautocor}
  \end{minipage}
+\vspace{1cm}
 \caption{Autocorrelation and partial autocorrelation for all hour precipitation data of station De Bilt. For the other stations we did not include the same figures as there are no significant differences between the stations in these two parameters.}
 \end{figure}
 
@@ -217,11 +222,11 @@ Legendgrob2 <- legendGrob(c("mean","75%","90%","95%","99%","99.9%"), pch=15,
   \textbf{Quantile regression on 2 day max. hourly intensities}\par\medskip
 <<label=QR_max2d,cache=FALSE>>=
 ymax <- 30
-plot1 <- QR2d_plotting(data=QR_max2d[STN == 235], title="De Kooy",point=FALSE)
-plot2 <- QR2d_plotting(data=QR_max2d[STN == 260], title="De Bilt",point=FALSE)
-plot3 <- QR2d_plotting(data=QR_max2d[STN == 280], title="Eelde",point=FALSE)
-plot4 <- QR2d_plotting(data=QR_max2d[STN == 310], title="Vlissingen",point=FALSE)
-plot5 <- QR2d_plotting(data=QR_max2d[STN == 380], title="Maastricht",point=FALSE)
+plot1 <- QR2d_plotting(data=QR_max2d[STN == 235], title="De Kooy",point=FALSE,ymax)
+plot2 <- QR2d_plotting(data=QR_max2d[STN == 260], title="De Bilt",point=FALSE,ymax)
+plot3 <- QR2d_plotting(data=QR_max2d[STN == 280], title="Eelde",point=FALSE,ymax)
+plot4 <- QR2d_plotting(data=QR_max2d[STN == 310], title="Vlissingen",point=FALSE,ymax)
+plot5 <- QR2d_plotting(data=QR_max2d[STN == 380], title="Maastricht",point=FALSE,ymax)
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
              ncol= 1)
 @
@@ -271,7 +276,7 @@ plot_permdist(permdist999)
 \end{figure}
 
 
-<<p_test,cache=TRUE>>=
+<<p_test,cache=FALSE>>=
 p <- p_test(data=max2d,tau=0.50)
 setnames(p,c("STN","Q50"))
 p[, ":="(Q75 = p_test(data=max2d,tau=0.75)$V1, Q90 = p_test(data=max2d,tau=0.90)$V1)]
@@ -279,14 +284,14 @@ p[, ":="(Q95 = p_test(data=max2d,tau=0.95)$V1, Q99 = p_test(data=max2d,tau=0.99)
          Q999 = p_test(data=max2d,tau=0.999)$V1)]
 @
 
-<<cache=FALSE>>=
+<<p_tbl,cache=FALSE>>=
 save(p, file="./inst/tussenStap/p.rda")
 @
 
-<<p_tbl>>=
-#setnames(p, c("Station","50%","75%","90%","95","99%","99.9%"))
-#tbl <- xtable(p)  --> to print latex format
-@
+%<<p_tbl>>=
+%#setnames(p, c("Station","50%","75%","90%","95","99%","99.9%"))
+%#tbl <- xtable(p)  --> to print latex format
+%@
 
 \begin{table}[h!]
   \centering
@@ -348,17 +353,17 @@ load("./inst/tussenStap/QRW_max2d.rda")
     %\hspace{-1cm}
     \flushleft
 <<label=QRW_max2d>>=
-ymax <- 9
-plot1 <- QR2d_plotting(data=QRW_max2d[STN == 235], title="De Kooy",point=FALSE)
-plot2 <- QR2d_plotting(data=QRW_max2d[STN == 260], title="De Bilt",point=FALSE)
-plot3 <- QR2d_plotting(data=QRW_max2d[STN == 280], title="Eelde",point=FALSE)
-plot4 <- QR2d_plotting(data=QRW_max2d[STN == 310], title="Vlissingen",point=FALSE)
-plot5 <- QR2d_plotting(data=QRW_max2d[STN == 380], title="Maastricht",point=FALSE)
+ymax <- 10
+plot1 <- QR2d_plotting(data=QRW_max2d[STN == 235], title="De Kooy",point=FALSE,ymax)
+plot2 <- QR2d_plotting(data=QRW_max2d[STN == 260], title="De Bilt",point=FALSE,ymax)
+plot3 <- QR2d_plotting(data=QRW_max2d[STN == 280], title="Eelde",point=FALSE,ymax)
+plot4 <- QR2d_plotting(data=QRW_max2d[STN == 310], title="Vlissingen",point=FALSE,ymax)
+plot5 <- QR2d_plotting(data=QRW_max2d[STN == 380], title="Maastricht",point=FALSE,ymax)
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
              ncol= 1)
 @
-  \subcaption{Winter}
-  \label{fig:Qint_win}
+    \subcaption{Winter}
+    \label{fig:Qint_win}
   \end{minipage}
   \hfill
   \hspace{-0.5cm}
@@ -366,16 +371,16 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
     \flushleft
 <<label=QRS_max2d>>=
 ymax <- 50
-plot1 <- QR2d_plotting(data=QRS_max2d[STN == 235], title="De Kooy",point=FALSE)
-plot2 <- QR2d_plotting(data=QRS_max2d[STN == 260], title="De Bilt",point=FALSE)
-plot3 <- QR2d_plotting(data=QRS_max2d[STN == 280], title="Eelde",point=FALSE)
-plot4 <- QR2d_plotting(data=QRS_max2d[STN == 310], title="Vlissingen",point=FALSE)
-plot5 <- QR2d_plotting(data=QRS_max2d[STN == 380], title="Maastricht",point=FALSE)
+plot1 <- QR2d_plotting(data=QRS_max2d[STN == 235], title="De Kooy",point=FALSE,ymax)
+plot2 <- QR2d_plotting(data=QRS_max2d[STN == 260], title="De Bilt",point=FALSE,ymax)
+plot3 <- QR2d_plotting(data=QRS_max2d[STN == 280], title="Eelde",point=FALSE,ymax)
+plot4 <- QR2d_plotting(data=QRS_max2d[STN == 310], title="Vlissingen",point=FALSE,ymax)
+plot5 <- QR2d_plotting(data=QRS_max2d[STN == 380], title="Maastricht",point=FALSE,ymax)
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
              ncol= 1)
 @
-  \subcaption{Summer}
-  \label{fig:Qint_sum}
+    \subcaption{Summer}
+    \label{fig:Qint_sum}
   \end{minipage}
   \caption{Quantile regression fits with $\tau = 50, 75, 90, 95, 99, 99.9$ \% on 2 day Winter (left) and Summer (right) maxima in hourly precipitation intensities (mm/hr), for all stations.}
   \label{fig:QR_int_WvsS}
@@ -401,13 +406,14 @@ p_SW[, ":="(Q95w = p_test(data=max2dW,tau=0.95)$V1, Q99w = p_test(data=max2dW,ta
          Q999w = p_test(data=max2dW,tau=0.999)$V1)]
 @
 
-<<cache=TRUE>>=
+<<p_SW,cache=TRUE>>=
 save(p_SW, file="./inst/tussenStap/p_SW.rda")
 @
 
-<<cache=FALSE>>=
+<<loading9,cache=FALSE>>=
 load("./inst/tussenStap/p_SW.rda")
 @
+
 
 
 <<p_SWtbl>>=
@@ -504,13 +510,13 @@ save(freq_Swet, file="./inst/tussenStap/freq_Swet.rda")
 save(freq_Wwet, file="./inst/tussenStap/freq_Wwet.rda")
 @
 
- <<label=loading9,cache=FALSE>>=
+<<label=loading10,cache=FALSE>>=
 load("./inst/tussenStap/freq_wet.rda")
 load("./inst/tussenStap/freq_Swet.rda")
 load("./inst/tussenStap/freq_Wwet.rda")
 @
 
- <<label=QRfreq,cache=TRUE>>=
+<<label=QRfreq,cache=TRUE>>=
 QR_freq <- QR_freqall(freq_wet)
 QR_Sfreq <- QR_freqall(freq_Swet)
 QR_Wfreq <- QR_freqall(freq_Wwet)
@@ -523,7 +529,7 @@ save(QR_Sfreq, file="./inst/tussenStap/QR_Sfreq.rda")
 save(QR_Wfreq, file="./inst/tussenStap/QR_Wfreq.rda")
 @
 
- <<label=loading10,cache=FALSE>>=
+ <<label=loading11,cache=FALSE>>=
 load("./inst/tussenStap/QR_freq.rda")
 load("./inst/tussenStap/QR_Sfreq.rda")
 load("./inst/tussenStap/QR_Wfreq.rda")
@@ -536,22 +542,23 @@ load("./inst/tussenStap/QR_Wfreq.rda")
   \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=QR_freqplotting,cache=FALSE>>=
+ymin <- 1000
 ymax <- 1500
-plot1 <- QR_freqplotting(data=QR_freq[STN == 235], title="De Kooy")
-plot2 <- QR_freqplotting(data=QR_freq[STN == 260], title="De Bilt")
-plot3 <- QR_freqplotting(data=QR_freq[STN == 280], title="Eelde")
-plot4 <- QR_freqplotting(data=QR_freq[STN == 310], title="Vlissingen")
-plot5 <- QR_freqplotting(data=QR_freq[STN == 380], title="Maastricht")
+plot1 <- QR_freqplotting(data=QR_freq[STN == 235], title="De Kooy",ymin,ymax)
+plot2 <- QR_freqplotting(data=QR_freq[STN == 260], title="De Bilt",ymin,ymax)
+plot3 <- QR_freqplotting(data=QR_freq[STN == 280], title="Eelde",ymin,ymax)
+plot4 <- QR_freqplotting(data=QR_freq[STN == 310], title="Vlissingen",ymin,ymax)
+plot5 <- QR_freqplotting(data=QR_freq[STN == 380], title="Maastricht",ymin,ymax)
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2),
              ncol= 1)
 @
-  \subcaption{All wet hours}
-  \label{fig:Qfreq}
+    \subcaption{All wet hours}
+    \label{fig:Qfreq}
   \end{minipage}
   \hfill
   \begin{minipage}{0.48\textwidth}
     \flushleft
-<<label=>>=
+<<label=null>>=
 
 @
     \subcaption{Impact $>$ 10 mm/hr}
@@ -564,13 +571,14 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2)
 \begin{figure}[H]
   \begin{minipage}{0.48\textwidth}
     \flushleft
-<<label=QRW_freqplotting>>=
+<<label=QRW_freqplotting,cache=FALSE>>=
+ymin <- 0
 ymax <- 500
-plot1 <- QR_freqplotting(data=QR_Wfreq[STN == 235], title="De Kooy")
-plot2 <- QR_freqplotting(data=QR_Wfreq[STN == 260], title="De Bilt")
-plot3 <- QR_freqplotting(data=QR_Wfreq[STN == 280], title="Eelde")
-plot4 <- QR_freqplotting(data=QR_Wfreq[STN == 310], title="Vlissingen")
-plot5 <- QR_freqplotting(data=QR_Wfreq[STN == 380], title="Maastricht")
+plot1 <- QR_freqplotting(data=QR_Wfreq[STN == 235], title="De Kooy",ymin,ymax)
+plot2 <- QR_freqplotting(data=QR_Wfreq[STN == 260], title="De Bilt",ymin,ymax)
+plot3 <- QR_freqplotting(data=QR_Wfreq[STN == 280], title="Eelde",ymin,ymax)
+plot4 <- QR_freqplotting(data=QR_Wfreq[STN == 310], title="Vlissingen",ymin,ymax)
+plot5 <- QR_freqplotting(data=QR_Wfreq[STN == 380], title="Maastricht",ymin,ymax)
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2),
              ncol= 1)
 @
@@ -581,13 +589,14 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2)
   \hspace{-0.5cm}
     \begin{minipage}{0.48\textwidth}
     \flushleft
-<<label=QRS_freqplotting>>=
+<<label=QRS_freqplotting,cache=FALSE>>=
+ymin <- 150
 ymax <- 350
-plot1 <- QR_freqplotting(data=QR_Sfreq[STN == 235], title="De Kooy")
-plot2 <- QR_freqplotting(data=QR_Sfreq[STN == 260], title="De Bilt")
-plot3 <- QR_freqplotting(data=QR_Sfreq[STN == 280], title="Eelde")
-plot4 <- QR_freqplotting(data=QR_Sfreq[STN == 310], title="Vlissingen")
-plot5 <- QR_freqplotting(data=QR_Sfreq[STN == 380], title="Maastricht")
+plot1 <- QR_freqplotting(data=QR_Sfreq[STN == 235], title="De Kooy",ymin,ymax)
+plot2 <- QR_freqplotting(data=QR_Sfreq[STN == 260], title="De Bilt",ymin,ymax)
+plot3 <- QR_freqplotting(data=QR_Sfreq[STN == 280], title="Eelde",ymin,ymax)
+plot4 <- QR_freqplotting(data=QR_Sfreq[STN == 310], title="Vlissingen",ymin,ymax)
+plot5 <- QR_freqplotting(data=QR_Sfreq[STN == 380], title="Maastricht",ymin,ymax)
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2),
              ncol= 1)
 @
@@ -599,16 +608,22 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2)
 \end{figure}
 
 All fits, except for De Kooy, show a negative trend for the 50\% wettest years (in the amount of wet hours a year). A positive trend is visible for the very wet (>90\%) years of De Kooy, which is a summer trend as can be seen by comparing Figure \ref{fig:Qfreq_win} and \ref{fig:Qfreq_sum}. To investigate whether these trends are significant a 9999 Monte Carlo permutation is applied.
+<<length,results='markup'>>=
+length(QR_freq$Year)
+@
+
 
 % Significance test
-<<p_testfreq,cache=TRUE>>=
+<<p_testfreq,cache=FALSE>>=
+hallo <- 1+1
 p_freq <- p_test(data=QR_freq,tau=0.50,freq=TRUE)
 setnames(p_freq,c("STN","Q50"))
 p_freq[, ":="(Q75 = p_test(data=QR_freq,tau=0.75,freq=TRUE)$V1, Q90 = p_test(data=QR_freq,tau=0.90,freq=TRUE)$V1)]
 p_freq[, ":="(Q95 = p_test(data=QR_freq,tau=0.95,freq=TRUE)$V1, Q99 = p_test(data=QR_freq,tau=0.99,freq=TRUE)$V1, Q999 = p_test(data=QR_freq,tau=0.999,freq=TRUE)$V1)]
 @
 
-<<p_test_freqS,cache=TRUE>>=
+<<p_test_freqS,cache=FALSE>>=
+hallo <- 1+1
 p_freq[, ":="(Q50s = p_test(data=QR_Sfreq,tau=0.50,freq=TRUE)$V1,
          Q75s = p_test(data=QR_Sfreq,tau=0.75,freq=TRUE)$V1,
          Q90s = p_test(data=QR_Sfreq,tau=0.90,freq=TRUE)$V1)]
@@ -617,7 +632,8 @@ p_freq[, ":="(Q95s = p_test(data=QR_Sfreq,tau=0.95,freq=TRUE)$V1,
          Q999s = p_test(data=QR_Sfreq,tau=0.999,freq=TRUE)$V1)]
 @
 
-<<p_test_freqW,cache=TRUE>>=
+<<p_test_freqW,cache=FALSE>>=
+hallo <- 1+1
 p_freq[, ":="(Q50w = p_test(data=QR_Wfreq,tau=0.50,freq=TRUE)$V1,
          Q75w = p_test(data=QR_Wfreq,tau=0.75,freq=TRUE)$V1,
          Q90w = p_test(data=QR_Wfreq,tau=0.90,freq=TRUE)$V1)]
@@ -793,7 +809,7 @@ ggplot(freq_20, aes(x = Year, color=Quantiles)) +        # data
 \end{figure}
 
 % Significance test
-<<p_5thres,cache=TRUE>>=
+<<p_5thres,cache=FALSE>>=
 p_thres <- p_test(data=freq_5,tau=0.50,freq=TRUE)
 setnames(p_thres,c("STN","Q50_5"))
 p_thres[, ":="(Q75_5 = p_test(data=freq_5,tau=0.75,freq=TRUE)$V1,
@@ -803,7 +819,7 @@ p_thres[, ":="(Q95_5 = p_test(data=freq_5,tau=0.95,freq=TRUE)$V1,
          Q999_5 = p_test(data=freq_5,tau=0.999,freq=TRUE)$V1)]
 @
 
-<<p_10thres,cache=TRUE>>=
+<<p_10thres,cache=FALSE>>=
 p_thres[, ":="(Q50_10 = p_test(data=freq_10,tau=0.50,freq=TRUE)$V1,
          Q75_10 = p_test(data=freq_10,tau=0.75,freq=TRUE)$V1,
          Q90_10 = p_test(data=freq_10,tau=0.90,freq=TRUE)$V1)]
@@ -813,7 +829,7 @@ p_thres[, ":="(Q95_10 = p_test(data=freq_10,tau=0.95,freq=TRUE)$V1,
 @
 
 
-<<p_15thres,cache=TRUE>>=
+<<p_15thres,cache=FALSE>>=
 p_thres[, ":="(Q50_15 = p_test(data=freq_15,tau=0.50,freq=TRUE, STN=FALSE)$V1,
           Q75_15 = p_test(data=freq_15,tau=0.75,freq=TRUE, STN=FALSE)$V1,
           Q90_15 = p_test(data=freq_15,tau=0.90,freq=TRUE, STN=FALSE)$V1)]
@@ -867,6 +883,7 @@ setnames(p_thres, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","
 % Count > 20 mm/hr
 
 \subsubsection{Rain events}
+
 
 
 
