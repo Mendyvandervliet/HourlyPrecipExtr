@@ -1,8 +1,10 @@
-# Function to make a Correlation heatmap
+# Correlation heatmap with Pearson method, to visualize correlation matrix
 
+#' Function to obtain correlation heatmap
 
-#M <- M[max2d > quantile(max2d,0.95) & (max2d < quantile(max2d,0.99))]
-
+#' @import ggplot2
+#'
+#' @export
 heatmap <- function(data){
   cormat <- round(cor(data),3)
   cormat <- reorder_cormat(cormat)               # Reorder the correlation matrix
@@ -33,10 +35,6 @@ heatmap <- function(data){
     guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
                                  title.position = "top", title.hjust = 0.5))
 }
-
-
-
-# Create a ggheatmap
 
 
 
