@@ -180,7 +180,6 @@ For lags till 48 hours the autocorrelation and partial autocorrelation values ar
 
 <<label=setupdata2d,cache=TRUE>>=
 data2d <- data2d(hrKNMI)
-save(data2d, file="./inst/tussenStap/data2d.rda")
 @
 
 % Load QR-fitted data on max 2d
@@ -191,6 +190,7 @@ load("./inst/tussenStap/data2d.rda")
 <<label=setupmax2d,cache=TRUE>>=
 data2d$YM <- format(data2d$Date,format="%Y-%m")
 data2d[,":="(Year=Year,YM=YM, month=round(mean(Month),digits=0),day=mean(Day), max2d=max(RH)),by=list(d2,STN)]
+save(data2d, file="./inst/tussenStap/data2d.rda")
 max2d <- data2d[, list(max2d=unique(max2d), Year=unique(Year),YM=unique(YM),month=unique(month)),by= list(d2,STN)]
 #max2d[,mon_mean := mean(max2d),by=month]
 max2d[,yr_mean := mean(max2d),by=Year]
