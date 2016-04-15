@@ -101,6 +101,7 @@ This chapter focusses on linear trends in hourly precipitation extremes. Whether
 <<setup_trends,cache=TRUE>>=
 tmp <- subset(hrKNMI,select=c("STN", "YYYYMMDD","Date","date","Year","Day","RH"))
 QR_hrKNMI <- QR_stn(data=tmp)
+QR_hrKNMI[, ":="(yr_mean = mean(RH)), by = list(STN, Year)]
 save(QR_hrKNMI, file="./inst/tussenStap/QR_hrKNMI.rda")
 @
 
@@ -112,7 +113,6 @@ Legendgrob1 <- legendGrob(c("90%","95%","99%","99.9%"), pch=15,
 % Load QR-fitted data
 <<loading2, cache=FALSE>>=
 load("./inst/tussenStap/QR_hrKNMI.rda")
-QR_hrKNMI[, ":="(yr_mean = mean(RH)), by = list(STN, Year)]
 @
 
 \subsubsection{Intensity}
@@ -279,8 +279,10 @@ plot_permdist(permdist999)
 <<p_test,cache=TRUE>>=
 p <- p_test(data=max2d,tau=0.50)
 setnames(p,c("STN","Q50"))
-p[, ":="(Q75 = p_test(data=max2d,tau=0.75)$V1, Q90 = p_test(data=max2d,tau=0.90)$V1)]
-p[, ":="(Q95 = p_test(data=max2d,tau=0.95)$V1, Q99 = p_test(data=max2d,tau=0.99)$V1,
+p[, ":="(Q75 = p_test(data=max2d,tau=0.75)$V1,
+         Q90 = p_test(data=max2d,tau=0.90)$V1)]
+p[, ":="(Q95 = p_test(data=max2d,tau=0.95)$V1,
+         Q99 = p_test(data=max2d,tau=0.99)$V1,
          Q999 = p_test(data=max2d,tau=0.999)$V1)]
 @
 
@@ -292,28 +294,6 @@ save(p, file="./inst/tussenStap/p.rda")
 %#setnames(p, c("Station","50%","75%","90%","95","99%","99.9%"))
 %#tbl <- xtable(p)  --> to print latex format
 %@
-
-\begin{table}[h!]
-  \centering
-  \caption{Significance table for all fits}
-  \begin{tabular}{l|r|r|r|r|r|r|r}
-  \hline\hline
-    \multicolumn{2}{c}{Location}
-    %\multicolumn{1}{c}{STN} &
-    \vline
-    & \multicolumn{6}{c}{Quantiles of fit} \\
-    \hline
-    Station   & STN & 50\% & 75\% & 90\% & 95\% & Q99\% & 99.9\% \\
-    \hline
-    De Kooy   & 235 & 0.13                 & 0.06                   & \cellcolor{green} 0.97 & \cellcolor{green} 1.00 & 0.84                   & 0.16 \\
-    De Bilt   & 260 & \cellcolor{red} 0.05 & \cellcolor{green} 0.99 & \cellcolor{green} 1.00 &                   0.93 & 0.92                   & 0.87 \\
-    Eelde     & 280 & \cellcolor{red} 0.01 & \cellcolor{green} 0.96 &                   0.92 &                   0.91 & 0.77                   & 0.33 \\
-    Vlissingen& 310 & 0.92                 &                   0.07 &                   0.27 & \cellcolor{green} 0.96 & 0.81 & 0.38 \\
-    Maastricht& 380 & 0.16                 &                   0.13 & \cellcolor{green} 0.98 & 0.94                   & 0.49 & 0.67 \\
-     \hline
-  \end{tabular}
-\end{table}
-
 
 
 
@@ -496,7 +476,8 @@ ggplot(yearlyMax, aes(x = Year, y = RHmax)) + geom_point() +
 \subsubsection{Frequency}
 
 Next to changes in intensity of extreme rain events, is it also relevant to study whether precipitation events occur more, equally or less often in time. In this part analysis of frequency data is reported. First, the number of wet hours a year, a summer, a winter are plotted in the figure below.
- <<label=freq,cache=TRUE>>=
+
+<<label=freq,cache=TRUE>>=
 freq_wet <-  hrKNMI[RH > 0][ , ':='(f = .N),by = list(Year,STN)]
 freq_Swet <- hrKNMI[RH > 0][Month==6| Month==7 | Month==8][ , ':='(f = .N),by = list(Year,STN)]
 freq_Wwet <- hrKNMI[RH > 0][Month==12| Month==1 | Month==2][ , ':='(f = .N),by = list(Year,STN)]
@@ -541,9 +522,23 @@ load("./inst/tussenStap/QR_Wfreq.rda")
   \textbf{Quantile regression on frequency data}\par\medskip
   \begin{minipage}{0.48\textwidth}
     \flushleft
+<<label=distributionfreq>>=
+plot(density(freq_wet$f), type='l', col='blue', lwd=3, main=NA,   #Distribution of nr of wet hours
+      xlab="F (counts/year)", ylab="Density")
+# plot(density(freq_Swet$f), type='l', col='blue', lwd=3, main=NA,
+#       xlab="Slope (increase per 2days)", ylab="Density")
+# plot(density(freq_Wwet$f), type='l', col='blue', lwd=3, main=NA,
+#       xlab="Slope (increase per 2days)", ylab="Density")
+@
+    \subcaption{Density plot of amount of wet hours a year}
+    \label{fig:impact}
+  \end{minipage}
+    \hfill
+  \begin{minipage}{0.48\textwidth}
+    \flushleft
 <<label=QR_freqplotting,cache=TRUE>>=
-ymin <- 1000
-ymax <- 1500
+ymin <- 700
+ymax <- 1550
 plot1 <- QR_freqplotting(data=QR_freq[STN == 235], title="De Kooy",ymin,ymax)
 plot2 <- QR_freqplotting(data=QR_freq[STN == 260], title="De Bilt",ymin,ymax)
 plot3 <- QR_freqplotting(data=QR_freq[STN == 280], title="Eelde",ymin,ymax)
@@ -555,18 +550,7 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2)
     \subcaption{All wet hours}
     \label{fig:Qfreq}
   \end{minipage}
-  \hfill
-  \begin{minipage}{0.48\textwidth}
-    \flushleft
-<<label=null>>=
 
-@
-    \subcaption{Impact $>$ 10 mm/hr}
-    \label{fig:impact}
-  \end{minipage}
-  \caption{Quantile regression fits with $\tau = 25, 50, 75, 90$ \% on counts of wet hours a year, for all hours (a) and .., for all stations.}
-  \label{fig:QR_freq}
-\end{figure}
 \hfill
 \begin{figure}[H]
   \begin{minipage}{0.48\textwidth}
@@ -590,8 +574,8 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2)
     \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=QRS_freqplotting,cache=TRUE>>=
-ymin <- 150
-ymax <- 350
+ymin <- 50
+ymax <- 400
 plot1 <- QR_freqplotting(data=QR_Sfreq[STN == 235], title="De Kooy",ymin,ymax)
 plot2 <- QR_freqplotting(data=QR_Sfreq[STN == 260], title="De Bilt",ymin,ymax)
 plot3 <- QR_freqplotting(data=QR_Sfreq[STN == 280], title="Eelde",ymin,ymax)
@@ -681,14 +665,14 @@ To investigate the frequency of extreme events with a high potential impact, we 
 
  <<label=freqthreshold,cache=TRUE>>=
 freq_5 <- hrKNMI[(RH > 5) & (RH <10)][, ':='(f = .N),by = Year]
-freq_5 <-  freq15[, list(Year=unique(Year)),by = f]
+freq_5 <-  freq_5[, list(Year=unique(Year)),by = f]
 setkey(freq_5,Year)
-freq_5 <- QR_freqall(freq_5,STN=FALSE)
+#freq_5 <- QR_freqall(freq_5,STN=FALSE)
 
-freq_10 <-  hrKNMI[(RH > 10) & (RH <15)][, ':='(f = .N),by = STN]
-freq_10 <-  freq10[, list(Year=unique(Year)),by = f]
+freq_10 <-  hrKNMI[(RH > 10) & (RH <15)][, ':='(f = .N),by = Year]
+freq_10 <-  freq_10[, list(Year=unique(Year)),by = f]
 setkey(freq_10,Year)
-freq_10 <- QR_freqall(freq_10,STN=FALSE)
+#freq_10 <- QR_freqall(freq_10,STN=FALSE)
 
 save(freq_5, file="./inst/tussenStap/freq_5.rda")
 save(freq_10, file="./inst/tussenStap/freq_10.rda")
@@ -706,15 +690,15 @@ load("./inst/tussenStap/freq_10.rda")
   \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=threshold1,cache=TRUE>>=
-#ymax <- 20
-ggplot(freq_5, aes(x = Year, color=Quantiles)) +        # data
-    geom_point(aes(y=f, color="Points"))+
-    geom_line(aes(y=f25, color="25%")) +
-    geom_line(aes(y=f50, color="50%")) +
-    geom_line(aes(y=f75, color="75%")) +
-    geom_line(aes(y=f90, color="90%")) +
-    scale_color_manual(values=c("Points"="gray","25%"="black", "50%"="blue" ,"75%"="green","90%"="orange")) +
-    #ylim(0,ymax) +
+ggplot(freq_5, aes(x = Year,y = f)) +        # data
+    geom_point(color="Gray")+
+    geom_curve(aes(x=1958,xend= 1958+10,y=50, yend=50), curvature=-0.5, color="red",linetype=2)+
+    geom_curve(aes(x=1968,xend= 1968+30,y=50, yend=50), curvature=0.4, color="red",linetype=2)+
+    geom_curve(aes(x=1998,xend= 1998+17,y=50, yend=50), curvature=-0.5, color="red",linetype=2)+
+    geom_smooth(aes(y=f),method=lm, color="black")+
+    geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
+    geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
+    geom_quantile(formula= y~x,quantiles=0.75, color="green")+
     xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
     theme_bw()
 @
@@ -725,14 +709,15 @@ ggplot(freq_5, aes(x = Year, color=Quantiles)) +        # data
   \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=threshold2,cache=TRUE>>=
-ggplot(freq_10, aes(x = Year, color=Quantiles)) +        # data
-    geom_point(aes(y=f, color="Points"))+
-    geom_line(aes(y=f25, color="25%")) +
-    geom_line(aes(y=f50, color="50%")) +
-    geom_line(aes(y=f75, color="75%")) +
-    geom_line(aes(y=f90, color="90%")) +
-    scale_color_manual(values=c("Points"="gray","25%"="black", "50%"="blue" ,"75%"="green","90%"="orange")) +
-    #ylim(0,ymax) +
+ggplot(freq_10, aes(x = Year,y = f)) +        # data
+    geom_point(color="Gray")+
+    geom_curve(aes(x=1958,xend=1978,y=3.7, yend=4), curvature=-0.45, color="red",linetype=2)+
+    geom_curve(aes(x=1978,xend=1992,y=4, yend=4.4), curvature=0.35, color="red",linetype=2)+
+    geom_curve(aes(x=1992,xend=2015,y=4.4, yend=7), curvature=-0.45, color="red",linetype=2)+
+    geom_smooth(aes(y=f),method=lm, color="black")+
+    geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
+    geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
+    geom_quantile(formula= y~x,quantiles=0.75, color="green")+
     xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
     theme_bw()
 @
@@ -746,15 +731,16 @@ ggplot(freq_10, aes(x = Year, color=Quantiles)) +        # data
 When the data of the different stations are combined quantile regression on (yearly resolution) frequency data is possible. This allows us to study extremes which can have significant moderate to high impact (hourly intensity of 10-20 mm/hr and >20 mm/hr).
 
  <<label=freqthreshold2,cache=TRUE>>=
+hoi <- 1
 freq_15 <-  hrKNMI[(RH > 15) & (RH <20)][, ':='(f = .N),by = Year]
 freq_15 <-  freq_15[, list(Year=unique(Year)),by = f]
 setkey(freq_15,Year)
-freq_15 <- QR_freqall(freq_15,STN=FALSE)
+#freq_15 <- QR_freqall(freq_15,STN=FALSE)
 
 freq_20 <-  hrKNMI[RH > 20][, ':='(f = .N),by = Year]
 freq_20 <-  freq_20[, list(Year=unique(Year)),by = f]
 setkey(freq_20,Year)
-freq_20 <- QR_freqall(freq_20,STN=FALSE)
+#freq_20 <- QR_freqall(freq_20,STN=FALSE)
 
 save(freq_15, file="./inst/tussenStap/freq_15.rda")
 save(freq_20, file="./inst/tussenStap/freq_20.rda")
@@ -772,14 +758,12 @@ load("./inst/tussenStap/freq_20.rda")
   \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=threshold3,cache=TRUE>>=
-ggplot(freq_15, aes(x = Year, color=Quantiles)) +        # data
-    geom_point(aes(y=f, color="Points"))+
-    geom_line(aes(y=f25, color="25%")) +
-    geom_line(aes(y=f50, color="50%")) +
-    geom_line(aes(y=f75, color="75%")) +
-    geom_line(aes(y=f90, color="90%")) +
-    scale_color_manual(values=c("Points"="gray","25%"="black", "50%"="blue" ,"75%"="green","90%"="orange")) +
-    #ylim(0,ymax) +
+ggplot(freq_15, aes(x = Year,y = f)) +        # data
+    geom_point(color="Gray")+
+    geom_smooth(aes(y=f),method=lm, color="black")+
+    geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
+    geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
+    geom_quantile(formula= y~x,quantiles=0.75, color="green")+
     xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
     theme_bw()
 @
@@ -790,14 +774,12 @@ ggplot(freq_15, aes(x = Year, color=Quantiles)) +        # data
   \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=threshold4,cache=TRUE>>=
-ggplot(freq_20, aes(x = Year, color=Quantiles)) +        # data
-    geom_point(aes(y=f, color="Points"))+
-    geom_line(aes(y=f25, color="25%")) +
-    geom_line(aes(y=f50, color="50%")) +
-    geom_line(aes(y=f75, color="75%")) +
-    geom_line(aes(y=f90, color="90%")) +
-    scale_color_manual(values=c("Points"="gray","25%"="black", "50%"="blue" ,"75%"="green","90%"="orange")) +
-    #ylim(0,ymax) +
+ggplot(freq_20, aes(x = Year,y = f)) +        # data
+    geom_point(color="Gray")+
+    geom_smooth(aes(y=f),method=lm, color="black")+
+    geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
+    geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
+    geom_quantile(formula= y~x,quantiles=0.75, color="green")+
     xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
     theme_bw()
 @
