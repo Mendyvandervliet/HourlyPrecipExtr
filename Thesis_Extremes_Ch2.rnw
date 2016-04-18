@@ -368,37 +368,34 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
 
 
 % Significance test
-<<p_test_S,cache=TRUE>>=
+<<p_test_SW,cache=TRUE>>=
 max2dS <- max2d[month==6| month==7 | month==8]
-p_SW <- p_test(data=QRS_max2d,tau=0.50)
-setnames(p_SW,c("STN","Q50s"))
-p_SW[, ":="(Q75s = p_test(data=max2dS,tau=0.75)$V1, Q90s = p_test(data=max2dS,tau=0.90)$V1)]
-p_SW[, ":="(Q95s = p_test(data=max2dS,tau=0.95)$V1, Q99s = p_test(data=max2dS,tau=0.99)$V1,
-         Q999s = p_test(data=max2dS,tau=0.999)$V1)]
-@
-
-
-<<p_test_W,cache=TRUE>>=
 max2dW <- max2d[month==12| month==1| month==2]
-p_SW[, ":="(Q50w = p_test(data=max2dW,tau=0.50)$V1,Q75w = p_test(data=max2dW,tau=0.75)$V1,
+p_S <- p_test(data=max2dS,tau=0.50)
+setnames(p_S,c("STN","Q50s"))
+p_S[, ":="(Q75s = p_test(data=max2dS,tau=0.75)$V1, Q90s = p_test(data=max2dS,tau=0.90)$V1)]
+p_S[, ":="(Q95s = p_test(data=max2dS,tau=0.95)$V1, Q99s = p_test(data=max2dS,tau=0.99)$V1,
+         Q999s = p_test(data=max2dS,tau=0.999)$V1)]
+p_W <- p_test(data=max2dW,tau=0.50)
+setnames(p_W,c("STN","Q50w"))
+p_W[, ":="(Q75w = p_test(data=max2dW,tau=0.75)$V1,
          Q90w = p_test(data=max2dW,tau=0.90)$V1)]
-p_SW[, ":="(Q95w = p_test(data=max2dW,tau=0.95)$V1, Q99w = p_test(data=max2dW,tau=0.99)$V1,
+p_W[, ":="(Q95w = p_test(data=max2dW,tau=0.95)$V1, Q99w = p_test(data=max2dW,tau=0.99)$V1,
          Q999w = p_test(data=max2dW,tau=0.999)$V1)]
-@
-
-<<p_SW,cache=TRUE>>=
-save(p_SW, file="./inst/tussenStap/p_SW.rda")
+save(p_S, file="./inst/tussenStap/p_SW.rda")
+save(p_W, file="./inst/tussenStap/p_SW.rda")
 @
 
 <<loading9,cache=FALSE>>=
-load("./inst/tussenStap/p_SW.rda")
+load("./inst/tussenStap/p_S.rda")
+load("./inst/tussenStap/p_W.rda")
 @
 
 
 
 <<p_SWtbl>>=
-setnames(p_SW, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
-#tbl <- xtable(p_SW)
+#setnames(p_SW, c("Station","50%","75%","90%","95%","99%","99.9%","50%","75%","90%","95%","99%","99.9%"))
+#tbl <- xtable(p_W)
 # print(tbl,
 #     only.contents=TRUE,
 #     include.rownames=FALSE,
@@ -550,14 +547,16 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2)
     \subcaption{All wet hours}
     \label{fig:Qfreq}
   \end{minipage}
+  \caption{Distribution plot of all wet hour a year (a). In (b) quantile regression fits with $\tau = 25, 50, 75, 90$ \% on counts of wet hours a year for all stations.}
+  \label{fig:QR_freq}
+\end{figure}
 
-\hfill
 \begin{figure}[H]
   \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=QRW_freqplotting,cache=TRUE>>=
-ymin <- 0
-ymax <- 500
+ymin <- 100
+ymax <- 550
 plot1 <- QR_freqplotting(data=QR_Wfreq[STN == 235], title="De Kooy",ymin,ymax)
 plot2 <- QR_freqplotting(data=QR_Wfreq[STN == 260], title="De Bilt",ymin,ymax)
 plot3 <- QR_freqplotting(data=QR_Wfreq[STN == 280], title="Eelde",ymin,ymax)
@@ -566,12 +565,12 @@ plot5 <- QR_freqplotting(data=QR_Wfreq[STN == 380], title="Maastricht",ymin,ymax
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2),
              ncol= 1)
 @
-  \subcaption{Winter}
-  \label{fig:Qfreq_win}
+    \subcaption{Winter}
+    \label{fig:Qfreq_win}
   \end{minipage}
   \hfill
   \hspace{-0.5cm}
-    \begin{minipage}{0.48\textwidth}
+  \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=QRS_freqplotting,cache=TRUE>>=
 ymin <- 50
@@ -625,41 +624,35 @@ save(p_freq, file="./inst/tussenStap/p_freq.rda")
 load("./inst/tussenStap/p_freq.rda")
 @
 
-<<p_freqtbl>>=
-setnames(p_freq, c("STN","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
-tbl <- xtable(p_freq)
-# print(tbl,
-#     only.contents=TRUE,
-#     include.rownames=FALSE,
-#     type="latex", #digits(tbl) <- c(0,1,1)
-#     file="p_freqtbl.tex")
+<<p_test_freqall>>=
+p_Sfreqall <- p_test(data=freq_Swet,tau=0.50,freq=TRUE, STN=FALSE)
+setnames(p_Sfreqall,c("Q50s"))
+p_Sfreqall[, ":="(Q75s = p_test(data=freq_Swet,tau=0.75,freq=TRUE,STN=FALSE)$V1,
+         Q90s = p_test(data=freq_Swet,tau=0.90,freq=TRUE,STN=FALSE)$V1,
+         Q95s = p_test(data=freq_Swet,tau=0.95,freq=TRUE,STN=FALSE)$V1,
+         Q99s = p_test(data=freq_Swet,tau=0.99,freq=TRUE,STN=FALSE)$V1,
+         Q999s = p_test(data=freq_Swet,tau=0.999,freq=TRUE,STN=FALSE)$V1)]
+p_Wfreqall <- p_test(data=freq_Wwet,tau=0.50,freq=TRUE, STN=FALSE)
+setnames(p_Wfreqall,c("Q50s"))
+p_Wfreqall[, ":="(Q75w = p_test(data=freq_Wwet,tau=0.75,freq=TRUE, STN=FALSE)$V1,
+         Q90w = p_test(data=freq_Wwet,tau=0.90,freq=TRUE,STN=FALSE)$V1,
+         Q95w = p_test(data=freq_Wwet,tau=0.95,freq=TRUE,STN=FALSE)$V1,
+         Q99w = p_test(data=freq_Wwet,tau=0.99,freq=TRUE,STN=FALSE)$V1,
+         Q999w = p_test(data=freq_Wwet,tau=0.999,freq=TRUE,STN=FALSE)$V1)]
+save(p_Sfreqall, file="./inst/tussenStap/p_Sfreqall.rda")
+save(p_Wfreqall, file="./inst/tussenStap/p_Wfreqall.rda")
 @
 
-\begin{table}[h!]
-  \centering
-  \caption{Significance table for all fits on frequency data}
-  \begin{tabular}{l|r|r|r|r|r|r|r}
-  \hline\hline
-    \multicolumn{2}{c}{Location}
-    \vline
-    & \multicolumn{18}{c}{Quantiles of fit} \\
-    & \multicolumn{2}{c}{}
-    & \multicolumn{6}{c}{All year}
-    & \multicolumn{6}{c}{Summer}
-    & \multicolumn{6}{c}{Winter}\\
+<<p_freqtbl>>=
+# setnames(p_freq, c("STN","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
+# tbl <- xtable(p_freq)
+#setnames(p_Wfreqall, c("50%","75%","90%","95","99%","99.9%"))
+#xtable(p_Sfreqall)
+#xtable(p_Wfreqall)
 
-    \hline
-    Station & STN & 50\% & 75\% & 90\% & 95\% & Q99\% & 99.9\% & 50\% & 75\% & 90\% & 95\% & Q99\% & 99.9\% & 50\% & 75\% & 90\% & 95\% & Q99\% & 99.9\% \\
-    \hline
-   STN  50%  75%  90%   95  99% 99.9%  50%  75%  90%   95  99% 99.9%  50%  75%  90%   95  99% 99.9%
-De Kooy     & 235 & 0.31                & 0.24                & 0.61                & 0.39                & 0.19 & 0.31 & 0.49                & 0.61 & 0.64 & 0.83 & 0.68 & 0.64 & 0.39 & 0.19 & 0.10 & 0.22 & 0.54 & 0.61
-De Bilt     & 260 & \cellcolor{red}0.05 & \cellcolor{red}0.02 & \cellcolor{red}0.05 & 0.49                & 0.36 & 0.32 & 0.27                & 0.29 & 0.07 & 0.12 & 0.15 & 0.29 & 0.41 & 0.15 & 0.22 & 0.19 & 0.64 & 0.63
-Eelde       & 280 & 0.12                & \cellcolor{red}0.03 & 0.15                & 0.29                & 0.20 & 0.27 & \cellcolor{red}0.03 & 0.14 & 0.37 & 0.22 & 0.22 & 0.10 & 0.66 & 0.29 & 0.08 & 0.08 & 0.64 & 0.51
-Vlissingen  & 310 & 0.12                & 0.34                & 0.24                & \cellcolor{red}0.05 & 0.22 & 0.27 & 0.81                & 0.10 & 0.27 & 0.32 & 0.88 & 0.90 & 0.56 & 0.19 & 0.42 & 0.19 & 0.68 & 0.53
-Maastricht  & 380 & \cellcolor{red}0.05 & 0.03                & \cellcolor{red}0.02 & 0.22                & 0.15 & 0.15 & 0.15                & 0.20 & 0.07 & 0.25 & 0.07 & 0.14 & 0.29 & 0.42 & 0.68 & 0.36 & 0.34 & 0.46
-     \hline
-  \end{tabular}
-\end{table}
+@
+
+
 
 To investigate the frequency of extreme events with a high potential impact, we will investigate the frequency of wet hours with an intensity between 5-10, 10-15, 15-20 and >20 mm/hr. For more intense hourly values there is to little data.
 
