@@ -7,7 +7,7 @@
 MC_coefperm <- function(data=max2d,x, y, tau, N=9999, plot=TRUE){
   #tmp <- subset(max2d,select=c("STN","d2","max2d"))
   #tmp <- data.table(STN=c(235,260,280,310,380))
-  reps <- replicate(N, round(as.numeric(coef(rq(sample(y) ~ x, tau=tau))[2]),digits=7))
+  reps <- replicate(N, round(as.numeric(coef(rq(sample(y) ~ x, tau=tau,method="fn"))[2]),digits=7))
   obs <- round(as.numeric(coef(rq(y ~ x, tau=tau,method="fn"))[2]),digits=7)
   p <- (1+sum(obs > reps))/(N+1)   #p <- mean(reps > obs)
   mean <- mean(reps)
@@ -17,3 +17,24 @@ MC_coefperm <- function(data=max2d,x, y, tau, N=9999, plot=TRUE){
   #return(list(obs=obs,reps=reps,p=p))
   return(tmp)
 }
+
+
+data <- max2d[STN==280]
+x <- max2d[STN==280]$d2
+y <- max2d[STN==280]$max2d
+N=9999
+tau <- 0.99
+reps <- replicate(N, round(as.numeric(coef(rq(sample(y) ~ x, tau=tau,method="fn"))[2]),digits=7))
+obs <- round(as.numeric(coef(rq(y ~ x, tau=tau,method="fn"))[2]),digits=7)
+p <- (1+sum(obs > reps))/(N+1)   #p <- mean(reps > obs)
+
+reps2 <- replicate(N, round(as.numeric(coef(rq(sample(y) ~ x, tau=tau))[2]),digits=7))
+obs2 <- round(as.numeric(coef(rq(y ~ x, tau=tau))[2]),digits=7)
+p2 <- (1+sum(obs2 > reps2))/(N+1)
+
+mean <- mean(reps)
+sd <- sd(reps)
+area <- pnorm(max(reps), mean, sd) - pnorm(0, mean, sd)
+tmp <- data.table(reps,obs,tau,p,area)
+#return(list(obs=obs,reps=reps,p=p))
+return(tmp)
