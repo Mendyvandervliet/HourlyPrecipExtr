@@ -420,6 +420,14 @@ load("./inst/tussenStap/p_W.rda")
 %   \label{tab:p_SWtbl}
 % \end{table}
 
+<<density>>=
+ggplot(max2d[(max2d>0.9) & (Year==1962)], aes(x = max2d)) + geom_histogram(binwidth=1) + coord_trans(x = "log10") + facet_wrap(~STN)
+#scale_x_log10(name='Intensity (mm/hr)')+#, breaks=c(0.1,0.2,0.5,1,10,25,50))+
+  facet_wrap(~STN)
+# d <- density(dt$reps)
+# plot(d, type='l', col='blue', lwd=3, main=NA,          # main="#Distribution of permuted slopes(99QR fit)"
+#      xlab="Slope (increase per 2days)", ylab="Density")
+@
 
 %-------------------------
 \paragraph{Yearly maximum}\par\medskip
@@ -657,18 +665,24 @@ save(p_Wfreqall, file="./inst/tussenStap/p_Wfreqall.rda")
 To investigate the frequency of extreme events with a high potential impact, we will investigate the frequency of wet hours with an intensity between 5-10, 10-15, 15-20 and >20 mm/hr. For more intense hourly values there is to little data.
 
  <<label=freqthreshold,cache=TRUE>>=
-freq_5 <- hrKNMI[(RH > 5) & (RH <10)][, ':='(f = .N),by = Year]
-freq_5 <-  freq_5[, list(Year=unique(Year)),by = f]
-setkey(freq_5,Year)
-#freq_5 <- QR_freqall(freq_5,STN=FALSE)
+# freq_5 <- hrKNMI[(RH > 5) & (RH <10)][, ':='(f = .N),by = Year]
+# freq_5 <-  freq_5[, list(Year=unique(Year)),by = f]
+# setkey(freq_5,Year)
+# #freq_5 <- QR_freqall(freq_5,STN=FALSE)
+#
+# freq_10 <-  hrKNMI[(RH > 10) & (RH <15)][, ':='(f = .N),by = Year]
+# freq_10 <-  freq_10[, list(Year=unique(Year)),by = f]
+# setkey(freq_10,Year)
+# #freq_10 <- QR_freqall(freq_10,STN=FALSE)
 
-freq_10 <-  hrKNMI[(RH > 10) & (RH <15)][, ':='(f = .N),by = Year]
-freq_10 <-  freq_10[, list(Year=unique(Year)),by = f]
-setkey(freq_10,Year)
+hrKNMI$YM <- format(hrKNMI$Date,format="%Y-%m")
+freq_10YM <-  hrKNMI[(RH > 10) & (RH <20)][, ':='(f = .N),by = YM]
+freq_10YM <-  freq_10YM[, list(YM=unique(YM)),by = f]
+setkey(freq_10YM,YM)
 #freq_10 <- QR_freqall(freq_10,STN=FALSE)
-
 save(freq_5, file="./inst/tussenStap/freq_5.rda")
 save(freq_10, file="./inst/tussenStap/freq_10.rda")
+save(freq_10m, file="./inst/tussenStap/freq_10.rda")
 @
 
  <<label=loading13,cache=FALSE>>=
@@ -686,8 +700,8 @@ load("./inst/tussenStap/freq_10.rda")
 ggplot(freq_5, aes(x = Year,y = f)) +        # data
     geom_point(color="Gray")+
     geom_curve(aes(x=1958,xend= 1958+10,y=50, yend=50), curvature=-0.5, color="red",linetype=2)+
-    geom_curve(aes(x=1968,xend= 1968+30,y=50, yend=50), curvature=0.4, color="red",linetype=2)+
-    geom_curve(aes(x=1998,xend= 1998+17,y=50, yend=50), curvature=-0.5, color="red",linetype=2)+
+    geom_curve(aes(x=1968,xend= 1968+35,y=50, yend=50), curvature=0.5, color="red",linetype=2)+
+    geom_curve(aes(x=2003,xend= 1998+17,y=50, yend=50), curvature=-0.5, color="red",linetype=2)+
     geom_smooth(aes(y=f),method=lm, color="black")+
     geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
     geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
@@ -704,9 +718,9 @@ ggplot(freq_5, aes(x = Year,y = f)) +        # data
 <<label=threshold2,cache=TRUE>>=
 ggplot(freq_10, aes(x = Year,y = f)) +        # data
     geom_point(color="Gray")+
-    geom_curve(aes(x=1958,xend=1978,y=3.7, yend=4), curvature=-0.45, color="red",linetype=2)+
-    geom_curve(aes(x=1978,xend=1992,y=4, yend=4.4), curvature=0.35, color="red",linetype=2)+
-    geom_curve(aes(x=1992,xend=2015,y=4.4, yend=7), curvature=-0.45, color="red",linetype=2)+
+    #geom_curve(aes(x=1958,xend=1978,y=3.7, yend=4), curvature=-0.45, color="red",linetype=2)+
+    #geom_curve(aes(x=1978,xend=1992,y=4, yend=4.4), curvature=0.35, color="red",linetype=2)+
+    #geom_curve(aes(x=1992,xend=2015,y=4.4, yend=7), curvature=-0.45, color="red",linetype=2)+
     geom_smooth(aes(y=f),method=lm, color="black")+
     geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
     geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
@@ -717,7 +731,7 @@ ggplot(freq_10, aes(x = Year,y = f)) +        # data
     \subcaption{Hours with intensity $> 10$ mm/hr}
     \label{fig:threshold2}
   \end{minipage}
-  \caption{Quantile regression fits with $\tau = 25, 50, 75, 90$ \% on counts of wet hours a year, with intensity 5-10 (a) and $>$ 10 mm/hr (b), for all stations.}
+  \caption{Quantile regression fits with $\tau = 25, 50, 75$ \% on counts of wet hours a year, with intensity 5-10 (a) and $>$ 10 mm/hr (b), for all stations.}
   \label{QR_thres_all}
 \end{figure}
 
