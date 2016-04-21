@@ -420,14 +420,7 @@ load("./inst/tussenStap/p_W.rda")
 %   \label{tab:p_SWtbl}
 % \end{table}
 
-<<density>>=
-ggplot(max2d[(max2d>0.9) & (Year==1962)], aes(x = max2d)) + geom_histogram(binwidth=1) + coord_trans(x = "log10") + facet_wrap(~STN)
-#scale_x_log10(name='Intensity (mm/hr)')+#, breaks=c(0.1,0.2,0.5,1,10,25,50))+
-  facet_wrap(~STN)
-# d <- density(dt$reps)
-# plot(d, type='l', col='blue', lwd=3, main=NA,          # main="#Distribution of permuted slopes(99QR fit)"
-#      xlab="Slope (increase per 2days)", ylab="Density")
-@
+
 
 %-------------------------
 \paragraph{Yearly maximum}\par\medskip
