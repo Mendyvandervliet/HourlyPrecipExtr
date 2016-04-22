@@ -49,6 +49,11 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 
 \chapter{Method}
 
+<<showWD,results='markup'>>=
+getwd()
+#setwd("~/Documents/HourlyPrecipExtr")
+@
+
 <<Example_DT,cache=TRUE>>=
 dt <- data.table(x = c(1:100),y = rnorm(100))
 @
@@ -66,11 +71,6 @@ ggplot(dt,aes(x=x,y=y)) +
 @
 
 \chapter{Data}
-
-<<showWD,results='markup'>>=
-#getwd()
-#setwd("~/Documents/HourlyPrecipExtr")
-@
 
 <<getdata,cache=TRUE>>=
 # How to get right file?
@@ -238,6 +238,7 @@ hourly precipitation intensities (mm/hr) and a line giving the yearly means, for
 Figure \ref{fig:QR_max2d} suggest that particularly (the 99 and 99 \% ) quantiles for De Bilt regress in time. Whether the 99 and 99.9 \% trends for de Bilt are significant is investigated by a Monte Carlo 9999 permutation test of the linear regression coefficient. The corresponding distribution plot of the permuted slopes is shown in the following figure.
 
 <<label=setupMC,cache=TRUE>>=
+hallo=1+1
 permdist99 <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.99)
 permdist999 <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.999)
 save(permdist99, file="./inst/tussenStap/permdist99.rda")
@@ -468,7 +469,7 @@ ggplot(yearlyMax, aes(x = Year, y = RHmax)) + geom_point() +
   xlab("Year") + ylab("Annual max mm/hr") + theme_bw()
 @
   \caption{The 25, 50, 75 and 90 percentile of annual maximum hourly rainfall for all stations combined}
-  \label{fig:Yearlymax}
+  \label{fig:Yearlymax_all)}
 \end{figure}
 
 \subsubsection{Frequency}
@@ -508,7 +509,7 @@ save(QR_Sfreq, file="./inst/tussenStap/QR_Sfreq.rda")
 save(QR_Wfreq, file="./inst/tussenStap/QR_Wfreq.rda")
 @
 
- <<label=loading11,cache=FALSE>>=
+<<label=loading11,cache=FALSE>>=
 load("./inst/tussenStap/QR_freq.rda")
 load("./inst/tussenStap/QR_Sfreq.rda")
 load("./inst/tussenStap/QR_Wfreq.rda")
@@ -666,16 +667,14 @@ To investigate the frequency of extreme events with a high potential impact, we 
 # freq_10 <-  hrKNMI[(RH > 10) & (RH <15)][, ':='(f = .N),by = Year]
 # freq_10 <-  freq_10[, list(Year=unique(Year)),by = f]
 # setkey(freq_10,Year)
-# #freq_10 <- QR_freqall(freq_10,STN=FALSE)
-
-hrKNMI$YM <- format(hrKNMI$Date,format="%Y-%m")
-freq_10YM <-  hrKNMI[(RH > 10) & (RH <20)][, ':='(f = .N),by = YM]
-freq_10YM <-  freq_10YM[, list(YM=unique(YM)),by = f]
-setkey(freq_10YM,YM)
 #freq_10 <- QR_freqall(freq_10,STN=FALSE)
-save(freq_5, file="./inst/tussenStap/freq_5.rda")
-save(freq_10, file="./inst/tussenStap/freq_10.rda")
-save(freq_10m, file="./inst/tussenStap/freq_10.rda")
+
+# Percentage of wet hours a month, with RH > 10 and <20,
+
+#freq_10 <- QR_freqall(freq_10,STN=FALSE)
+# save(freq_5, file="./inst/tussenStap/freq_5.rda")
+# save(freq_10, file="./inst/tussenStap/freq_10.rda")
+#save(freq_10m, file="./inst/tussenStap/freq_10m.rda")
 @
 
  <<label=loading13,cache=FALSE>>=
@@ -683,13 +682,14 @@ load("./inst/tussenStap/freq_5.rda")
 load("./inst/tussenStap/freq_10.rda")
 @
 
+
 \begin{figure}[H]
   \hspace{-1cm}
   \centering
   \textbf{Quantile regression on threshold based frequency data}\par\medskip
   \begin{minipage}{0.48\textwidth}
     \flushleft
-<<label=threshold1,cache=TRUE>>=
+<<label=threshold1,cache=FALSE>>=
 ggplot(freq_5, aes(x = Year,y = f)) +        # data
     geom_point(color="Gray")+
     geom_curve(aes(x=1958,xend= 1958+10,y=50, yend=50), curvature=-0.5, color="red",linetype=2)+
@@ -708,7 +708,7 @@ ggplot(freq_5, aes(x = Year,y = f)) +        # data
   \hfill
   \begin{minipage}{0.48\textwidth}
     \flushleft
-<<label=threshold2,cache=TRUE>>=
+<<label=threshold2,cache=FALSE>>=
 ggplot(freq_10, aes(x = Year,y = f)) +        # data
     geom_point(color="Gray")+
     #geom_curve(aes(x=1958,xend=1978,y=3.7, yend=4), curvature=-0.45, color="red",linetype=2)+
@@ -731,7 +731,6 @@ ggplot(freq_10, aes(x = Year,y = f)) +        # data
 When the data of the different stations are combined quantile regression on (yearly resolution) frequency data is possible. This allows us to study extremes which can have significant moderate to high impact (hourly intensity of 10-20 mm/hr and >20 mm/hr).
 
  <<label=freqthreshold2,cache=TRUE>>=
-hoi <- 1
 freq_15 <-  hrKNMI[(RH > 15) & (RH <20)][, ':='(f = .N),by = Year]
 freq_15 <-  freq_15[, list(Year=unique(Year)),by = f]
 setkey(freq_15,Year)
@@ -830,12 +829,12 @@ p_thres[, ":="(Q95_20 = p_test(data=freq_20,tau=0.95,freq=TRUE, STN=FALSE)$V1,
           Q999_20 = p_test(data=freq_20,tau=0.999,freq=TRUE, STN=FALSE)$V1)]
 @
 
-<<>>=
+<<save_pthres>>=
 save(p_thres, file="./inst/tussenStap/p_thres.rda")
 @
 
 <<p_threstbl>>=
-setnames(p_thres, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
+#setnames(p_thres, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
 #tbl <- xtable(p_thres)
 @
 
@@ -863,6 +862,44 @@ setnames(p_thres, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","
 %
 % Count > 10 mm/hr
 % Count > 20 mm/hr
+
+<<frac_10mm>>=
+#Fraction extreme hours a month
+library(zoo)
+ggplotRegression <- function (fit) {
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) +
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)))
+}
+
+hrKNMI$YM <- as.yearmon(hrKNMI$YM)
+hrKNMI[, ":="(montotal=.N),by = YM]
+all <- hrKNMI[, list(YM=unique(YM)),by = montotal]
+setorder(all, by=YM)
+count10 <- count(hrKNMI[(RH>10)&(RH<20)],vars="YM")
+
+
+fraction_10_allhr <- merge(all,count10,by="YM")
+fraction_10_allhr[, ":="(fraction = freq/montotal),by=YM]
+
+# ggplot(fraction_10_wethr,aes(x=YM,y=fraction)) + geom_point() + geom_quantile(formula= y~x) +
+#   geom_smooth(method=lm, color="red") + theme_bw()
+@
+
+<<plot_frac10>>=
+fit10 <- lm(fraction ~ YM, data = fraction_10_allhr)
+ggplotRegression(fit10)
+@
+
+
+
+
+
+
 
 \subsubsection{Rain events}
 
