@@ -30,7 +30,7 @@ p_test <- function(data,tau,N=9999, freq=FALSE, method="fn", STN=TRUE,plot=TRUE)
     tmp <- data[, list(replicate(N, round(as.numeric(coef(rq(sample(f) ~ Year, tau=tau,method="br"))[2]),digits=7)))]
     tmp$obs <- data[, list(round(as.numeric(coef(rq(f ~ Year, tau=tau,method="br"))[2]),digits=7))]
     setnames(tmp, c("reps","obs"))
-    p <- unique(tmp[, list((1+sum(obs > reps))/(N+1))])
+    p <- tmp[, list((1+sum(obs > reps))/(N+1))]
   }
   return(p)
 }
