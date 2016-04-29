@@ -22,6 +22,7 @@
 % install.packages("xtable")
 <<setup, include=FALSE, cache=FALSE, echo=FALSE>>=
 library(PCICt)
+library(reshape2)
 library(ggplot2)
 library(knitr)
 library(data.table)
@@ -31,6 +32,7 @@ library(grid)
 library(gridExtra)
 library(xtable)
 library(Hmisc)
+library(zoo)
 library(HourlyPrecipExtr)
 # set global chunk options
 opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
@@ -227,8 +229,7 @@ plot2 <- QR2d_plotting(data=QR_max2d[STN == 260], title="De Bilt",point=FALSE,ym
 plot3 <- QR2d_plotting(data=QR_max2d[STN == 280], title="Eelde",point=FALSE,ymax)
 plot4 <- QR2d_plotting(data=QR_max2d[STN == 310], title="Vlissingen",point=FALSE,ymax)
 plot5 <- QR2d_plotting(data=QR_max2d[STN == 380], title="Maastricht",point=FALSE,ymax)
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
-             ncol= 1)
+
 @
   \caption{Quantile regression fits with $\tau = 75, 90, 95, 99, 99.9$ \% on 2 day maxima in
 hourly precipitation intensities (mm/hr) and a line giving the yearly means, for all stations.}
@@ -501,8 +502,8 @@ QR_freq <- QR_freqall(freq_wet)
 QR_Sfreq <- QR_freqall(freq_Swet)
 QR_Wfreq <- QR_freqall(freq_Wwet)
 
-Legendgrob3 <- legendGrob(c("mean","25%","50%","75%", "90%"), pch=15,
-                          gp=gpar(col=c("black","purple","blue","green","orange"),cex=1), ncol=2)
+Legendgrob3 <- legendGrob(c("LM","25%","50%","75%"), pch=15,
+                          gp=gpar(col=c("black","purple","blue","green"),cex=1), ncol=2)
 
 save(QR_freq, file="./inst/tussenStap/QR_freq.rda")
 save(QR_Sfreq, file="./inst/tussenStap/QR_Sfreq.rda")
@@ -535,7 +536,7 @@ plot(density(freq_wet$f), type='l', col='blue', lwd=3, main=NA,   #Distribution 
     \hfill
   \begin{minipage}{0.48\textwidth}
     \flushleft
-<<label=QR_freqplotting,cache=TRUE>>=
+<<label=QR_freqplotting,cache=FALSE>>=
 ymin <- 700
 ymax <- 1550
 plot1 <- QR_freqplotting(data=QR_freq[STN == 235], title="De Kooy",ymin,ymax)
@@ -549,14 +550,14 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2)
     \subcaption{All wet hours}
     \label{fig:Qfreq}
   \end{minipage}
-  \caption{Distribution plot of all wet hour a year (a). In (b) quantile regression fits with $\tau = 25, 50, 75, 90$ \% on counts of wet hours a year for all stations.}
+  \caption{Distribution plot of all wet hour a year (a). In (b) linear regression (black line) and quantile regression fits with $\tau = 25, 50, 75, 90$ \% on counts of wet hours a year for all stations.}
   \label{fig:QR_freq}
 \end{figure}
 
 \begin{figure}[H]
   \begin{minipage}{0.48\textwidth}
     \flushleft
-<<label=QRW_freqplotting,cache=TRUE>>=
+<<label=QRW_freqplotting,cache=FALSE>>=
 ymin <- 100
 ymax <- 550
 plot1 <- QR_freqplotting(data=QR_Wfreq[STN == 235], title="De Kooy",ymin,ymax)
@@ -574,7 +575,7 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2)
   \hspace{-0.5cm}
   \begin{minipage}{0.48\textwidth}
     \flushleft
-<<label=QRS_freqplotting,cache=TRUE>>=
+<<label=QRS_freqplotting,cache=FALSE>>=
 ymin <- 50
 ymax <- 400
 plot1 <- QR_freqplotting(data=QR_Sfreq[STN == 235], title="De Kooy",ymin,ymax)
@@ -588,11 +589,12 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2)
     \subcaption{Summer}
     \label{fig:Qfreq_sum}
   \end{minipage}
-  \caption{Quantile regression fits with $\tau = 25, 50, 75, 90$ \% on counts of wet hours a year, for only Winter (a) and only Summer (b) data, for all stations.}
+  \caption{Linear regression (black line) and quantile regression fits with $\tau = 25, 50, 75, 90$ \% on counts of wet hours a year, for only Winter (a) and only Summer (b) data, for all stations.}
   \label{fig:QR_freqWS}
 \end{figure}
 
-All fits, except for De Kooy, show a negative trend for the 50\% wettest years (in the amount of wet hours a year). A positive trend is visible for the very wet (>90\%) years of De Kooy, which is a summer trend as can be seen by comparing Figure \ref{fig:Qfreq_win} and \ref{fig:Qfreq_sum}. To investigate whether these trends are significant a 9999 Monte Carlo permutation is applied.
+The distribution of wet hours a year approaches a Gaussian distribution, therefore linear regression can be applied on this data. All linear regression fits demonstrate a negative trend in the amount of wet hours a year, except for the summer data of De Kooy. For hours a year the coefficient for de Kooy is the lowest, which is due to the negative trend in summer wet hours (\ref{fig:Qfreq_sum}).
+Most of the quantile fits show negative trends in the amount of wet hours a year, but spatial difference are visible especially in the 90\% quantile fit, giving the trend for the 10\% wettest years. Next to all year and summer data for De Kooy, this 90\% quantile fit is positive for summer data of Eelde and winter data of Maastricht. In Chapter 3 we hope to find an explanation for this spatial difference. To investigate whether these trends are significant a 9999 Monte Carlo permutation is applied.
 
 
 % Significance test
@@ -645,6 +647,19 @@ save(p_Sfreqall, file="./inst/tussenStap/p_Sfreqall.rda")
 save(p_Wfreqall, file="./inst/tussenStap/p_Wfreqall.rda")
 @
 
+<<p_LM>>=
+p_flm <- p_test(data=freq_wet,freq=TRUE,lm=TRUE,STN=TRUE)
+setnames(p_flm,c("STN","All year"))
+p_flm[, ":="(Summer = p_test(data=freq_Swet,freq=TRUE,lm=TRUE,STN=TRUE)$V1,
+             Winter = p_test(data=freq_Wwet,freq=TRUE,lm=TRUE,STN=TRUE)$V1)]
+p_flm_all <- p_test(data=freq_wet,freq=TRUE,lm=TRUE,STN=FALSE)
+setnames(p_flm_all,c("All year"))
+p_flm_all[, ":="(Summer = p_test(data=freq_Swet,freq=TRUE,lm=TRUE,STN=FALSE)$V1,
+                Winter = p_test(data=freq_Wwet,freq=TRUE,lm=TRUE,STN=FALSE)$V1)]
+save(p_flm, file="./inst/tussenStap/p_flm.rda")
+save(p_flm_all, file="./inst/tussenStap/p_flm_all.rda")
+@
+
 <<p_freqtbl>>=
 # setnames(p_freq, c("STN","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
 # tbl <- xtable(p_freq)
@@ -657,6 +672,12 @@ save(p_Wfreqall, file="./inst/tussenStap/p_Wfreqall.rda")
 
 
 To investigate the frequency of extreme events with a high potential impact, we will investigate the frequency of wet hours with an intensity between 5-10, 10-15, 15-20 and >20 mm/hr. For more intense hourly values there is to little data.
+! Amount of extreme events a year
+RH > 75\%, 90\%, 95\%, 99\%
+1. determine Q90 for certain station
+2. calculate events a year
+3. LM
+
 
  <<label=freqthreshold,cache=TRUE>>=
 # freq_5 <- hrKNMI[(RH > 5) & (RH <10)][, ':='(f = .N),by = Year]
@@ -788,50 +809,50 @@ ggplot(freq_20, aes(x = Year,y = f)) +        # data
   \caption{Quantile regression fits with $\tau = 25, 50, 75, 90$ \% on counts of wet hours a year, with intensity 5-10 (a) and $>$ 10 mm/hr (b). The data of the different staton are combined.}
   \label{QR_thres_combined}
 \end{figure}
-
-% Significance test
-<<p_5thres,cache=TRUE>>=
-p_thres <- p_test(data=freq_5,tau=0.50,freq=TRUE)
-setnames(p_thres,c("STN","Q50_5"))
-p_thres[, ":="(Q75_5 = p_test(data=freq_5,tau=0.75,freq=TRUE)$V1,
-         Q90_5 = p_test(data=freq_5,tau=0.90,freq=TRUE)$V1)]
-p_thres[, ":="(Q95_5 = p_test(data=freq_5,tau=0.95,freq=TRUE)$V1,
-         Q99_5 = p_test(data=freq_5,tau=0.99,freq=TRUE)$V1,
-         Q999_5 = p_test(data=freq_5,tau=0.999,freq=TRUE)$V1)]
-@
-
-<<p_10thres,cache=TRUE>>=
-p_thres[, ":="(Q50_10 = p_test(data=freq_10,tau=0.50,freq=TRUE)$V1,
-         Q75_10 = p_test(data=freq_10,tau=0.75,freq=TRUE)$V1,
-         Q90_10 = p_test(data=freq_10,tau=0.90,freq=TRUE)$V1)]
-p_thres[, ":="(Q95_10 = p_test(data=freq_10,tau=0.95,freq=TRUE)$V1,
-         Q99_10 = p_test(data=freq_10,tau=0.99,freq=TRUE)$V1,
-         Q999_10 = p_test(data=freq_10,tau=0.999,freq=TRUE)$V1)]
-@
-
-
-<<p_15thres,cache=TRUE>>=
-p_thres[, ":="(Q50_15 = p_test(data=freq_15,tau=0.50,freq=TRUE, STN=FALSE)$V1,
-          Q75_15 = p_test(data=freq_15,tau=0.75,freq=TRUE, STN=FALSE)$V1,
-          Q90_15 = p_test(data=freq_15,tau=0.90,freq=TRUE, STN=FALSE)$V1)]
-p_thres[, ":="(Q95_15 = p_test(data=freq_15,tau=0.95,freq=TRUE, STN=FALSE)$V1,
-          Q99_15 = p_test(data=freq_15,tau=0.99,freq=TRUE, STN=FALSE)$V1,
-          Q999_15 = p_test(data=freq_15,tau=0.999,freq=TRUE, STN=FALSE)$V1)]
-@
-
-
-<<p_20thres,cache=TRUE>>=
-p_thres[, ":="(Q50_20 = p_test(data=freq_20,tau=0.50,freq=TRUE, STN=FALSE)$V1,
-          Q75_20 = p_test(data=freq_20,tau=0.75,freq=TRUE, STN=FALSE)$V1,
-          Q90_20 = p_test(data=freq_20,tau=0.90,freq=TRUE, STN=FALSE)$V1)]
-p_thres[, ":="(Q95_20 = p_test(data=freq_20,tau=0.95,freq=TRUE, STN=FALSE)$V1,
-          Q99_20 = p_test(data=freq_20,tau=0.99,freq=TRUE, STN=FALSE)$V1,
-          Q999_20 = p_test(data=freq_20,tau=0.999,freq=TRUE, STN=FALSE)$V1)]
-@
-
-<<save_pthres>>=
-save(p_thres, file="./inst/tussenStap/p_thres.rda")
-@
+%'
+%' % Significance test
+%' <<p_5thres,cache=TRUE>>=
+%' p_thres <- p_test(data=freq_5,tau=0.50,freq=TRUE)
+%' setnames(p_thres,c("STN","Q50_5"))
+%' p_thres[, ":="(Q75_5 = p_test(data=freq_5,tau=0.75,freq=TRUE)$V1,
+%'          Q90_5 = p_test(data=freq_5,tau=0.90,freq=TRUE)$V1)]
+%' p_thres[, ":="(Q95_5 = p_test(data=freq_5,tau=0.95,freq=TRUE)$V1,
+%'          Q99_5 = p_test(data=freq_5,tau=0.99,freq=TRUE)$V1,
+%'          Q999_5 = p_test(data=freq_5,tau=0.999,freq=TRUE)$V1)]
+%' @
+%'
+%' <<p_10thres,cache=TRUE>>=
+%' p_thres[, ":="(Q50_10 = p_test(data=freq_10,tau=0.50,freq=TRUE)$V1,
+%'          Q75_10 = p_test(data=freq_10,tau=0.75,freq=TRUE)$V1,
+%'          Q90_10 = p_test(data=freq_10,tau=0.90,freq=TRUE)$V1)]
+%' p_thres[, ":="(Q95_10 = p_test(data=freq_10,tau=0.95,freq=TRUE)$V1,
+%'          Q99_10 = p_test(data=freq_10,tau=0.99,freq=TRUE)$V1,
+%'          Q999_10 = p_test(data=freq_10,tau=0.999,freq=TRUE)$V1)]
+%' @
+%'
+%'
+%' <<p_15thres,cache=TRUE>>=
+%' p_thres[, ":="(Q50_15 = p_test(data=freq_15,tau=0.50,freq=TRUE, STN=FALSE)$V1,
+%'           Q75_15 = p_test(data=freq_15,tau=0.75,freq=TRUE, STN=FALSE)$V1,
+%'           Q90_15 = p_test(data=freq_15,tau=0.90,freq=TRUE, STN=FALSE)$V1)]
+%' p_thres[, ":="(Q95_15 = p_test(data=freq_15,tau=0.95,freq=TRUE, STN=FALSE)$V1,
+%'           Q99_15 = p_test(data=freq_15,tau=0.99,freq=TRUE, STN=FALSE)$V1,
+%'           Q999_15 = p_test(data=freq_15,tau=0.999,freq=TRUE, STN=FALSE)$V1)]
+%' @
+%'
+%'
+%' <<p_20thres,cache=TRUE>>=
+%' p_thres[, ":="(Q50_20 = p_test(data=freq_20,tau=0.50,freq=TRUE, STN=FALSE)$V1,
+%'           Q75_20 = p_test(data=freq_20,tau=0.75,freq=TRUE, STN=FALSE)$V1,
+%'           Q90_20 = p_test(data=freq_20,tau=0.90,freq=TRUE, STN=FALSE)$V1)]
+%' p_thres[, ":="(Q95_20 = p_test(data=freq_20,tau=0.95,freq=TRUE, STN=FALSE)$V1,
+%'           Q99_20 = p_test(data=freq_20,tau=0.99,freq=TRUE, STN=FALSE)$V1,
+%'           Q999_20 = p_test(data=freq_20,tau=0.999,freq=TRUE, STN=FALSE)$V1)]
+%' @
+%'
+%' <<save_pthres>>=
+%' save(p_thres, file="./inst/tussenStap/p_thres.rda")
+%' @
 
 <<p_threstbl>>=
 #setnames(p_thres, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
@@ -865,7 +886,6 @@ save(p_thres, file="./inst/tussenStap/p_thres.rda")
 
 <<frac_10mm>>=
 #Fraction extreme hours a month
-library(zoo)
 ggplotRegression <- function (fit) {
 ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) +
   geom_point() +
@@ -876,6 +896,7 @@ ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) 
                      " P =",signif(summary(fit)$coef[2,4], 5)))
 }
 
+hrKNMI$YM <- format(hrKNMI$Date,format="%Y-%m")
 hrKNMI$YM <- as.yearmon(hrKNMI$YM)
 hrKNMI[, ":="(montotal=.N),by = YM]
 all <- hrKNMI[, list(YM=unique(YM)),by = montotal]
@@ -890,12 +911,16 @@ fraction_10_allhr[, ":="(fraction = freq/montotal),by=YM]
 #   geom_smooth(method=lm, color="red") + theme_bw()
 @
 
+\begin{figure}[H]
+  \centering
+  \textbf{Linear regression on fraction extreme events (10-20 mm/hr) a month}\par\medskip
 <<plot_frac10>>=
 fit10 <- lm(fraction ~ YM, data = fraction_10_allhr)
 ggplotRegression(fit10)
 @
-
-
+  \caption{Ordinary least-square regression on monthly fraction of wet events (intensity of 10-20 mm/hr). R2, Intercept and slope are given, as well as the p-value giving the significance level.}
+  \label{fig:QR_max2d}
+\end{figure}
 
 
 
