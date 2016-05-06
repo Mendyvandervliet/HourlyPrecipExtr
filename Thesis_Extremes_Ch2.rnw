@@ -686,10 +686,6 @@ RH > 75\%, 90\%, 95\%, 99\%
 3. LM
 
 <<Real_Intensity>>=
-hrKNMI[, I := (RH/DR), by=date]
-hrKNMI <- within(hrKNMI, I[DR==0] <- 0)
-save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
-
 # Frequency calculation
 freq_I10 <- hrKNMI[(I > 10) & (I <20)][, ':='(f = .N),by = Year]
 freq_I10 <-  freq_I10[, list(Year=unique(Year)),by = f]
