@@ -1,0 +1,75 @@
+\documentclass{report}
+
+%------------------------------------------------------------------------------------------------------------------------
+%Packages
+
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{a4wide}
+\usepackage{colortbl}
+\overfullrule=2cm             %To spot overfull hboxes
+
+%------------------------------------------------------------------------------------------------------------------------
+
+% install.packages("PCICt")
+% install.packages("ggplot2")
+% install.packages("knitr")
+% install.packages(quantreg)
+% install.packages("data.table", repos="http://R-Forge.R-project.org")      % install.packages("data.table")
+% install.packages("xtable")
+<<setup, include=FALSE, cache=FALSE, echo=FALSE>>=
+library(ggplot2)
+library(knitr)
+library(data.table)
+library(quantreg)
+library(HourlyPrecipExtr)
+# set global chunk options
+opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
+               echo=FALSE, fig.height=5, fig.width=5, #message=FALSE,
+               fig.pos="!ht", fig.align='center') #,tidy=TRUE
+@
+
+\title{Generic Report\\
+        Mechanism behind intensification of hourly precipitation extremes}
+\author{Mendy van der Vliet}
+
+\begin{document}
+
+
+\maketitle
+
+\chapter{Method}
+
+<<showWD,results='markup'>>=
+getwd()
+#setwd("~/Documents/HourlyPrecipExtr")
+@
+
+
+\chapter{Data}
+
+<<getdata,cache=TRUE>>=
+# How to get right file?
+# Go to http://projects.knmi.nl/klimatologie/uurgegevens/selectie.cgi
+# Select period: 1-1-1958 till 21-12-2015 (1-24 hrs)
+# Select variables: DD (wind direction), T(temperature), TD (dewpoint temperature),
+# DR (duration of rain event), RH (hourly rain sum), U(relative humidity), WW (weather code)
+# Select stations: 225 De Kooy, 260 De Bilt, 280 Eelde, 310 Vlissingen, 380 Maastricht
+# For description weather codes (WW) see: http://bibliotheek.knmi.nl/scholierenpdf/weercodes_Nederland,
+# these code are  only used to study specific extreme events
+hrKNMI <- loaddata("./inst/extData/KNMI_rainhr.txt")
+save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
+@
+
+\chapter{Results}
+
+
+
+Exponential increase in I with T / TD,
+exponential decrease after 20 C ?? No only statistical effect;
+The fewer the data points to lower the chance for very high extremes.
+
+\end{document}
