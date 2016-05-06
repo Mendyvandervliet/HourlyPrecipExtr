@@ -20,6 +20,7 @@
 % install.packages(quantreg)
 % install.packages("data.table", repos="http://R-Forge.R-project.org")      % install.packages("data.table")
 % install.packages("xtable")
+
 <<setup, include=FALSE, cache=FALSE, echo=FALSE>>=
 library(PCICt)
 library(reshape2)
@@ -57,10 +58,12 @@ getwd()
 @
 
 <<Example_DT,cache=TRUE>>=
+#
 dt <- data.table(x = c(1:100),y = rnorm(100))
 @
 
 <<Example_QR,cache=FALSE>>=
+#
 ggplot(dt,aes(x=x,y=y)) +
   geom_point(data=dt[(y < quantile(y,probs=0.50)) & (y > (quantile(y,probs=0.25)))],aes(x,y),color="black") +
   geom_point(data=dt[(y < quantile(y,probs=0.75)) & (y > (quantile(y,probs=0.50)))],aes(x,y),color="blue") +
@@ -97,13 +100,16 @@ load("./inst/tussenStap/hrKNMI.rda")
 
 
 \subsection{Trends in extreme precipitation}
-This chapter focusses on linear trends in hourly precipitation extremes. Whether the hourly intensity of extremes regresses linearly in time or not is investigated for the period 1958 to 2014. Next to intensity, trends in the frequency of hourly extremes are considered (and compared to the proportional change by studying the regression of the mean hourly intensity in time as well).
+This chapter focusses on linear trends in hourly precipitation extremes. Whether the hourly intensity (calculated from the hourly precipitation sum as the mean rate of one hour) of extremes regresses linearly in time or not is investigated for the period 1958 to 2014. Next to intensity, trends in the frequency of hourly extremes are considered (and compared to the proportional change by studying the regression of the mean hourly intensity in time as well).
 
 % Fit data via quantile regression
 <<setup_trends,cache=TRUE>>=
 tmp <- subset(hrKNMI,select=c("STN", "YYYYMMDD","Date","date","Year","Day","RH"))
 QR_hrKNMI <- QR_stn(data=tmp)
+
 QR_hrKNMI[, ":="(yr_mean = mean(RH)), by = list(STN, Year)]
+
+
 save(QR_hrKNMI, file="./inst/tussenStap/QR_hrKNMI.rda")
 @
 
@@ -674,10 +680,60 @@ save(p_flm_all, file="./inst/tussenStap/p_flm_all.rda")
 To investigate the frequency of extreme events with a high potential impact, we will investigate the frequency of wet hours with an intensity between 5-10, 10-15, 15-20 and >20 mm/hr. For more intense hourly values there is to little data.
 ! Amount of extreme events a year
 RH > 75\%, 90\%, 95\%, 99\%
+1. Make new data set for intensity (not as mean hourly rate), by combining DR and RH --> calculate intensity
 1. determine Q90 for certain station
 2. calculate events a year
 3. LM
 
+<<Real_Intensity>>=
+hrKNMI[, I := (RH/DR), by=date]
+hrKNMI <- within(hrKNMI, I[DR==0] <- 0)
+save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
+
+# Frequency calculation
+freq_I10 <- hrKNMI[(I > 10) & (I <20)][, ':='(f = .N),by = Year]
+freq_I10 <-  freq_I10[, list(Year=unique(Year)),by = f]
+setkey(freq_I10,Year)
+freq_I10 <- QR_freqall(freq_I10,STN=FALSE)
+save(freq_I10, file="./inst/tussenStap/freq_I10.rda")
+@
+
+<<Plot_realint>>=
+YearlymaxI <- hrKNMI[, list(max_yrI = max(I)), by=Year]
+ggplot(YearlymaxI,aes(x=Year)) + geom_point(aes(y=max_yrI))
+@
+
+<<F_I20>>=
+# Frequency calculation
+freq_I20 <- hrKNMI[(I >20)][, ':='(f = .N),by = Year]
+freq_I20 <-  freq_I20[, list(Year=unique(Year)),by = f]
+setkey(freq_I20,Year)
+freq_I20 <- QR_freqall(freq_I20,STN=FALSE)
+save(freq_I20, file="./inst/tussenStap/freq_I20.rda")
+
+@
+
+<<I10>>=
+ggplot(freq_I10, aes(x = Year,y = f)) +        # data
+    geom_point(color="Gray")+
+    # geom_smooth(aes(y=f),method=lm, color="black")+
+    # geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
+    # geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
+    # geom_quantile(formula= y~x,quantiles=0.75, color="green")+
+    xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
+    theme_bw()
+@
+
+<<I20>>=
+ggplot(freq_I20, aes(x = Year,y = f)) +        # data
+    geom_point(color="Gray")+
+    #geom_smooth(aes(y=f),method=lm, color="black")+
+    #geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
+    #geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
+    #geom_quantile(formula= y~x,quantiles=0.75, color="green")+
+    xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
+    theme_bw()
+@
 
  <<label=freqthreshold,cache=TRUE>>=
 # freq_5 <- hrKNMI[(RH > 5) & (RH <10)][, ':='(f = .N),by = Year]
