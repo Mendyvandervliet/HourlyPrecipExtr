@@ -22,7 +22,7 @@
 % install.packages("xtable")
 
 <<setup, include=FALSE, cache=FALSE, echo=FALSE>>=
-library(PCICt)
+\section*{library(PCICt)
 library(reshape2)
 library(ggplot2)
 library(knitr)
@@ -90,7 +90,7 @@ hrKNMI <- loaddata("./inst/extData/KNMI_rainhr.txt")
 save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
 @
 
-\chapter{Results}
+\chapter{Trends in extreme precipitation}
 
 
 <<loading, cache=FALSE>>=
@@ -99,7 +99,7 @@ load("./inst/tussenStap/hrKNMI.rda")
 
 
 
-\subsection{Trends in extreme precipitation}
+\section{Introduction}
 This chapter focusses on linear trends in hourly precipitation extremes. Whether the hourly intensity (calculated from the hourly precipitation sum as the mean rate of one hour) of extremes regresses linearly in time or not is investigated for the period 1958 to 2014. Next to intensity, trends in the frequency of hourly extremes are considered (and compared to the proportional change by studying the regression of the mean hourly intensity in time as well).
 
 % Fit data via quantile regression
@@ -123,8 +123,8 @@ Legendgrob1 <- legendGrob(c("90%","95%","99%","99.9%"), pch=15,
 load("./inst/tussenStap/QR_hrKNMI.rda")
 @
 
-\subsubsection{Intensity}
-\paragraph{All hours} \par\medskip
+\section{Intensity}
+\subsection{All hours} \par\medskip
 
 % Make 10 figures, for every station 1 plot showing the quantile fits (ymax=10)
 % and 1 plot showing the plots corresponding to the 99.9 % fit.
@@ -309,7 +309,7 @@ save(p, file="./inst/tussenStap/p.rda")
 
 
 %-------------------------
-\paragraph{Summer vs winter}
+\subsection{Summer vs winter}
 
 In this paragraph we will distinquish between trends in 2-day maxima between summer and winter season. For the summer extremes, which have a local, short-lasting character, we could probably take shorter periods for sampling maxima's based on the autocorrelation and partial autocorrelation. This would increase the amount of data and thereby improve the significance of any trends present. However, as we want to compare the trends between summer and winter season, we do not want to have 2 different approaches of data selection as this could induce seasonal differences without physical basis.
 
@@ -431,7 +431,7 @@ load("./inst/tussenStap/p_W.rda")
 
 
 %-------------------------
-\paragraph{Yearly maximum}\par\medskip
+\subsection{Yearly maximum}\par\medskip
 Impact events; order of 5-50 mm/hr  (15,5 mm/hr as mean) . Above 90 (and 75) quantile can impact sewage (from 20 mm/hr) or traffic problems ($\> 30$ mm/hr)
 
 <<AggregateByYear>>=
@@ -479,7 +479,7 @@ ggplot(yearlyMax, aes(x = Year, y = RHmax)) + geom_point() +
   \label{fig:Yearlymax_all)}
 \end{figure}
 
-\subsubsection{Frequency}
+\section{Frequency}
 
 Next to changes in intensity of extreme rain events, is it also relevant to study whether precipitation events occur more, equally or less often in time. In this part analysis of frequency data is reported. First, the number of wet hours a year, a summer, a winter are plotted in the figure below.
 
@@ -675,7 +675,7 @@ save(p_flm_all, file="./inst/tussenStap/p_flm_all.rda")
 
 @
 
-
+\subsection{Impacting events}
 
 To investigate the frequency of extreme events with a high potential impact, we will investigate the frequency of wet hours with an intensity between 5-10, 10-15, 15-20 and >20 mm/hr. For more intense hourly values there is to little data.
 ! Amount of extreme events a year
@@ -978,7 +978,7 @@ ggplotRegression(fit10)
 
 
 
-\subsubsection{Rain events}
+\section{Rain events}
 
 
 
