@@ -10,8 +10,26 @@
 \usepackage{subcaption}
 \usepackage{a4wide}
 \usepackage{colortbl}
-\overfullrule=2cm             %To spot overfull hboxes
+\usepackage{hyperref}
+\usepackage{filecontents}
+\usepackage[backend=bibtex,natbib=true, sorting=none,style=authoryear]{biblatex}
 
+\begingroup\newif\ifmy
+\IfFileExists{references.bib}{}{\mytrue}
+\ifmy
+\begin{filecontents*}{references.bib}
+@book{Sumner1988,
+  author    = {Graham Sumner},
+  title     = {Precipitation, Process and Analysis},
+  publisher = {John Wily and Sons Ltd.},
+  year      = 1988
+}
+\end{filecontents*}
+\fi\endgroup
+
+\bibliography{references}
+%\addbibresource{References.bib}
+\overfullrule=2cm             %To spot overfull hboxes
 %------------------------------------------------------------------------------------------------------------------------
 
 
@@ -33,13 +51,10 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 
 \begin{document}
 
-
 \maketitle
 
-
-
 <<showWD,results='markup'>>=
-getwd()
+#getwd()
 #setwd("~/Documents/HourlyPrecipExtr")
 @
 
@@ -55,7 +70,7 @@ getwd()
 # Select stations: 225 De Kooy, 260 De Bilt, 280 Eelde, 310 Vlissingen, 380 Maastricht
 # For description weather codes (WW) see: http://bibliotheek.knmi.nl/scholierenpdf/weercodes_Nederland,
 # these code are  only used to study specific extreme events
-hrKNMI <- loaddata("./inst/extData/KNMI_rainhr.txt")
+hrKNMI <- KNMI_loading("./inst/extData/KNMI_rainhr.txt")
 save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
 
 @
@@ -66,7 +81,7 @@ save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
 
 \section{Introduction}
 In this chapter we will try to find an explanation for the observed intensification of hourly precipitation extremes, which agrees with a simultaneously decrease in overall precipitation time. In order to find a mechanism, we first identify key variables by describing their relationship to (extreme) precipitation. Secondly, for those variables measured or represented by our metadata, we  make simple linear correlation matrices and acf plots. For the most promising variables we apply quantile regression (Intensity or frequency against the variable in question) to validate the relation of the variable with the extreme spectra of precipitation. Lastly, to be able to assign the observed trends to a certain variable, we also regress the key variables against time and compare the magnitude of observed time trends with the positive trends in intensity and the negative trend in wet time.
-! Test for spatial and seasonal differences
+?! Test for spatial and seasonal differences
 
 
 \section{Detection of key variables}
@@ -75,13 +90,74 @@ In this chapter we will try to find an explanation for the observed intensificat
 
 
 \subsubsection{Temperature}
-Temperature  (Possibility of occurence and magnitude):
-- The saturation level of an air parcel is determined by it s temperature. The ability of air to hold water vapour increases with temperature.   An increase of the water vapour of an saturated air parcel without changing temperature or pressure will result in oversaturation.  In most of the natural cases air must be at least saturated for condensation to occur, leading to cloud or fog formation.    Claesius Clapeyron. Figure: increase of RH with T ! +  change of RH per dT of warming for every T;
-Look at magnitude differences between summer and winter trends
-- Warm clouds are limited in formation, only beneath the 0 degrees Celsius isotherm. So that they only comprise water droplets in the stable phase, with coalescence involved in the production of precipitation. Therefore, these clouds have a lower vertical extent at middle and high latitudes, than at low latitudes. The higher intensity and amount of precipitation produced by warm clouds, is confined tot the warmer seasons and lower latitudes.  So not really intense at high-latitude, only in summer
-- The urban heat island effect: Warm urban areas with enhanced convection can be compared to small island with sea-breeze systems, as cool surface air is drawn from rural areas inwards to feed the enhanced convection near the urban centre. Precipitation incidence and intensity may be enhanced in cities, as is demonstrated by Atkinson (1975,1977) for London .  ALSO FOR NL CITIES?  The temperature is higher due to the lower albedo (urban fabrics and building materials) and the urban surface has a relatively high roughness which increases heat absorption and reduces wind speed. Not only the temperature, but also the concentration of CCN is higher in urban areas. Changnon, Semonin & Huff (1976) have indicated 25% higher summer (convectional) precipitation in urban areas, relative to the surrounding suburbs and countryside.
- - Vertical uplift is also determined by the temperature of the air. The higher the temperature of air at the surface relative the air above it, the more buoyant and vertical instable the air is. A measure of the vertical instability is the Convective Available Potential Energy (CAPE).
+ Temperature at the surface, as well as the background vertical profile, influences precipitation intensity and occurence in many ways. It plays a role into the entire chain from moisture influx and cloud formation,precipitation production up to and including the falling process. In this section we describe briefly the temperature interaction with the saturation level, type of cloud, urban heat island effect and vertical uplift.
 
+First, the saturation level of an air parcel is determined by its temperature and pressure. The ability of air to hold water vapour increases with temperature (correcly phrased as: a higher equilibrium vapor pressure for a higher temperature, as air does not absorb water vapor). An increase in water vapour of an saturated air parcel without changing temperature or pressure will result in oversaturation. In most of the natural cases air must be at least saturated for condensation to occur, leading to cloud or fog formation \citep{Sumner1988}. The moment that the saturation vapor pressure ($e_s$) rises till the point it exerts the water vapor pressure ($e=e_s$), an equilibrium exist between the rate of condensation and evaporation and air is said to be saturated with respect to a plane surface of pure water at temperature T , and the pressure $e_s$. %\cite{Markowski and Richardson 2010, p.12-13, Wallace and Hobbs p.80-81} The expression of $e_s$ in T, is called the Clausius-Clapeyron equation,
+\begin{equation}
+\frac{d e_s}{d T} = \frac{l_v e_s}{R_v T^2},
+\end{equation}
+in which $l_v$ is the specific latent heat of vaporization and $R_v$ the gas constant for water vapor ($R_v = 461.51 J kg^{-1} K^{-1}$). %\cite{Bolton1980}
+
+<<Clausius>>=
+### Clausius Clapyron
+## Change of water vapour pressure per K T change for all T range
+
+
+# Known constants
+Lv <- 2501*1000  # J/kg at 0 C(Latent heat for vaporisation)
+Rv <- 461.51         # J/kg/K (Gas constant for water vapor)
+rho_w <- 0.804      # kg/m3
+# Bolton (1980) Approximation, accurate to within 0.3% in the range -35C <= T <= 35
+# using es in hPa and T in degrees Celsius
+es <- function(T){
+  return(6.112 * exp((17.67*T)/(T+243.5)))
+}
+# Calculate the percentage change in water vapor pressure (des/es)
+Des_es <- function(dT,T) {
+  Des_es <- (Lv * dT) / (Rv * (T+273.15)^2)
+  return(Des_es*100)
+}
+
+# Calculate the percentage change in RH (d e/es / (e/es) = dRH)
+dRH <- function(dT,T) {
+  e <- rho_w * Rv * (T+273.15)
+  es <- es(T)
+  dRH <- ((rho_w * Rv) - (e * Lv)/(Rv * (T+273.15)^2)) * (dT/e)
+  return(dRH*100)
+}
+
+# Temperature range, valid in approximation
+T <- c(-35:35)
+# Create datatable
+Clausius <- data.table(T=T,es=es(T),Des_es = Des_es(dT=1,T), dRH = dRH(dT=1,T))
+@
+This relation is shown in the following figure.
+<<plot_es>>=
+# For T range -35:35 degrees Celsius plot the water vapor pressure and the change in water vapor pressure for 1 degree of T increase as percentage
+ggplot(Clausius,aes(x=T)) + geom_line(aes(y=es)) +
+  xlab("T (degrees Celsius)") + ylab("Water vapour pressure (hPa)")+ # x and y-axis label
+  theme_bw()
+@
+
+! Theory Clausius Clapeyron - Extremes
+To investigate the change of the water vapor pressure or RH (!!) with increasing temperature we took the derivative of the Clausius-Clapeyron equation to temperature. Reminding that $RH = e/e_s$, we can investigate what the percential change in relative humidity is for the whole temperature range for 1 degree Celsius increase.
+<<plot_change>>=
+# Plot the change in water vapor pressure or the change in RH as percentage for 1 degree of T increase as percentage for T range -35:35 grades Celsius
+# 1 of the two lines!!
+ggplot(Clausius,aes(x=T))+
+  #geom_line(aes(y=Des_es)) +
+  geom_line(aes(y=dRH))+
+  xlab("T (degrees Celsius)") + ylab("Change in relative humidity (%)")+
+  theme_bw()
+@
+
+From this we can deduce that a certain increase in temperature has a larger impact on colder temperature, than  on warmer temperatures. For temperatures lower than 0 degrees Celsius the relative humidity decreases with more than 7\%, while for temperatures higher than 20 degrees Celsius it is less than 6\%. For this reason, we would expect that any trends in extremes caused by global warming induced changes in relative humidity, are stronger visible for winter than for summer. (Look at magnitude differences between summer and winter trends!!)). From Chapter 2 we learned that this is not the case. It could be because of different winter and summer mechanisms, where f.e. the summer precipitation is more dependent on relative humidity.
+
+Warm clouds are limited in formation, only beneath the 0 degrees Celsius isotherm. So that they only comprise water droplets in the stable phase, with coalescence involved in the production of precipitation. Therefore, these clouds have a lower vertical extent at middle and high latitudes, than at low latitudes. The higher intensity and amount of precipitation produced by warm clouds, is confined tot the warmer seasons and lower latitudes. So not really intense at high-latitude, only in summer.
+
+The urban heat island effect: Warm urban areas with enhanced convection can be compared to small island with sea-breeze systems, as cool surface air is drawn from rural areas inwards to feed the enhanced convection near the urban centre. Precipitation incidence and intensity may be enhanced in cities, as is demonstrated by Atkinson (1975,1977) for London. ALSO FOR NL CITIES?  The temperature is higher due to the lower albedo (urban fabrics and building materials) and the urban surface has a relatively high roughness which increases heat absorption and reduces wind speed. Not only the temperature, but also the concentration of CCN is higher in urban areas. Changnon, Semonin and Huff (1976) have indicated 25 \% higher summer (convectional) precipitation in urban areas, relative to the surrounding suburbs and countryside.
+
+Vertical uplift is also determined by the temperature of the air. The higher the temperature of air at the surface relative the air above it, the more buoyant and vertical instable the air is. A measure of the vertical instability is the Convective Available Potential Energy (CAPE).
 
 Exponential increase in I with T / TD,
 exponential decrease after 20 C ?? No only statistical effect;
@@ -93,15 +169,15 @@ The fewer the data points to lower the chance for very high extremes.
 -	Rising of air than occurs as a result of density differences. If we assume  that mixing not takes place, we can consider the thought experiment of a rising air parcel. The air parcel will rise as long as the temperature of the surrounding air is lower than its own.   Buoyancy is then given by:  a = (Tp – T0 ) g / T0.  With a is the buoyancy, Tp the internal temperature of the air parcel, the external temperature and g the acceleration due to gravity.
 
 
-Instability:
-http://www.zamg.ac.at/docu/Manual/SatManu/main.htm?/docu/Manual/SatManu/Basic/Convection/Parameters.htm
-http://www.spc.noaa.gov/exper/mesoanalysis/help/begin.html
-http://www.theweatherprediction.com/severe/ingredients/instability/
-http://www.weather.gov/media/lmk/soo/svr_parameters.pdf
-http://www.metoffice.gov.uk/media/pdf/7/e/Chapter_4._Convection__Showers.pdf
-http://www.staff.science.uu.nl/~delde102/Thunderst.Predictors.pdf
-
-Hail conditions and instability indices : http://www.metoffice.gov.uk/media/pdf/7/e/Chapter_4._Convection__Showers.pdf
+% Instability:
+% http://www.zamg.ac.at/docu/Manual/SatManu/main.htm?/docu/Manual/SatManu/Basic/Convection/Parameters.htm
+% http://www.spc.noaa.gov/exper/mesoanalysis/help/begin.html
+% http://www.theweatherprediction.com/severe/ingredients/instability/
+% http://www.weather.gov/media/lmk/soo/svr_parameters.pdf
+% http://www.metoffice.gov.uk/media/pdf/7/e/Chapter_4._Convection__Showers.pdf
+% http://www.staff.science.uu.nl/~delde102/Thunderst.Predictors.pdf
+%
+% Hail conditions and instability indices : http://www.metoffice.gov.uk/media/pdf/7/e/Chapter_4._Convection__Showers.pdf
 
 \subsubsection{Specific or Relative humidity (magnitude)}
 
@@ -119,8 +195,9 @@ The presence of CCN’s is vital to cloud formation, and their concentration may
 Production of precipitation tied to a specific topographic barrier is called orographic precipitation. This type is is not spatially mobile and considerable amounts of precipitation may accumulate in restricted regions, namely on the windward side of the topographic barrier. The strongest orographic rainfalls are caused by a sustained and deep, moist flow against a relief barrier, so the magnitude is dependent on the local lower trospheric circulation and its stability. In temperate regions warm sectors in frontal depressions or mesocale systems can be moderately intensive, when uplifted by relief.   Although the magnitude and extent of orographic precipitation is governed  by the height and longitudinal extent of the relief barrier, even low hills of only tens of metres in height can lead to notable increases in precipitation (Bergeron, 1968).
 Factors of importance to orographic precipitation are: 1) Relative humidity and ϑe (equivalent potential temperature) and ϑw (wet-bulb potential temperature) of low-level air, 2) slope of the hill perpendicular tot he mountain, 3) strength of the wind component normal to the mountain, 4) depth of the feeder cloud, 5) precipitation rate from the feeder cloud, 6) rate of production condensate in the feeder cloud, 7) cloud water content and 8) rate of accretion or washout by the precipitation emanating from the seeder cloud.
 
+
 \subsubsection{Weather code}
-Rewrite “” As mentioned: Precipitation is mostly produced by the Bergeron-Findeisen process, because of the considerable vertical development of the clouds (therefore exceeding the 0 degrees C isotherm) . so that very intense precipitation (sometimes in form of hail or ice pellets) is resultant.  The majority of severe local storms associated with self-perpetuating convectional systems, are characterized by significant hail production. “”
+Rewrite “” As mentioned: Precipitation is mostly produced by the Bergeron-Findeisen process, because of the considerable vertical development of the clouds (therefore exceeding the 0 degrees C isotherm) . so that very intense precipitation (sometimes in form of hail or ice pellets) is resultant.  The majority of severe local storms associated with self-perpetuating convectional systems, are characterized by significant hail production. “” From \citet{Sumner1988}.
 
 
 \subsection{Identification of relationships}
@@ -133,4 +210,17 @@ Quantile regression of precipitation on key variables
 
 \subsection{Trend in key variables}
 
+quantile regression time
+% \begin{thebibliography}{9}
+% \bibitem{lamport94}
+%   Leslie Lamport,
+%   \emph{\LaTeX: a document preparation system},
+%   Addison Wesley, Massachusetts,
+%   2nd edition,
+%   1994.
+% \end{thebibliography}
+
+\printbibliography
+
 \end{document}
+
