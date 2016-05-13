@@ -16,6 +16,7 @@ KNMI_loading <- function(file){
   tmp[, ':='(Year= year(Date), Month= month(Date), Day= mday(Date))]
   # Correct units
   tmp[, ':='(RH = RH * 0.1, T = T * 0.1, TD = TD * 0.1, DR = DR * 0.1)] # RH in mm, T and Td in degrees Celsius, DR in hrs
+  tmp[RH == -0.1] <- tmp[RH == -0.1][,RH := 0] # All negative values(meaning RH<0.05) become 0
   # Generate a column indicating season
   tmp[,Season := 0]
   tmp <- within(tmp, Season[(Month == 12) | (Month == 1)| (Month == 2)] <- "Winter")
@@ -24,7 +25,7 @@ KNMI_loading <- function(file){
   tmp <- within(tmp, Season[(Month == 9) | (Month == 10)| (Month == 11)] <- "Autumn")
   # Generate a column Intensity
   tmp[, I := (RH/DR), by=date]
-  tmp <- within(tmp, I[DR==0] <- 0)[RH == -0.1] <- tmp[RH == -0.1][,RH := 0] # All negative values(RH<0.05) become 0
+  tmp <- within(tmp, I[DR==0] <- 0)
   return(tmp)
 }
 
