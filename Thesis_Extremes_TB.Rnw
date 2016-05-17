@@ -1,0 +1,36 @@
+\documentclass{report}
+
+%------------------------------------------------------------------------------------------------------------------------
+%Packages
+
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{a4wide}
+\usepackage{colortbl}
+\usepackage{hyperref}
+\usepackage{filecontents}
+\usepackage[backend=bibtex,natbib=true, sorting=nyt,style=authoryear]{biblatex}
+
+
+\bibliography{references}
+%\addbibresource{references.bib}
+\overfullrule=2cm             %To spot overfull hboxes
+%------------------------------------------------------------------------------------------------------------------------
+
+
+\title{Generic Report\\
+        Theoretical background}
+\author{Mendy van der Vliet}
+
+\begin{document}
+
+\maketitle
+
+    Convection in general is mass motion within a fluid resulting in transport and turbulent mixing of the properties of that fluid by vertical movement, in matters of transport of energy (heat), water vapour and momentum. As such, it is one of the three main processes by which energy (heat) can be transported vertically: radiation, conduction, and convection.
+
+Meteorologists typically use the term convection to refer to heat transport by the vertical component of the flow associated with an updraft.
+
+\end{document}

@@ -1,0 +1,89 @@
+\documentclass{report}
+
+%------------------------------------------------------------------------------------------------------------------------
+%Packages
+
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{a4wide}
+\usepackage{colortbl}
+\usepackage{hyperref}
+\usepackage{filecontents}
+\usepackage[backend=bibtex,natbib=true, sorting=nyt,style=authoryear]{biblatex}
+
+
+\bibliography{references}
+%\addbibresource{references.bib}
+\overfullrule=2cm             %To spot overfull hboxes
+%------------------------------------------------------------------------------------------------------------------------
+
+
+\title{Generic Report\\
+        Introduction}
+\author{Mendy van der Vliet}
+
+\begin{document}
+
+\maketitle
+
+
+\chapter(Introduction)
+
+\section{Background}
+One of the meteorological factors of highest importance in affecting society directly are changes in precipitation\citep{Berg2013}. In particular the extreme events regarding precipitation give rise to natural hazards such as floods and droughts, of which the occurrence and magnitude is very important from economic and social perspective \citep{Trenberth2003}.  Therefore, it is highly relevant to investigate whether the amount and intensity of extreme events changes through time. As climate change can cause changes in the probability of occurrence or the severity of extreme weather and climate events, it could drive trends in temperature and precipitation extremes \citep{IPCC2013}. Whereas global-mean precipitation is mainly determined by the global energy budget, the intensity of extreme events are constraints by the moisture availability \citep{Pall2007}. Multiple studies \citep{Lenderink2010,Hardwick2010,Lenderink2011} state that the heaviest events are expected when all the moisture in a volume of air is precipitated out. With global warming, the moisture-holding capacity of the atmosphere rises. Under the constraint of constant relative humidity and sufficient available moisture, changes in extreme precipitation are expected to be thermodynamically related to temperature following the Clausius-Clapeyron relation (approximately 7\% increase per degree of warming)\citep{Pall2007}. Next to moisture availability (expressed by the dewpoint temperature in LM09), the amount of vertical instability is also an important factor in the formation of intense rain showers, demonstrated by a Entraining plume model study of \citet{Loriaux2013} and in …. (?!)  Next to temperature, dewpoint temperature and vertical instability, a changing wind pattern can be a factor of importance for trends in extreme precipitation, as the wind direction influences the source and quantity of moisture in a cloud.  (ELABORATE with literature).
+
+\section{Definition extreme precipitation}
+While it is evident that extreme rain events can have serious impacts, it is relevant to define first what extreme precipitation is. Given the large spread in climate types across the world, it is a difficult task to assign a valid definition to ‘extreme precipitation’. The Fifth Assessment Report of the IPCC states: “An extreme weather event is one that is rare at a particular place and/or time of year”. A couple of so-called ‘extreme indices’ are listed in AR5 which are widely used in literature. These indices are based on either the probability of occurrence of given quantities or on absolute or percentage threshold exceedances (relative to climatological reference period), but also some complex definitions about duration, intensity and persistence of extreme events are involved. \citep{IPCC2007}  These extreme indices have been selected on basis of their robust statistical properties, their applicability across a wide range of climate types and extensive data availability over space and time. These indices reflect more ‘moderate’ extremes, as they do not include 1 in 100 year events, but events taking place as often as 5\% or 10\% of the time. \citep{IPCC2007}  ((In general, statistical tests indicate changes in precipitation extremes are consistent with a wetter climate (Section 7.6.5), although with a less spatially coherent pattern of change than temperature, in that there are large areas that show increasing trends and large areas that show decreasing trends and a lower level of statistical significance than for temperature change \citep{Alexander2006;Donat2013a;Donat2013b}))
+
+\section{Trends}
+The Fifth Assessment Report (AR5) of the Intergovernmental Panel on Climate Change (IPCC) concluded that it is likely that since 1951 there have been statistically significant increases in heavy precipitation events (e.g. above the 95th percentile) in more regions than regions where statistically significant decreases occurred \citep{IPCC2007}. Note, that there are strong seasonal and (sub)regional variations in the trends. However, the annual heavy precipitation events have increased in a disproportional way compared to mean changes between 1951 and 2003 over various mid-latitude areas, even in regions where a reduction was found in the total annual precipitation \citep{IPCC2007}. For Europe from 1951 to 2010, \citet{Besselaar2013} found a median reduction in 5- to 20-year return periods for extreme precipitation events of 21\% with a range between 2\% and 58\% depending on the subregion and season. This is consistent to both the increase in moderate extremes for Europe, as the earlier local results for the extreme tail of the precipitation distribution reported in the Fourth Assessment Report of the IPCC (AR4)\citep{IPCC2007}.
+
+\section{Hourly scale}
+The aforementioned studies refer to daily precipitation extremes, although an extreme rain shower will likely occur during a specific part of the day. The current literature about precipitation extremes on sub-daily scales is scare, although it is evident that analysis of changes in sub-daily precipitation extremes is becoming more urgent. \citep{IPCC2007,Trenberth2011} On sub-daily precipitation  a couple of studies show a scaling of hourly precipitation with temperature that is outside that expected from the Clausius-Clapeyron (CC) relation \citep{Lenderink2008,Haerter2010,Hardwick2010,Lenderink2011,Utsumi2011}.  \citet{Lenderink2008,Lenderink2010,Lenderink2011}  found a super CC-scaling for the Netherlands, Belgium, Switzerland and Hong Kong, related to temperature and dewpoint temperature.  Although, scaling beyond that expected from thermodynamic theories is controversial %\citep{,};
+Haert and Berg \citet{Haerter2009} argued that the scaling is a statistical product of the transition from large-scale to convective precipitation with temperature.  Besides, they suggest that studying extremes on an hourly basis instead of a daily basis, implies a shift from more large-scale-dominanted rain events to convective-dominated events, because the later type occurs during a shorter time scale than the other type. As convective (large-scale) precipitation occurs more often at high (low) temperature, this could explain the super CC-scaling with temperature.  (Section 7.6.5).))  Add: convective higher intensities than large-scale (stratiform) !!; from Berg, Moseley and Haerter,
+
+\section{Relevance}
+To study extremes;  impacts
+ (Elaborate: impacts risk of flooding, agriculture, river discharge/ boot , Ruimte voor de rivier, sewage, traffic/public transport delay, house damage.... )
+information about intensity, occurrence and the length precipitation events is crucial to prevent or minimize water damage. Moreover, to know whether there are regional or national differences in these properties. Uit STOWA Nieuwe Neerslagstatistieken voor het waterbeheer: Extreme neerslaggebeurtenissen nemen toe en komen vaker voor. 2015))
+AR4 highlighted the importance of understanding changes in extreme climate events (Annex III: Glossary) because of their disproportionate impact on society and ecosystems compared to changes in mean climate (see also IPCC Working Group II). (p.209) (see Chapter 3 of the IPCC Special Report on Managing the Risks of Extreme Events and Disasters to Advance Climate Change Adaptation (SREX); Seneviratne et al., 2012).
+To study spatial and seasonal trends
+For trends in daily amount precipitation \citet{} Buishand et al. (2013) found trends over the period 1951-2009 for annual precipitation and seasonal amounts, with the strongest increases in the winter season. This is consistent with the increases found in western and central Europe \citep{}(Van den Besselaar et al. 2013).
+Elaborate with literature; winter more large-scale, summer more convective. As the probability density function of wet events consists of the sum of large-scale and convective precipitation, it is relevant to consider winter and summer season separately. Moreover, spatial factors can be important for the amount and intensity of precipitation. Significant trends in summer precipitation amounts were restricted to coastal regions, assumedly explained by an increase in the sea surface temperature \citep{}(Lenderink et al. 2009). \citet{} Daniels et al. (2014) concluded that the distance to the coast is a more important factor for the seasonal mean precipitation and quantiles of wet-day precipitation amounts than soil type, topography or urbanization.   → therefore relevant to consider spatial differences between rain stations.
+To study hourly data vs daily data
+As hourly data provides the possibility to capture short-lasting, intensive convective precipitation, analysis thereof is essential regarding extremes;  EXAMPLES damage/relevance intensive showers. On a daily basis long-lasting, weak stratiform rain could add up to relatively high daily sum, but is significant in other cases. (f.e. ..). Convective rain showers important in precipitation extremes ; ELABORATE BH13, LM08, LM09, L 2011.
+
+\section{Master thesis; aim & structure}
+Here we attempt to understand this socially, ecologically and economically relevant topic. This master thesis aims at understanding how hourly extremes change in time and what the mechanism is behind these changes. In Chapter 2 the spatial differences in distribution of different hourly values, the amount of wet hours and intensity of extremes is studied, as well as the seasonal variability. In chapter 3 we address the question whether the frequency and/or intensity of extreme hourly values increases for 5 stations in the Netherlands. As scaling beyond that expected from Clausius-Clapeyron is controversial,  this research tries to verify in chapter 4 whether a super CC-scaling with temperature (T) and dewpoint temperature (Td) can also be found for 4 more stations in the Netherlands (De Kooy, Vlissingen, Maastricht and Eelde), next to the reference series of the Bilt. Thereby, the temperature dependent relation with extreme precipitation are considered separately for summer and winter season. To bring the research closer to the mechanism(s) behind the trends, we define rain events, allowing us to study changes in the duration and frequency of rain events (instead of hourly values). Furthermore, changes in the vertical instability are investigated by studying the Convective Available Potential Energy (CAPE) and changes in wind direction (Wd) are also accounted for. By combining the different factors (T, Td, Cape and Wd) in a Taylor diagram, we can investigate how much of the observed trends is explained by which factor. Moreover, the present work and the research of Lenderink and van Meijgaard (2009) concerning Western Europe (Netherlands, Belgium and Switzerland)  are extended with 4 observational records from Norway, Spain, Polen, Czech Republic and Germany. In Chapter … we investigate whether the same (spatial) trends and corresponding mechanisms in extremes are present in other parts of Europe. Chapter .. ? : Climate models are used to predict future change in precipitation extremes (Pelt et al, 2012; …) → is this valid, do models simulate extreme precipitation events well ?
+
+
+
+\section{Main questions}
+Paragraph 1 (Variability in (extreme) hourly rain sums in NL):
+What are the spatial and seasonal differences in the data series of hourly precipitation sums?:
+Are there any differences between the 5 stations in the probability density function and the cumulative density estimate?
+What are the spatial differences in mean and extreme hourly precipitation sums?
+Does the amount of wet hours a day varies a lot during a year?
+Are there significant changes between the monthly means and extreme intensities?
+Can we distinguish a summer and winter season regarding wetness and intensities?
+
+Paragraph 2 (Trends in NL):
+Does the intensity of extreme wet hours increase in time? (What is an extreme wet hour? Are there differences in trends in extreme precipitation between summer and winter season?)
+Do extreme wet hours occur more often now than in the past? (Does this result and the result found at question 2 say anything about future trends?, Summer and winter season differences in trends?)
+How do the intensity and frequency of extreme rain events change? If a positive trend in frequency is present, can this then be explained by an increase in duration of extreme rain events or an increase in amount of extreme events? (What is an extreme rain event?, Summer and winter season differences in trends?).
+
+Paragraph 3 (Mechanisms):
+1) How do trends in extreme precipitation and temperature correlate? Does this correlation hold when a distinction between summer and winter season trends in extreme precipitation is applied?
+2) Do trends in extreme precipitation fit better with dewpoint temperature than with temperature?
+3) Can changes in vertical instability (i.e. in CAPE) explain trends in extreme rain events/hours?
+4) What is the relation between trends in extreme rain events/hours and wind direction?
+5) To what degree do these factors explain the temporal variance within the intensity and frequency of extreme precipitation?
+
+
+
+
+
+\end{document}
