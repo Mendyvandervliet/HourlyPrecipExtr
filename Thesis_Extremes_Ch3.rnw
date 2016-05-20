@@ -77,11 +77,22 @@ In this chapter we will try to find an explanation for the observed intensificat
 
 \subsection{Theory}
 
-
 \subsubsection{Temperature}
 Temperature at the surface, as well as the background vertical profile, influences precipitation intensity and occurence in many ways. It plays a role into the entire chain; from moisture influx and cloud formation,precipitation production up to and including the falling process. In this section we describe briefly the temperature interaction with the saturation level, type of cloud, urban heat island effect and vertical uplift.
 
-First, the saturation level of an air parcel is determined by its temperature and pressure. The ability of air to hold water vapour increases with temperature (correcly phrased as: a higher equilibrium vapor pressure for a higher temperature, as air does not absorb water vapor). An increase in water vapour of an saturated air parcel without changing temperature or pressure will result in oversaturation. In most of the natural cases air must be at least saturated for condensation to occur, leading to cloud or fog formation \citep{Sumner1988}. The moment that the saturation vapor pressure ($e_s$) rises till the point it exerts the water vapor pressure ($e=e_s$), an equilibrium exist between the rate of condensation and evaporation and air is said to be saturated with respect to a plane surface of pure water at temperature T , and the pressure $e_s$ \citep[12-13]{Markowski2010}, \citep[80-81]{Wallace2006}. The expression of $e_s$ in T, is called the Clausius-Clapeyron equation,
+First, the saturation level of an air parcel is determined by its temperature and pressure. The ability of air to hold water vapour increases with temperature (correcly phrased as: a higher equilibrium vapor pressure for a higher temperature, as air does not absorb water vapor). Further elaboration of air's ability to hold moisture linked to (extreme) precipitation will follow in \ref{subsubsec:moist}.
+
+Second, we can also distinguish clouds based on their temperature: warm and cold clouds. Warm clouds are limited in formation, only beneath the 0 degrees Celsius isotherm. So that they only comprise water droplets in the stable phase, with coalescence involved in the production of precipitation. Therefore, these clouds have a lower vertical extent at middle and high latitudes, than at low latitudes. The higher intensity and amount of precipitation produced by warm clouds, is confined tot the warmer seasons and lower latitudes. So not really intense at high-latitude, only in summer \citep[110-111]{Sumner1988}.
+
+Third, the urban heat island effect is a temperature-driven phenomenon with associated characterstics in precipitation. Warm urban areas with enhanced convection can be compared to small island with sea-breeze systems, as cool surface air is drawn from rural areas inwards to feed the enhanced convection near the urban centre \citep[188]{Sumner1988}. Precipitation incidence and intensity may be enhanced in cities, as is demonstrated by \citet{Atkinson1975,Atkinson1977} for London. ALSO FOR NL CITIES?  The temperature is higher due to the lower albedo (urban fabrics and building materials) and the urban surface has a relatively high roughness which increases heat absorption and reduces wind speed. Not only the temperature, but also the concentration of CCN is higher in urban areas. \citet{Changnon1976} have indicated 25 \% higher summer (convectional) precipitation in urban areas, relative to the surrounding suburbs and countryside \citep[110-111]{Sumner1988}.
+
+Lastly, vertical uplift is also determined by the temperature of the air. The higher the temperature of air at the surface relative the air above it, the more buoyant and vertical instable the air is. A measure of the vertical instability is the Convective Available Potential Energy (CAPE). As CAPE is also available in our metadata, we will further discuss it's relation to temperature in the following paragraph.
+
+
+\subsubsection{Specific or Relative humidity (magnitude)}
+\label{subsubsec:moist}
+
+The specific humidity is the ratio between the mass of the water vapour in the sample and the total mass of the sample. It gives the actual amount of water vapour in an air sample.\citep{Sumner1988}. The specific humidity gives an indication about the level of saturation for a certain temperature and pressure. An increase in water vapour of an saturated air parcel without changing temperature or pressure will result in oversaturation. In most of the natural cases air must be at least saturated for condensation to occur, leading to cloud or fog formation \citep{Sumner1988}. The moment that the saturation vapor pressure ($e_s$) rises till the point it exerts the water vapor pressure ($e=e_s$), an equilibrium exist between the rate of condensation and evaporation and air is said to be saturated with respect to a plane surface of pure water at temperature T , and the pressure $e_s$ \citep[12-13]{Markowski2010}, \citep[80-81]{Wallace2006}. The expression of $e_s$ in T, is called the Clausius-Clapeyron equation,
 \begin{equation}
 \frac{d e_s}{d T} = \frac{l_v e_s}{R_v T^2},
 \end{equation}
@@ -151,18 +162,13 @@ ggplot(Clausius,aes(x=T))+
   \end{minipage}
 \end{figure}
 
-To investigate the change of the water vapor pressure with increasing temperature we took the derivative of the Clausius-Clapeyron equation to temperature. Reminding that $RH = e/e_s$, we can investigate what the percential change in relative humidity is for the whole temperature range for 1 degree Celsius increase. As we can deduce from Figure \ref{fig:e_s} the saturation vapor pressure increases rapidly with temperature. This means that more water vapor can be present in warmer air without reaching saturation. Therefore, the Clausius Clapeyron equation predicts that under the constraint of constant relative humidity \citep{Ingram2002} an increasing temperature leads to an exponential increase in specific humidity, which is the ratio of the mass of water vapor that could be held in saturation to the total mass of saturated air \citep{Trenberth1999,Allen2002,Pall2007,Pierrehumbert2007}. Hence, atmospheric moisture would increase at the same rate. The heaviest rainfall events are likely to occur when all available moisture in a volume of air is precipitated out effectively. The intensity of these extreme events is dependent on the intensity and therefore we might expect the highest quantiles of the rainfall distribution to increase in ratio with the Clausius Clapeyron equation \citep{Pall2007}.
+To investigate the change of the water vapor pressure with increasing temperature we took the derivative of the Clausius-Clapeyron equation to temperature. As we can deduce from Figure \ref{fig:e_s} the saturation vapor pressure increases rapidly with temperature. This means that more water vapor can be present in warmer air without reaching saturation. Therefore, the Clausius Clapeyron equation predicts that under the constraint of constant relative humidity \citep{Ingram2002} an increasing temperature leads to an exponential increase in specific humidity, which is the ratio of the mass of water vapor that could be held in saturation to the total mass of saturated air \citep{Trenberth1999,Allen2002,Pall2007,Pierrehumbert2007}. Hence, atmospheric moisture would increase at the same rate. The heaviest rainfall events are likely to occur when all available moisture in a volume of air is precipitated out effectively. The intensity of these extreme events is dependent on the intensity and therefore we might expect the highest quantiles of the rainfall distribution to increase in ratio with the Clausius Clapeyron equation \citep{Pall2007}.
 
 Figure \ref{fig:Des_dt} demonstrates that a certain increase in temperature has a larger impact on the saturation vapor pressure for colder temperatures, than for warmer temperatures. For T $< 0^{\circ}$ C $e_s$ increases with more  than 7\%, while for temperatures higher than 20$^{\circ}$ Celsius it is less than 6\%.
 
 For this reason, we would expect that any trends in extremes caused by global warming induced changes in moisture-holding capacity, are stronger visible for winter than for summer. (Look at magnitude differences between summer and winter trends!!). From Chapter 2 we learned that this is not the case. It could be because of different winter and summer mechanisms, where f.e. the summer precipitation is more dependent on relative humidity.
 
-Second, we can also distinguish clouds based on their temperature: warm and cold clouds. Warm clouds are limited in formation, only beneath the 0 degrees Celsius isotherm. So that they only comprise water droplets in the stable phase, with coalescence involved in the production of precipitation. Therefore, these clouds have a lower vertical extent at middle and high latitudes, than at low latitudes. The higher intensity and amount of precipitation produced by warm clouds, is confined tot the warmer seasons and lower latitudes. So not really intense at high-latitude, only in summer \citep[110-111]{Sumner1988}.
-
-Third, the urban heat island effect is a temperature-driven phenomenon with associated characterstics in precipitation. Warm urban areas with enhanced convection can be compared to small island with sea-breeze systems, as cool surface air is drawn from rural areas inwards to feed the enhanced convection near the urban centre \citep[188]{Sumner1988}. Precipitation incidence and intensity may be enhanced in cities, as is demonstrated by \citet{Atkinson1975,Atkinson1977} for London. ALSO FOR NL CITIES?  The temperature is higher due to the lower albedo (urban fabrics and building materials) and the urban surface has a relatively high roughness which increases heat absorption and reduces wind speed. Not only the temperature, but also the concentration of CCN is higher in urban areas. \citet{Changnon1976} have indicated 25 \% higher summer (convectional) precipitation in urban areas, relative to the surrounding suburbs and countryside \citep[110-111]{Sumner1988}.
-
-Lastly, vertical uplift is also determined by the temperature of the air. The higher the temperature of air at the surface relative the air above it, the more buoyant and vertical instable the air is. A measure of the vertical instability is the Convective Available Potential Energy (CAPE). As CAPE is also available in our metadata, we will further discuss it's relation to temperature in the following paragraph.
-
+(Reminding that $RH = e/e_s$, we can investigate what the percential change in relative humidity is for the whole temperature range for 1 degree Celsius increase.)
 
 \subsubsection{CAPE}
 
@@ -170,64 +176,38 @@ As explained in the theoretical background section (Chapter ?!) initial cooling 
 \begin{equation}
 CAPE = g \int_{z_1}^{z_2} B dz
 \end{equation}
-with g the acceleration due to gravity (m s$^{-2}$), $z_1$ the level of free convection, $z_2$ the equilibrium level and B the buoyancy force. Following the Skew-T Log P Diagram and Sounding Anlysis Remote Training Module, RTM-230 \citep{NWSTC2000}, CAPE is also expressed as:
+with g the acceleration due to gravity (m s$^{-2}$), $z_1$ the level of free convection (LFC), $z_2$ the equilibrium level (EL) and B the buoyancy force. Following the Skew-T Log P Diagram and Sounding Anlysis Remote Training Module, RTM-230 \citep{NWSTC2000}, CAPE is also expressed as:
 \begin{equation}
 CAPE = g \int_{z_1}^{z_2} \frac{T_vp - T_ve}{T_ve} dz
 \end{equation}
-in which $T_vp$ is the virtual temperature of the air parcel and $T_ve$ the virtual temperature of the environment. The units for CAPE are $J/kg$
+in which $T_vp$ is the virtual temperature of the air parcel and $T_ve$ the virtual temperature of the environment. The units for CAPE are $J/kg$. Studying CAPE is therefore a key to the possibility of convective storms \citep{ManualSynop}.
 
-Something about conditional instability!
-%(From: http://www.zamg.ac.at/docu/Manual/SatManu/main.htm?/docu/Manual/
-Not all situations with conditional instability are characterised by air parcels with CAPE. Thus, the moisture content of the air is important for knowing whether conditional instability actually contains the potential for parcels to become buoyant. In that case, an external source of energy must be supplied to the air mass to convert its potential instability into actual instability and lift the parcel through its condensation level to its Level of Free Convection (LFC) - that means, for instance, the change from potential instability to conditional instability. The amount of this supplied energy is known as the Convective Inhibition (CIN).
-From the LFC to the Equilibrium Level (EL), the parcel accelerates vertically, drawing the energy for this acceleration from the CAPE. )
-
-Studying CAPE is therefore a key to the possibility of convective storms \citep{ManualSynop}.
-
-Elaborate from: %http://www.weather.gov/media/lmk/soo/svr_parameters.pdf
-CAPE integrates a substantial portion of the thermodynamic information contained in a sounding. It is proportional to energy available for a rising parcel. CAPE provides an estimate of maximum updraft strength (Wmax) in convective storms by the relationship:
+In pre-thunder conditions CAPE values can range from a few hundreds up to thousands of J/kg, with maxima on the order of 5000-7000 J/kg \citep{ManualSynop}. The Storm Prediction Center of the National Oceanic and Atmospheric Administration (NOAA) divides CAPE values in four classes: "weak instability" (CAPE less than 1000 J kg$^{-1}$), "moderate instability" (CAPE between 1000-2500 J kg$^{-1}$), "strong instability" (CAPE from 2500-4000 J kg$^{-1}$) and "extreme instability" (CAPE greater than 4000 J kg$^{-1}$)(\citep{SPCNOAA}).The definition of CAPE does not include the existence of liquid water loading, entrainment, the vertical motions in the air or aerodynamical effects, which all decrease the value of CAPE. Therefore, in real world CAPE is ussualy an overestimation of the vertical instability and of updraft strenght {\citep{ManualSynop,SPCNOAA}}. As CAPE is  proportional to available energy for a rising parcel, it provides an estimate of maximal updraft strengt, W_max, in convective storms (\citep{SVRNOAA}):
 \begin{equation}
 W_max= \sqrt 2CAPE
 \end{equation}
-CAPE is a fundamental indicator of potential intensity of
-deep, moist convection. Operationally, CAPE is more popular
-than indices such as Lifted Index or K Index which uses
-temperat
-ure and dew point from only a few mandatory levels in
-a sounding. Weakness:
-SBCAPE will overestimate realized instability when soundings possess shallow moist layers. SBCAPE value alone does not account for effects of vertical distribution of CAPE.
-The estimates of maximum updraft strength (Wmax) based on CAPE are usually twice as high as in observed updrafts because of water loading and mixing effects. In well-organized convective storms, vertical velocity in updrafts are much closer to Wmax. Supercells can have stron
-g updrafts even when the static instability, as measured by CAPE, is modest (See McCaul and
-Weisman, 2001). This is due to vertical shear effects.
-
-From: http://www.zamg.ac.at/docu/Manual/SatManu/main.htm?/docu/Manual/
-
-CAPE values in pre-thunder conditions range from a few hundreds of J/kg up to thousands of J/kg. The greatest observed values are of the order of 5000-7000 J/kg.
-The definition of CAPE doesn't take into account the existence of entrainment, liquid water loading, aerodynamical effects or the vertical motions in the environment, which have a decreasing effect on the value of CAPE.
-CAPE can also be calculated with starting integration level not being the LFC, but instead, either a fixed level (e.g. 850 hPa), a lifted condensation level (LCL) or a convective condensation level (CCL). \citep{ManualSynop}
-
-From: http://www.spc.noaa.gov/exper/mesoanalysis/help/begin.html
-
-CAPE = Convective Available Potential Energy. CAPE is a measure of instability through the depth of the atmosphere, and is related to updraft strength in thunderstorms. SPC forecasters often refer to "weak instability" (CAPE less than 1000 Jkg-1), "moderate instability" (CAPE from 1000-2500 Jkg-1), "strong instability" (CAPE from 2500-4000 Jkg-1), and "extreme instability" (CAPE greater than 4000 Jkg-1). The CAPE in the sample sounding above is about 3200 Jkg-1 lifting the "virtual" surface parcel. In the real world, CAPE is usually an overestimate of updraft strength due to water loading and entrainment of unsaturated environmental air.
+CAPE is a central indicator of potential intensity of deep, moist convection. Surface based CAPE (sbCAPE) is .... , it overestimates instability for shallow moist layers, as it does not account for effects of vertical distribution of CAPE. The updrafts of supercells can nontheless be much stronger than indicated by CAPE, due to vertical shear effects \citep{Mccaul2001,SVRNOAA}.
 
 
-% Instability:
 
 
-% http://www.metoffice.gov.uk/media/pdf/7/e/Chapter_4._Convection__Showers.pdf
-% http://www.staff.science.uu.nl/~delde102/Thunderst.Predictors.pdf
-%
-% Hail conditions and instability indices : http://www.metoffice.gov.uk/media/pdf/7/e/Chapter_4._Convection__Showers.pdf
 
-\subsubsection{Specific or Relative humidity (magnitude)}
+((CAPE can also be calculated with starting integration level not being the LFC, but instead, either a fixed level (e.g. 850 hPa), a lifted condensation level (LCL) or a convective condensation level (CCL). \citep{ManualSynop}
+The estimates of maximum updraft strength (Wmax) based on CAPE are usually twice as high as in observed updrafts because of water loading and mixing effects. In well-organized convective storms, vertical velocity in updrafts are much closer to Wmax. \citep{SVRNOAA}))
 
-This the moisture content of an air parcel; ratio between the mass of the water vapour in the sample and the total mass of the sample. It gives the actual amount of water vapour in an air sample.\citep{Sumner1988}
+(((Something about conditional instability!
+%From: http://www.zamg.ac.at/docu/Manual/SatManu/main.htm?/docu/Manual/
+Not all situations with conditional instability are characterised by air parcels with CAPE. Thus, the moisture content of the air is important for knowing whether conditional instability actually contains the potential for parcels to become buoyant. In that case, an external source of energy must be supplied to the air mass to convert its potential instability into actual instability and lift the parcel through its condensation level to its Level of Free Convection (LFC) - that means, for instance, the change from potential instability to conditional instability. The amount of this supplied energy is known as the Convective Inhibition (CIN).
+From the LFC to the Equilibrium Level (EL), the parcel accelerates vertically, drawing the energy for this acceleration from the CAPE. )))
+
+
+
 
 \subsubsection{Wind shear}
-Vertical wind structure of the atmospheric environment:
-Severe local storm are associated with pronounced shifts in wind speeds and/or direction with height: wind shear. This wind shear can give a storm a self-perpetuating character, as it permits the continual introduction of fresh and moist air into the system at the lowel-level developing edge and the venting of used air aloft while the downdraught remains separated from the updraughts. Wind shear is therefore related to the lifetime of a storm (up to several hours). Some of these storm scan develop into larger storms delivering an hour or two of very intense precipitation at a point. The four types of these storms distinguished on the way of development are: supercell, multicell,  a collection of numerous individual precipitation cells as f.e. squall-line storms and mesoscale convective complexes.
+
+Severe local storm are associated with pronounced shifts in wind speeds and/or direction with height: wind shear. This wind shear can give a storm a self-perpetuating character, as it permits the continual introduction of fresh and moist air into the system at the lowel-level developing edge and the venting of used air aloft while the downdraught remains separated from the updraughts \citep[p. 156]{Sumner1988}. Wind shear is therefore related to the lifetime of a storm (up to several hours). Some of these storm scan develop into larger storms delivering an hour or two of very intense precipitation at a point. The four types of these storms distinguished on the way of development are: supercell, multicell,  a collection of numerous individual precipitation cells as f.e. squall-line storms and mesoscale convective complexes \citep[p. 156]{Sumner1988}.
 
 \subsubsection{CCN}
-(Possibility of occurrence and magnitude):
 The presence of CCN’s is vital to cloud formation, and their concentration may have an impact on the likelihood or intensity of precipitation.   Many of the so called aerosols, very small particles or liquid droplets that are suspended in the air for a long time, form nucleus on which condensation can occur. Their size is on the order 0.1 to 1 micron and they originates from industrial pollution or natural sources as sea salt spraying or dimethylsuplhide emission from oceans \citep{Sumner1988}. The bigger the size of an aerosol or water droplet the lower the saturation vapour pressure above its surface, and thus the higher the preference to condensation compared to evaporation as it is then less curved, so bonding forces are stronger. Whether aerosols are hygroscopic also determines how easily condensation can take place. The concentration of aerosols over oceans and windward coast is small in this comparatively clean air environment, but their size is often large, so that precipitation-sized droplets may easily form. In contrary, the air over continental areas contains more nuclei from terrestrial sources, which have a wider range of sizes, resulting in larger minimum cloud thickness for shower development as moisture is spread among more and smaller aerosols.
 
 \subsubsection{Topography}
@@ -235,8 +215,15 @@ Production of precipitation tied to a specific topographic barrier is called oro
 Factors of importance to orographic precipitation are: 1) Relative humidity and ϑe (equivalent potential temperature) and ϑw (wet-bulb potential temperature) of low-level air, 2) slope of the hill perpendicular tot he mountain, 3) strength of the wind component normal to the mountain, 4) depth of the feeder cloud, 5) precipitation rate from the feeder cloud, 6) rate of production condensate in the feeder cloud, 7) cloud water content and 8) rate of accretion or washout by the precipitation emanating from the seeder cloud \citep{Cotton1989}.
 
 
-\subsubsection{Weather code}
-Rewrite “” As mentioned: Precipitation is mostly produced by the Bergeron-Findeisen process, because of the considerable vertical development of the clouds (therefore exceeding the 0 degrees C isotherm) . so that very intense precipitation (sometimes in form of hail or ice pellets) is resultant.  The majority of severe local storms associated with self-perpetuating convectional systems, are characterized by significant hail production. “” From \citet{Sumner1988}.
+\subsubsection{Weather codes}
+Human-made visual observations indicated by "present weather" (ww) codes are available in our metadata for every station. This code, which is approved by the World Meteorological Organization, 100 different weather type are distinquised by two-digit numbers (0-99)(see \citet{Dai2001} for a complete list). Heavy precipitation is related to certain conditions in the cloud and at the surface. For example convectional precipitation, which is often intense in nature, is mostly produced by the Bergeron-Findeisen process. This stems from the considerable vertical development of the clouds (therefore exceeding the 0 degrees C isotherm), so that very intense precipitation (sometimes in form of hail or ice pellets) is resultant. The majority of severe local storms associated with self-perpetuating convectional systems, are characterized by significant hail production \citep{Sumner1988}. Conditions of hail and thunderstorms are listed here because of their simultaneous occurence with heavy precipitation.
+
+\paragraph{Hail}
+For the production of hail deep and strong convection is required. The following criteria can be used as a guideline for hail prediction: (1) cumulonimbus tops are colder than $-20^{\circ}$C and (2) the temperature path curve of the parcel is $4^{\circ}$C warmer than the environment curve just in between the LFC and EL and this gives cloud tops of 4500 meter. Another method, based on parcel curve, is: (1) measure the temperature difference at the point where the curve reaches $-20^{\circ}$C with the environment temperature. (2) if this difference is $\ge 5^{\circ}$C forecast hail, between $5-2.5^{\circ}$C forecast soft hail or rain and $\le 2.5^{\circ}$C$ forecast rain \citep{Brown1963,Ludlam1980,MET1997}.
+
+\paragraph{Lightning}
+Lightning occurs in vigorous convective clouds, in which ice particles and hail are thought be key players in charge generation. The majority of the lightning discharge originates from thunderstorms extending above the freezing level. However, for all-water clouds there are also well documented UK observations of lightning events \citep{Atkinson1989,Lee1986,Mason1972,MET1997}.
+
 
 
 \subsection{Identification of relationships}
