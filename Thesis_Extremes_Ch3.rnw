@@ -28,6 +28,8 @@ library(knitr)
 library(data.table)
 library(quantreg)
 library(HourlyPrecipExtr)
+library(reshape2)
+library(GGally)
 # set global chunk options
 opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
                echo=FALSE, fig.height=5, fig.width=5, #message=FALSE,
@@ -89,9 +91,8 @@ Third, the urban heat island effect is a temperature-driven phenomenon with asso
 Lastly, vertical uplift is also determined by the temperature of the air. The higher the temperature of air at the surface relative the air above it, the more buoyant and vertical instable the air is. A measure of the vertical instability is the Convective Available Potential Energy (CAPE). As CAPE is also available in our metadata, we will further discuss it's relation to temperature in the following paragraph.
 
 
-\subsubsection{Specific or Relative humidity (magnitude)}
+\subsubsection{Specific or Relative humidity}
 \label{subsubsec:moist}
-
 The specific humidity is the ratio between the mass of the water vapour in the sample and the total mass of the sample. It gives the actual amount of water vapour in an air sample.\citep{Sumner1988}. The specific humidity gives an indication about the level of saturation for a certain temperature and pressure. An increase in water vapour of an saturated air parcel without changing temperature or pressure will result in oversaturation. In most of the natural cases air must be at least saturated for condensation to occur, leading to cloud or fog formation \citep{Sumner1988}. The moment that the saturation vapor pressure ($e_s$) rises till the point it exerts the water vapor pressure ($e=e_s$), an equilibrium exist between the rate of condensation and evaporation and air is said to be saturated with respect to a plane surface of pure water at temperature T , and the pressure $e_s$ \citep[12-13]{Markowski2010}, \citep[80-81]{Wallace2006}. The expression of $e_s$ in T, is called the Clausius-Clapeyron equation,
 \begin{equation}
 \frac{d e_s}{d T} = \frac{l_v e_s}{R_v T^2},
@@ -182,9 +183,12 @@ CAPE = g \int_{z_1}^{z_2} \frac{T_vp - T_ve}{T_ve} dz
 \end{equation}
 in which $T_vp$ is the virtual temperature of the air parcel and $T_ve$ the virtual temperature of the environment. The units for CAPE are $J/kg$. Studying CAPE is therefore a key to the possibility of convective storms \citep{ManualSynop}.
 
-In pre-thunder conditions CAPE values can range from a few hundreds up to thousands of J/kg, with maxima on the order of 5000-7000 J/kg \citep{ManualSynop}. The Storm Prediction Center of the National Oceanic and Atmospheric Administration (NOAA) divides CAPE values in four classes: "weak instability" (CAPE less than 1000 J kg$^{-1}$), "moderate instability" (CAPE between 1000-2500 J kg$^{-1}$), "strong instability" (CAPE from 2500-4000 J kg$^{-1}$) and "extreme instability" (CAPE greater than 4000 J kg$^{-1}$)(\citep{SPCNOAA}).The definition of CAPE does not include the existence of liquid water loading, entrainment, the vertical motions in the air or aerodynamical effects, which all decrease the value of CAPE. Therefore, in real world CAPE is ussualy an overestimation of the vertical instability and of updraft strenght {\citep{ManualSynop,SPCNOAA}}. As CAPE is  proportional to available energy for a rising parcel, it provides an estimate of maximal updraft strengt, W_max, in convective storms (\citep{SVRNOAA}):
+In pre-thunder conditions CAPE values can range from a few hundreds up to thousands of $\frac{J}{kg}$, with maxima on the order of 5000-7000 kg$^{-1}$ \citep{ManualSynop}. The Storm Prediction Center of the National Oceanic and Atmospheric Administration (NOAA) divides CAPE values in four classes: "weak instability" (CAPE less than 1000 J kg$^{-1}$), "moderate instability" (CAPE between 1000-2500 J kg$^{-1}$), "strong instability" (CAPE from 2500-4000 J kg$^{-1}$) and "extreme instability" (CAPE greater than 4000 J kg$^{-1}$)(\citep{SPCNOAA}).
+
+% The definition of CAPE does not include the existence of liquid water loading, entrainment, the vertical motions in the air or aerodynamical effects, which all decrease the value of CAPE. Therefore, in real world CAPE is ussualy an overestimation of the vertical instability and of updraft strenght {\citep{ManualSynop,SPCNOAA}}. As CAPE is  proportional to available energy for a rising parcel, it provides an estimate of maximal updraft strengt, W_max, in convective storms (\citep{SVRNOAA}):
+
 \begin{equation}
-W_max= \sqrt 2CAPE
+W_max = \sqrt 2 CAPE
 \end{equation}
 CAPE is a central indicator of potential intensity of deep, moist convection. Surface based CAPE (sbCAPE) is .... , it overestimates instability for shallow moist layers, as it does not account for effects of vertical distribution of CAPE. The updrafts of supercells can nontheless be much stronger than indicated by CAPE, due to vertical shear effects \citep{Mccaul2001,SVRNOAA}.
 
@@ -216,28 +220,150 @@ Factors of importance to orographic precipitation are: 1) Relative humidity and 
 
 
 \subsubsection{Weather codes}
-Human-made visual observations indicated by "present weather" (ww) codes are available in our metadata for every station. This code, which is approved by the World Meteorological Organization, 100 different weather type are distinquised by two-digit numbers (0-99)(see \citet{Dai2001} for a complete list). Heavy precipitation is related to certain conditions in the cloud and at the surface. For example convectional precipitation, which is often intense in nature, is mostly produced by the Bergeron-Findeisen process. This stems from the considerable vertical development of the clouds (therefore exceeding the 0 degrees C isotherm), so that very intense precipitation (sometimes in form of hail or ice pellets) is resultant. The majority of severe local storms associated with self-perpetuating convectional systems, are characterized by significant hail production \citep{Sumner1988}. Conditions of hail and thunderstorms are listed here because of their simultaneous occurence with heavy precipitation.
+Human-made visual observations indicated by "present weather" (ww) codes are available in our metadata for every station. This code, which is approved by the World Meteorological Organization, 100 different weather type are distinquised by two-digit numbers (0-99)(see %\citet{Dai2001} for a complete list). Heavy precipitation is related to certain conditions in the cloud and at the surface. For example convectional precipitation, which is often intense in nature, is mostly produced by the Bergeron-Findeisen process. This stems from the considerable vertical development of the clouds (therefore exceeding the 0 degrees C isotherm), so that very intense precipitation (sometimes in form of hail or ice pellets) is resultant. The majority of severe local storms associated with self-perpetuating convectional systems, are characterized by significant hail production \citep{Sumner1988}. Conditions of hail and thunderstorms are listed here because of their simultaneous occurence with heavy precipitation.
 
 \paragraph{Hail}
-For the production of hail deep and strong convection is required. The following criteria can be used as a guideline for hail prediction: (1) cumulonimbus tops are colder than $-20^{\circ}$C and (2) the temperature path curve of the parcel is $4^{\circ}$C warmer than the environment curve just in between the LFC and EL and this gives cloud tops of 4500 meter. Another method, based on parcel curve, is: (1) measure the temperature difference at the point where the curve reaches $-20^{\circ}$C with the environment temperature. (2) if this difference is $\ge 5^{\circ}$C forecast hail, between $5-2.5^{\circ}$C forecast soft hail or rain and $\le 2.5^{\circ}$C$ forecast rain \citep{Brown1963,Ludlam1980,MET1997}.
+% For the production of hail deep and strong convection is required. The following criteria can be used as a guideline for hail prediction: (1) cumulonimbus tops are colder than $-20^{\circ}$C and (2) the temperature path curve of the parcel is $4^{\circ}$C warmer than the environment curve just in between the LFC and EL and this gives cloud tops of 4500 meter. Another method, based on parcel curve, is: (1) measure the temperature difference at the point where the curve reaches $-20^{\circ}$C with the environment temperature. (2) if this difference is $\ge 5^{\circ}$C forecast hail, between $5-2.5^{\circ}$C forecast soft hail or rain and $\le 2.5^{\circ}$C$ forecast rain \citep{Brown1963,Ludlam1980,MET1997}.
 
 \paragraph{Lightning}
 Lightning occurs in vigorous convective clouds, in which ice particles and hail are thought be key players in charge generation. The majority of the lightning discharge originates from thunderstorms extending above the freezing level. However, for all-water clouds there are also well documented UK observations of lightning events \citep{Atkinson1989,Lee1986,Mason1972,MET1997}.
 
 
 
+\subsection{Link to spatial and seasonal variability (CH1)}
+
+
+
 \subsection{Identification of relationships}
 
 Pearson correlation
+
+
+<<correctformat_heatmap>>=
+
+# Create datatable of all wet hours and corresponding metadata (P, I, Temperature, dewpoint temp., RH, U)
+#load("./inst/tussenStap/hrKNMI.rda")
+M <- hrKNMI[RH>0][, list(P=RH, I=I,T, TD, RH=U)]
+M_max <- hrKNMI[RH>0][, list(Pmax=max(RH), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(RH)),by=Date]
+M_maxi <- subset(M_max, select=c(Pmax, Imax, Tmax, TDmax,RHmax))
+
+# Helper function to reorder the correlation matrix :
+reorder_cormat <- function(cormat){
+  # Use correlation between variables as distance
+  dd <- as.dist((1-cormat)/2)
+  hc <- hclust(dd)
+  cormat <-cormat[hc$order, hc$order]
+}
+
+# Get upper triangle of the correlation matrix
+get_upper_tri <- function(cormat){
+  cormat[lower.tri(cormat)]<- NA
+  return(cormat)
+}
+@
+
+
+
+\begin{figure}[H]
+  \centering
+  \textbf{Heat map of Pearson correlation}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+<<Heatmap_all>>=
+# All hours
+heatmap(M)
+@
+    \caption{All hours}
+    \label{fig:Heatmap_all}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+<<Heatmap_maxi>>=
+# Maxima a day
+heatmap(M_maxi)
+@
+    \caption{Maxima}
+    \label{fig:Heatmap_maxi}
+  \end{minipage}
+  \caption{A heatmap with Pearson correlation coefficients of the variables: intensity (I),hourly precipitation sum (P), temperature(T), dewpoint temperature(TD) and relative humidity. Colouring from blue to red gives the strength of the relationship as is shown in the legend.}
+\end{figure}
+
+To have an easy and clear overview of what kind of relationships there can exist between multiple variables,
+we plotted a heatmap of correlation coefficient calculated with the Pearson method.
+
+% Relation to CAPE
+% 1) Daily maximum to daily max P and I
+% 2) Cumulative rain amount after CAPE measurement with CAPE value
+
+<<Pearson_CAPE>>=
+CAPE <- CAPEloading("./inst/extData/cape.txt")
+load("~/Documents/HourlyPrecipExtr/inst/tussenStap/CAPE.rda")
+sbCAPE_check <- CAPE[sbCAPE<5000][, list(sbCAPE,Dat)]
+hrKNMI_check <- hrKNMI[(STN==260)&(Year > 1992)][, ":="(Dat = format(date,"%Y-%m-%d %H"))]
+Compare <- merge(sbCAPE_check,hrKNMI_check,by="Dat",all.y=TRUE)
+Compare[ , N := length(sbCAPE[!is.na(sbCAPE)]), by = Date]
+Compare[ , Nmean := mean(N), by = Year]
+save(Compare, file="./inst/tussenStap/Compare.rda")
+@
+
+<<CAPE>>=
+load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
+#Compare[!is.na(sbCAPE)][, cor(sbCAPE,RH)]
+#=0.0208
+
+# As we are interested in the effect of CAPE variability on (extreme) precipitation
+# and considering that is known from literature that CAPE decrease again when it is already raining,
+# we investigate CAPE effect on RH with correlation matrices, in two ways
+# 1) comparing maxima CAPE values to max intensity, hourly rain and daily rain sum
+# 2) comparing the rain sum of all the hours after an hour of which the CAPE value is measured, with that (latest) CAPE value
+
+# 1) Maxima
+CAPE_day <- Compare[N>0][(Year > 1993) | (Month > 2)][, list(maxCAPE = max(sbCAPE, na.rm = TRUE), RHsum=sum(RH), maxI=max(I), N=mean(N)), by=Date]
+CAPE_day <- subset(CAPE_day,select=c(maxCAPE, RHsum, maxI, N))
+@
+
+<<Heatmap_maxiCAPE>>=
+heatmap(CAPE_day)
+@
+
+<<cumRH>>=
+# 2) Cum RH after CAPE measurement
+DT_Ctime <- Ctime(Compare[N>0][(Year > 1993) | (Month > 2)])
+save(DT_Ctime,file="./inst/tussenStap/DT_Ctime.rda")
+
+cumRH <- DT_Ctime[, list(RHsum=sum(RH)), by=Ctime]
+sbCAPE_check <- CAPE[(Year > 1993) | (Month > 2)][sbCAPE<5000][, list(sbCAPE,Dat)]
+sbCAPE_check[, Ctime := c(1:length(sbCAPE))]
+
+CAPE_cumRH <- merge(cumRH,sbCAPE_check, by="Ctime")
+#CAPE_cumRH[, cor(sbCAPE,RHsum)]
+#=0.0803031
+@
+
+
+
+Explain differences in extremes in and occurence of rain events.
+
+
+
+
 Cross-correlation of univariate series with lags
+
+Pre-whitening
+
 
 Exponential increase in I with T / TD,
 exponential decrease after 20 C ?? No only statistical effect;
-The fewer the data points to lower the chance for very high extremes.
+The fewer the data points the lower the chance for very high extremes.
 
 
 
 --> key variables
+
+
+
+
+
+
 Quantile regression of precipitation on key variables
 
 \subsection{Trend in key variables}
