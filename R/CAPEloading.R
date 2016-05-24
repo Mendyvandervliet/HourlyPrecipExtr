@@ -19,7 +19,7 @@ CAPEloading <- function(file){
   tmp <- merge(tmp,dates,by="nr") # Merge by index column
   tmp[, ":="(Date = as.Date(as.POSIXlt(strptime(date,"%Y%m%d%H%M"),cal="gregorian"))),by=nr] # make date object
   tmp[, ":="(Dat = format(strptime(date,"%Y%m%d%H%M"),"%Y-%m-%d %H")),by=nr]
-  tmp[, ':='(Year= year(Date), mon = mon+1)] # create year as YYYY, and mon from 1 to 12 instead of 0 to 11.
+  tmp[, ':='(Year= year(Date), Month=month(Date))] # create year as YYYY, and mon from 1 to 12 instead of 0 to 11.
   return(tmp)
 }
 #tmp[, ":="(Dat = format(as.POSIXlt(strptime(date,"%Y%m%d%H%M")),"%y-%m-%d %H:%M")),by=nr]
