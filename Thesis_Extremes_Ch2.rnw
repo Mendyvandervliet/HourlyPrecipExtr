@@ -675,6 +675,10 @@ save(p_flm_all, file="./inst/tussenStap/p_flm_all.rda")
 
 @
 
+
+Table ... shows multiple significant positive trends for intensity and decreasing trends in frequency. However, trends are not uniform for every quantile and spatially. So not a simple shift of the precipitation distribution, but changes in form. Note, that for frequency data only 60 points are considered, so the change of the overall shape can be influenced by few points.
+
+
 \subsection{Impacting events}
 
 To investigate the frequency of extreme events with a high potential impact, we will investigate the frequency of wet hours with an intensity between 5-10, 10-15, 15-20 and >20 mm/hr. For more intense hourly values there is to little data.
