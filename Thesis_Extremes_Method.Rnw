@@ -96,7 +96,9 @@ For trend analysis a high quality data set is desired, especially one whose vari
 \subsection{Definition Extremes}
 The indices used in this study are expressions of events occuring 1-45 times a year (?!), so including "high" to "moderate" precipitation extremes. Accordingly, the annual number of events is large enough to apply meaningfull trend analysis on 58 yr time series. Extreme events are defined using the 75,90,95,99,99.9 quantiles, so hours with the highest 25-0.1\% intensities. For the entire dataset with all hourly values the 99-99.9 \% express "moderate" extremes (occuring 10-85 times a year, whereas dry hours occuring ~ 88\% of the time ), however, we only apply full trend analysis on data consisting of 2-day maxima (the reason therefore will be further explained in \ref{subsec:Interdependency_of_data}). The 75-99.9 quantiles of this data set correspond to 1-45 times a year and intensities of $>$ 2-24 mm of accumulated precipitation per hour. These indices are chosen such that it is a high to moderate extreme, with corresponding impacting intensities and having enough data per year for trend analysis.
 
-
+((
+A couple of so-called ‘extreme indices’ are listed in AR5 which are widely used in literature. These indices are based on either the probability of occurrence of given quantities or on absolute or percentage threshold exceedances (relative to climatological reference period), but also some complex definitions about duration, intensity and persistence of extreme events are involved. \citep{IPCC2013}  These extreme indices have been selected on basis of their robust statistical properties, their applicability across a wide range of climate types and extensive data availability over space and time. These indices reflect more ‘moderate’ extremes, as they do not include 1 in 100 year events, but events taking place as often as 5\% or 10\% of the time. \citep{IPCC2013}  ((In general, statistical tests indicate changes in precipitation extremes are consistent with a wetter climate (Section 7.6.5), although with a less spatially coherent pattern of change than temperature, in that there are large areas that show increasing trends and large areas that show decreasing trends and a lower level of statistical significance than for temperature change \citep{Alexander2006,Donat2013a,Donat2013b}))
+))
 
 
 \subsection{Linear Trends}
@@ -197,4 +199,6 @@ link to quantile regression
 % In statistics, Markov chain Monte Carlo (MCMC) methods are a class of algorithms for sampling from a probability distribution based on constructing a Markov chain that has the desired distribution as its equilibrium distribution. The state of the chain after a number of steps is then used as a sample of the desired distribution. The quality of the sample improves as a function of the number of steps.
 %
 %
+Mechanism
+Starting with a theoretical framework in chapter 4 we decide which variables in our metadata can explain changes in precipitation. Moreover, we define key variables based on their correlation matrices and cross-correlation, on which quantile regression is applied (precipitation over key variable x) to focus on the extreme part of the precipitation distribution.
 \end{document}
