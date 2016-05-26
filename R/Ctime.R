@@ -20,4 +20,5 @@ Ctime <- function(tmp){
     }
     #print(i/len*100)
   }
+  return(tmp)
 }
