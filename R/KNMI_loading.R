@@ -7,7 +7,7 @@
 #' @export
 KNMI_loading <- function(file){
   tmp <- fread(file)
-  setnames(tmp,c("STN", "YYYYMMDD", "HH", "DD", "T", "TD", "DR", "RH", "U", "WW"))
+  setnames(tmp,c("STN", "YYYYMMDD", "HH", "DD","FH", "T", "TD", "DR", "RH", "U", "WW"))
   #tmp <- data.table(tmp)
   #Date <- as.PCICt(strptime(tmp$YYYYMMDD,"%Y%m%d"),cal="gregorian")
   tmp[, Date := as.Date(as.POSIXlt(as.PCICt(strptime(YYYYMMDD,"%Y%m%d"),cal="gregorian")))]
@@ -15,7 +15,7 @@ KNMI_loading <- function(file){
   tmp[, date := as.POSIXct(paste(Date,as.character(HH)), format="%Y-%m- %d %H")]
   tmp[, ':='(Year= year(Date), Month= month(Date), Day= mday(Date))]
   # Correct units
-  tmp[, ':='(RH = RH * 0.1, T = T * 0.1, TD = TD * 0.1, DR = DR * 0.1)] # RH in mm, T and Td in degrees Celsius, DR in hrs
+  tmp[, ':='(FH=FH * 0.1,RH = RH * 0.1, T = T * 0.1, TD = TD * 0.1, DR = DR * 0.1)] # RH in mm, T and Td in degrees Celsius, DR in hrs
   tmp[RH == -0.1] <- tmp[RH == -0.1][,RH := 0] # All negative values(meaning RH<0.05) become 0
   # Generate a column indicating season
   tmp[,Season := 0]
@@ -26,6 +26,9 @@ KNMI_loading <- function(file){
   # Generate a column Intensity
   tmp[, I := (RH/DR), by=date]
   tmp <- within(tmp, I[DR==0] <- 0)
+  # code all dry and dry hours with 0 and 1's.
+  hrKNMI[, code := 0]
+  hrKNMI <- within(hrKNMI, code[RH>0] <- 1)
   return(tmp)
 }
 
