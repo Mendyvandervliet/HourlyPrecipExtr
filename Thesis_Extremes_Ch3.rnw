@@ -294,7 +294,7 @@ we plotted a heatmap of correlation coefficient calculated with the Pearson meth
 % 1) Daily maximum to daily max P and I
 % 2) Cumulative rain amount after CAPE measurement with CAPE value
 
-<<Pearson_CAPE>>=
+<<Pearson_CAPE,cache=TRUE>>=
 CAPE <- CAPEloading("./inst/extData/cape.txt")
 load("~/Documents/HourlyPrecipExtr/inst/tussenStap/CAPE.rda")
 sbCAPE_check <- CAPE[sbCAPE<5000][, list(sbCAPE,Dat)]
@@ -325,7 +325,7 @@ CAPE_day <- subset(CAPE_day,select=c(maxCAPE, RHsum, maxI, N))
 heatmap(CAPE_day)
 @
 
-<<cumRH>>=
+<<cumRH,cache=TRUE>>=
 # 2) Cum RH after CAPE measurement
 DT_Ctime <- Ctime(Compare[N>0][(Year > 1993) | (Month > 2)])
 save(DT_Ctime,file="./inst/tussenStap/DT_Ctime.rda")
