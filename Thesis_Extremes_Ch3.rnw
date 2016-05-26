@@ -28,8 +28,9 @@ library(knitr)
 library(data.table)
 library(quantreg)
 library(HourlyPrecipExtr)
-library(reshape2)
 library(GGally)
+library(reshape2)
+
 # set global chunk options
 opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
                echo=FALSE, fig.height=5, fig.width=5, #message=FALSE,
@@ -240,12 +241,12 @@ Pearson correlation
 
 
 <<correctformat_heatmap>>=
-
+load("./inst/tussenStap/hrKNMI.rda")
 # Create datatable of all wet hours and corresponding metadata (P, I, Temperature, dewpoint temp., RH, U)
 #load("./inst/tussenStap/hrKNMI.rda")
-M <- hrKNMI[RH>0][, list(P=RH, I=I,T, TD, RH=U)]
-M_max <- hrKNMI[RH>0][, list(Pmax=max(RH), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(RH)),by=Date]
-M_maxi <- subset(M_max, select=c(Pmax, Imax, Tmax, TDmax,RHmax))
+M <- hrKNMI[RH>0][, list(P=RH, I=I,T, TD, RH=U,FH=FH)]
+M_max <- hrKNMI[RH>0][, list(Pmax=max(RH), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(U),FHmax=max(FH)),by=Date]
+M_maxi <- subset(M_max, select=c(Pmax, Imax, Tmax, TDmax,RHmax,FHmax))
 
 # Helper function to reorder the correlation matrix :
 reorder_cormat <- function(cormat){
@@ -294,8 +295,12 @@ we plotted a heatmap of correlation coefficient calculated with the Pearson meth
 % 1) Daily maximum to daily max P and I
 % 2) Cumulative rain amount after CAPE measurement with CAPE value
 
-<<Pearson_CAPE,cache=TRUE>>=
+<<CAPEloading>>=
 CAPE <- CAPEloading("./inst/extData/cape.txt")
+save(CAPE,file="~/Documents/HourlyPrecipExtr/inst/tussenStap/CAPE.rda")
+@
+
+<<Pearson_CAPE,cache=TRUE>>=
 load("~/Documents/HourlyPrecipExtr/inst/tussenStap/CAPE.rda")
 sbCAPE_check <- CAPE[sbCAPE<5000][, list(sbCAPE,Dat)]
 hrKNMI_check <- hrKNMI[(STN==260)&(Year > 1992)][, ":="(Dat = format(date,"%Y-%m-%d %H"))]
@@ -303,7 +308,10 @@ Compare <- merge(sbCAPE_check,hrKNMI_check,by="Dat",all.y=TRUE)
 Compare[ , N := length(sbCAPE[!is.na(sbCAPE)]), by = Date]
 Compare[ , Nmean := mean(N), by = Year]
 save(Compare, file="./inst/tussenStap/Compare.rda")
+
 @
+
+
 
 <<CAPE>>=
 load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
@@ -325,11 +333,14 @@ CAPE_day <- subset(CAPE_day,select=c(maxCAPE, RHsum, maxI, N))
 heatmap(CAPE_day)
 @
 
-<<cumRH,cache=TRUE>>=
+<<Ctime,cache=TRUE>>=
 # 2) Cum RH after CAPE measurement
 DT_Ctime <- Ctime(Compare[N>0][(Year > 1993) | (Month > 2)])
 save(DT_Ctime,file="./inst/tussenStap/DT_Ctime.rda")
+@
 
+<<cumRH>>=
+load("./inst/tussenStap/DT_Ctime.rda")
 cumRH <- DT_Ctime[, list(RHsum=sum(RH)), by=Ctime]
 sbCAPE_check <- CAPE[(Year > 1993) | (Month > 2)][sbCAPE<5000][, list(sbCAPE,Dat)]
 sbCAPE_check[, Ctime := c(1:length(sbCAPE))]
@@ -339,6 +350,37 @@ CAPE_cumRH <- merge(cumRH,sbCAPE_check, by="Ctime")
 #=0.0803031
 @
 
+<<>>=
+# relation hourly P sum and I with wind strength
+# Colored with wind direction regime
+   c("N","NE","E","SE","S","SW","W","NW")
+Wind <- hrKNMI[DD<361]
+Wind[, DDregime := cut(DD,breaks=c(-1,seq(22,359,by=45),360),labels=c("N","NE","E","SE","S","SW","W","NW","N2"))]
+Wind <- within(Wind,DDregime[DDregime=="N2"] <- "N")
+
+
+ggplot(Wind) + geom_point(aes(x=FH,y=RH,colour=DDregime)) + geom_quantile(I~FH, tau=0.99))
+
+ggplot(Wind) + geom_bar(aes(x=FH))
+# lognormal
+
+
+
+M_RH[,RH_bin := .bincode(M_RH$RH, breaks=c(seq()))]
+wind direction
+0:360 graden
+divide into N - NE - E - SE - S - SW - W - NW (8 regimes)
+
+
+
+hrKNMI[, meanP=mean(RH) ,  by=T]
+
+
+@
+
+
+
+The highest correlations between the maximum hourly precipitation sum and the other variables, are those of maxima in T (0.412), TD (0.402). Also contributing, but less importance are correlation of FHmax(0.23) and RHmax (0.171) with Pmax. For intensity the relation with Tmax is even a bit higher (0.423), but for TD, FHmax and RHmax lower (respectievely 0.384,0.175 and 0.088).
 
 
 Explain differences in extremes in and occurence of rain events.
