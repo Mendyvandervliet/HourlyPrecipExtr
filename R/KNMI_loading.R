@@ -27,8 +27,8 @@ KNMI_loading <- function(file){
   tmp[, I := (RH/DR), by=date]
   tmp <- within(tmp, I[DR==0] <- 0)
   # code all dry and dry hours with 0 and 1's.
-  hrKNMI[, code := 0]
-  hrKNMI <- within(hrKNMI, code[RH>0] <- 1)
+  tmp[, code := 0]
+  tmp <- within(tmp, code[RH>0] <- 1)
   return(tmp)
 }
 
