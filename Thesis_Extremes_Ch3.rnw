@@ -243,9 +243,8 @@ Pearson correlation
 <<correctformat_heatmap>>=
 load("./inst/tussenStap/hrKNMI.rda")
 # Create datatable of all wet hours and corresponding metadata (P, I, Temperature, dewpoint temp., RH, U)
-#load("./inst/tussenStap/hrKNMI.rda")
 M <- hrKNMI[RH>0][, list(P=RH, I=I,T, TD, RH=U,FH=FH)]
-M_max <- hrKNMI[RH>0][, list(Pmax=max(RH), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(U),FHmax=max(FH)),by=Date]
+M_max <- hrKNMI[RH>0][, list(Pmax=max(RH), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(U),FHmax=max(FH)),by=list(Date,Season)]
 M_maxi <- subset(M_max, select=c(Pmax, Imax, Tmax, TDmax,RHmax,FHmax))
 
 # Helper function to reorder the correlation matrix :
