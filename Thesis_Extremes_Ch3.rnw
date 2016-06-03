@@ -31,6 +31,7 @@ library(HourlyPrecipExtr)
 library(GGally)
 library(reshape2)
 library(cowplot)
+library(lattice)
 
 # set global chunk options
 opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
@@ -238,16 +239,22 @@ Lightning occurs in vigorous convective clouds, in which ice particles and hail 
 
 \subsection{Identification of relationships}
 
-Pearson correlation
+<<Plotting_points_allvariables>>=
+M_trial <- subset(M_allmax, select=c("Tmax", "TDmax","CAPEmax","FHmax","Pmax"))
+plot(M_trial)
+@
+
+
+\subsubsection{Pearson correlation}
 
 
 <<correctformat_heatmap>>=
 load("./inst/tussenStap/hrKNMI.rda")
 # Create datatable of all wet hours and corresponding metadata (P, I, Temperature, dewpoint temp., RH, U)
 M <- hrKNMI[RH>0][, list(P=RH, I=I,T, TD, RH=U,FH=FH)]
-M_max <- hrKNMI[RH>0][, list(Pmax=max(RH), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(U),FHmax=max(FH)),by=list(Date,Season)]
+M_max <- hrKNMI[RH>0][, list(Pmax=max(RH), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(U),FHmax=max(FH),DD_maxP=DD[which.max(RH)]),by=list(Date,Season)]
+save(M_max,file="./inst/tussenStap/M_max.rda")
 M_maxi <- subset(M_max, select=c(Pmax, Imax, Tmax, TDmax,RHmax,FHmax))
-
 # Helper function to reorder the correlation matrix :
 reorder_cormat <- function(cormat){
   # Use correlation between variables as distance
@@ -263,7 +270,17 @@ get_upper_tri <- function(cormat){
 }
 @
 
-
+<<>>=
+library(ggcorrplot)
+#library(Hmisc)
+# cormatrix = rcorr(as.matrix(M_maxi), type='spearman')
+# cordata = melt(cormatrix$r)
+# ggplot(cordata, aes(x=Var1, y=Var2, fill=value))+   geom_tile() + xlab("") + ylab("")
+# or
+corr <- round(cor(M_maxi,method="spearman"), 2)
+p.mat <- cor_pmat(corr)
+ggcorrplot(p.mat, hc.order = TRUE,type = "lower",lab=TRUE)
+@
 
 \begin{figure}[H]
   \centering
@@ -325,12 +342,13 @@ load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
 # 2) comparing the rain sum of all the hours after an hour of which the CAPE value is measured, with that (latest) CAPE value
 
 # 1) Maxima
-CAPE_day <- Compare[N>0][(Year > 1993) | (Month > 2)][, list(maxCAPE = max(sbCAPE, na.rm = TRUE), RHsum=sum(RH), maxI=max(I), N=mean(N)), by=Date]
-CAPE_day <- subset(CAPE_day,select=c(maxCAPE, RHsum, maxI, N))
+CAPE_day <- Compare[N>0][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE), RHsum=sum(RH), maxI=max(I), N=mean(N)), by=Date]
+save(CAPE_day,file="./inst/tussenStap/CAPE_day.rda")
+CAPE <- subset(CAPE_day,select=c(CAPEmax, RHsum, maxI, N))
 @
 
 <<Heatmap_maxiCAPE>>=
-heatmap(CAPE_day)
+heatmap(CAPE)
 @
 
 <<Ctime,cache=TRUE>>=
@@ -351,6 +369,22 @@ CAPE_cumRH <- merge(cumRH,sbCAPE_check, by="Ctime")
 @
 
 <<Wind>>=
+load("./inst/tussenStap/CAPE_day.rda")
+load("./inst/tussenStap/M_max.rda")
+M_CAPE <- subset(CAPE_day,select=c(CAPEmax,Date))
+M_allmax <- merge(M_max,M_CAPE,by="Date")
+
+M_allmax[, Wind_maxP := 0]
+M_allmax <- within(M_allmax, Wind_maxP[(DD_maxP>337)|(DD_maxP<23)] <- "N")
+M_allmax <- within(M_allmax, Wind_maxP[(DD_maxP>22)&(DD_maxP<68)] <- "NE")
+M_allmax <- within(M_allmax, Wind_maxP[(DD_maxP>67)&(DD_maxP<113)] <- "E")
+M_allmax <- within(M_allmax, Wind_maxP[(DD_maxP>112)&(DD_maxP<158)] <- "SE")
+M_allmax <- within(M_allmax, Wind_maxP[(DD_maxP>157)&(DD_maxP<203)] <- "S")
+M_allmax <- within(M_allmax, Wind_maxP[(DD_maxP>202)&(DD_maxP<248)] <- "SW")
+M_allmax <- within(M_allmax, Wind_maxP[(DD_maxP>247)&(DD_maxP<293)] <- "W")
+M_allmax <- within(M_allmax, Wind_maxP[(DD_maxP>292)&(DD_maxP<338)] <- "NW")
+
+save(M_allmax,file="./inst/tussenStap/M_allmax.rda")
 # relation hourly P sum and I with wind strength
 # Colored with wind direction regime
 #    c("N","NE","E","SE","S","SW","W","NW")
@@ -382,7 +416,9 @@ CAPE_cumRH <- merge(cumRH,sbCAPE_check, by="Ctime")
 
 The highest correlations between the maximum hourly precipitation sum and the other variables, are those of maxima in T (0.412), TD (0.402). Also contributing, but less importance are correlation of FHmax(0.23) and RHmax (0.171) with Pmax. For intensity the relation with Tmax is even a bit higher (0.423), but for TD, FHmax and RHmax lower (respectievely 0.384,0.175 and 0.088).
 
+\subsubsection{Plotting key variables}
 For these important factors (maxima in T, TD and CAPE) we plotted point their distributions, and with respect to hourly precipitation sums point clouds and mean and quantile lines. We differentiated between summer and winter to have a better understanding of seasonal differences in precipitation explained by the key variables.
+
 
 
 <<PmaxvsTmax>>=
@@ -470,7 +506,7 @@ plot_grid(plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), ncol = 1, nrow 
 ## Plots showing relation Pmax and CAPE, differentiated on season
 load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
 
-CAPE_day <- Compare[N>0][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE),
+CAPE_day <- Compare[N>0][(HH==11)|(HH=17)][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE),
                                                      RHsum=sum(RH), Pmax=max(RH),Imax=max(I), N=mean(N)),by=list(Date,Season)]
 M_CAPEmax <- subset(CAPE_day,select=c(Pmax,CAPEmax,Season))[(Season=="Summer")|(Season=="Winter")][CAPEmax<2500]
 Q_CAPEbin <- M_CAPEmax[,CAPE_bin := .bincode(CAPEmax, breaks=seq(0,2500,50),include.lowest=TRUE)]
@@ -501,11 +537,90 @@ plot_grid(plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), ncol = 1, nrow 
 In summer we have high temperature (mainly between 12-24$^{\circ}$), dewpoint temperature (most values between9-20$^{\circ}$) and CAPE values (mainly between 0-2500 J kg$^{-1}$), compared to winter. In winter CAPE rarely exceeds 500 J kg$^{-1}$. Maxima in hourly precipitation sums are more sensitive for changes in high/summer temperature and dewpoint temperature, than for lower/winter values. For both temperature as dewpoint temperature a positive relationship exist with precipitation. However, for CAPE a slight stronger increase of maximum precipitation sums with increase in winter/lower CAPE is observed.
 The same factors plotted against intensity maxima is similar in characterstics and patterns.
 
-Multiple regression
+\subsubsection{Lead-lag relationships}
+
+
+
+\subsubsection{Multiple regression}
 
 <<>>=
+load("./inst/tussenStap/M_allmax.rda")
+
+fit1 <- lm(Pmax ~ Tmax + TDmax + CAPEmax, data=M_allmax)
+fit2 <- lm(Pmax ~ TDmax + CAPEmax, data=M_allmax)
+
+#fit3 <- lm(CAPEmax ~ Tmax, data=M_allmax) --> CAPEmax is well explained from Tmax
+#fit4 <- lm(Pmax ~ Tmax + TDmax, data=M_allmax) --> less good without CAPE
+
+summary(fit1)
+summary(fit2)
+# Check whether residuals of fits have normal distribution
+ggplot(fit1) + geom_histogram(aes(x=residuals(fit1)),binwidth=0.5)
+ggplot(fit2) + geom_histogram(aes(x=residuals(fit2)),binwidth=0.5)
+
+M_allmax <- within(M_allmax, Season <- factor(Season), Wind_maxP <- factor(Wind_maxP))
+@
+Significance of relations
+With TDmax and CAPEmax significant at 0.001, with Tmax at 0.05
+
+Linear correlation coef:
+With Tmax 0.063, with TDmax 0.1518, with CAPEmax 0.002
+
+Is standard error at least an order of magnitude less than the coefficient estimate (rule of thumb)
+0.0305811 (T), 0.0319947 (TD), 0.0001236 (CAPE) ; for TDmax and CAPE this is the case
+
+R squared - how much do the variables explain the variance
+~21.5\% of the variance in P maxima is described by Tmax, TDmax and CAPEmax
+
+As CAPEmax and TDmax have most significant relation to Pmax, we visualize this fit with 3D figures.
+<<Plotting_multiplereg>>=
+col_seas <- c("#CC6600","#009966","#FF0000","darkblue")
+cloud(Pmax ~ TDmax+CAPEmax | Wind_maxP, data = M_allmax, groups=Season, pch=20,
+      col.point=col_seas,
+      screen = list(z= 30, x = -60),
+      key = list(title = "P max", corner= c(1,1),
+                 points= list(pch = 19, col = col_seas),
+                 text= list(levels(M_allmax$Season)),space = 'top', columns = nlevels(M_allmax$Season)))
+@
+
+
+
+
+<<>>=
+#No summer and winter difference
+
+x <- Q_CAPEbin[Season=="Summer"]
+merge(Q_CAPEbin,Q_TDbin)
+
+DT_bin <- M_allmax[(TDmax>-0.1) &(TDmax<18.1)][CAPEmax<2500][,":="(TD_bin = .bincode(TDmax, breaks=seq(0,18,0.2),include.lowest=TRUE),CAPE_bin = .bincode(CAPEmax, breaks=seq(0,2500,25),include.lowest=TRUE))]
+
+
+# Calculate mean Pmax, 95 and 99% quantiles for each bin, per season
+DT_bin <- DT_bin[,list(Pmeanmax=mean(Pmax),CAPEmeanmax=mean(CAPEmax),TDmeanmax=mean(TDmax),freq=.N),by=list(CAPE_bin,TD_bin,Season)]
+# Show only summer and winter season, and for bins with N, number of measurements, higher than 100
+DT_bin <- DT_bin[(Season=="Summer")|(Season=="Winter")][order(CAPE_bin)][freq>10]
+
+#g <- expand.grid(x=DT_bin$CAPEmeanmax ,y = DT_bin$TDmeanmax)
+
+wireframe(Pmeanmax ~ CAPEmeanmax*TDmeanmax,data=DT_bin,groups=Season,scales = list(arrows = FALSE),drape= TRUE,aspect= c(2,1),colorkey= TRUE)
+# --> out of bound
+
+##EXAMPLE
+# x <- seq(-pi,pi, len = 20)
+# y <- seq(-pi,pi, len = 20)
+# g <- expand.grid(x= x, y = y)
+# g$z <- sin(sqrt(g$x^2
+# + g$y^2))
+# wireframe(z
+# ~ x * y, g, drape
+# = TRUE,
+# aspect
+# = c(3,1),
+# colorkey
+# = TRUE)
 
 @
+
 
 
 To investigate whether these positive relationships between maxima in hourly precipitation sums and T, TD and CAPE are lead-lag relationships, we study the cross-correlation figures of the different combinations.
@@ -539,13 +654,13 @@ The fewer the data points the lower the chance for very high extremes.
 --> key variables
 
 
-
-
-
-
+\subsubsection{Quantile regression}
+??
 Quantile regression of precipitation on key variables
 
-\subsection{Trend in key variables}
+\subsection{Lead-lag}
+
+\subsection{Trends in key variables}
 
 quantile regression time
 % \begin{thebibliography}{9}
