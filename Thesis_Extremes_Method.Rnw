@@ -4,6 +4,8 @@
 %Packages
 
 \usepackage{float}
+\usepackage{amsmath,amsfonts}
+\newcommand{\R}{\mathbb{R}}
 \usepackage{graphicx}
 \usepackage{textcomp,gensymb}
 \usepackage{color}
@@ -14,7 +16,6 @@
 \usepackage{hyperref}
 \usepackage{filecontents}
 \usepackage[backend=bibtex,natbib=true, sorting=nyt,style=authoryear]{biblatex}
-
 
 \bibliography{references}
 %\addbibresource{references.bib}
@@ -52,6 +53,10 @@ In this section an overview is given of the method involved in this work. Firstl
 \subsubsection{Time and place}
 For the first part of this thesis rain gauge data on an hourly resolution is used from five stations in the Netherlands.  Taking into consideration the need for having a long as possible consistent time serie as well as data which is spatially representative for different parts of the country, we were left with data from the following stations: de Kooy(235), De Bilt(260), Eelde(280), Vlissingen(310) and Maastricht(380), of which the location is shown in Figure \ref{fig:KaartStationsKNMI}. For each station metadata is available on hourly resolution of which the following variables are used in this study: time, hourly precipitation sum, temperature, dew point temperature, wind direction … As our focus of interest is precipitation extremes and their lifetime is often on the subhourly to hourly scale, we take into consideration a high resolution as well as a long enough time period to be able to detect trends. For the period from 01-01-1958 till 31-12-2015 coherent time series are present, which are easy to be compared and simultaneous analysed. Only CAPE data is more restricted in time and place. These Surface-based Cape observations are derived from radiosonde measurements at the Bilt from 01-03-1993 to 17-12-2015 is investigated, calculated as follows;….  In contrast to the other data, CAPE data also differs in resolution, from a mean of 4 a day to 1 a day in the course of time, with a maximum of 6 on days which were thought to be meteorological interesting.
 
+Implement: The reason to look at the statistics of wet events only is that these are less dependent on variations in the atmospheric circulation (Lenderink et al.,2007), which gives better statistics and enables us to better detect the influence
+of atmospheric moisture on precipitation extremes. From: http://www.hydrol-earth-syst-sci.net/15/3033/2011/hess-15-3033-2011.pdf
+
+
 \begin{figure}
   \centering
   \includegraphics[width=0.7\linewidth]{/usr/people/vliet/Documents/HourlyPrecipExtr/figure/KaartStationsKNMI.png}
@@ -85,120 +90,203 @@ ggplot(Nmean) + geom_bar(aes(x=Year,y=Nmean),stat="identity") + theme_bw()
   \end{minipage}
 \end{figure}
 
-\subsubsection{Instruments}
+\subsubsection{Type of data and instruments}
 
+In this thesis the variables investigated are listed in the following table.
+
+
+table
+
+name, unit - type of instrument - resolution
+
+on hourly resolution includes precipitation in mm,
+Precipitation intensity is defined as the mean hourly intensity in mm hr^{-1}, so the accumulated rain amount divided by 1 hour time. CAPE is computed from ... .
 
 
 \subsubsection{Data quality}
 For trend analysis a high quality data set is desired, especially one whose variability consist solely of changes in weather and climate. This is the definition of an homogeneous climate time series \citep{Freitas2013}. Nonetheless, long instrumental records are rarely homogeneous, for example due to station relocations, changes of rain gauge type, and changes in the rain gaug site \citep{Buishand2013,Freitas2013}. Although much attention has been devoted to homogeneity testing and adjusting for inhomogeneities, methods thereof are not considered here for multiple reasons. First of all, inventing and applying homogenization tests for hourly data is a time consuming and difficult task and would not fit within the framework of this thesis. Secondly, there are no excisting homogenization tests programs available on hourly resolution to implement easily.Thirdly, homogenization tests in which neighbouring stations are used in pairwise comparison would not be suited here due to the large spatial distance between the stations (and there are no other neigbouring stations matching in resolution and length of dataset). A possible way of correcting for instrumental errors is by comparing the automatic rain gauges with the hand rain gauges, as a study of \citet{Brandsma2014} concludes that the former measures annually 5-8\% lower than the latter. This can be explained by errors in evaporation values due to a warming element in the automatic rain gauge and comparitively less favorable aerodynamic shape \citep{STOWA2004}. However, there are several limitations to this correction. The timing of manual measurement is less thrustworthy, especially in case of extreme precipitation resulting in large absolute differences. Moreover, the correction factor as applied by \citet{Buishand1988} (multiplying every hour by the factor, $f=D/P$, with D the daiy sum of the manual rain gauge and P of the automatic rain gauge.) is not valid when errors are bigger for higher rain intensities or wind speeds. Besides, an underestimation of automatic is not that relevant for trends in extremes. As the underestimation is consistent in time, we can still deduce a trend. In addition, the manual and automatic rain gauges at all sites are placed further from each other in the course of time (?! De Bilt 1994). The larger the distance and the more local the rain events of interest, the smaller the value of this correction technique. As intense convective rain events can be very local, this is a serious limitation. This leads us to the conclusion that the proposed types of correction are not worthwhile to apply on our data. (?! But time periods)
 
-\section{Linear trend analysis}
-\subsection{Definition Extremes}
-The indices used in this study are expressions of events occuring 1-45 times a year (?!), so including "high" to "moderate" precipitation extremes. Accordingly, the annual number of events is large enough to apply meaningfull trend analysis on 58 yr time series. Extreme events are defined using the 75,90,95,99,99.9 quantiles, so hours with the highest 25-0.1\% intensities. For the entire dataset with all hourly values the 99-99.9 \% express "moderate" extremes (occuring 10-85 times a year, whereas dry hours occuring ~ 88\% of the time ), however, we only apply full trend analysis on data consisting of 2-day maxima (the reason therefore will be further explained in \ref{subsec:Interdependency_of_data}). The 75-99.9 quantiles of this data set correspond to 1-45 times a year and intensities of $>$ 2-24 mm of accumulated precipitation per hour. These indices are chosen such that it is a high to moderate extreme, with corresponding impacting intensities and having enough data per year for trend analysis.
 
+\section{Definition Extremes}
+A couple of so-called ‘extreme indices’ are listed in the Fifth Assessment Report of the IPCC report which are widely used in literature. These indices are based on either the probability of occurrence of given quantities or on absolute or percentage threshold exceedances (relative to climatological reference period), but also some complex definitions about duration, intensity and persistence of extreme events are involved. \citep{IPCC2013}  These extreme indices have been selected on basis of their robust statistical properties, their applicability across a wide range of climate types and extensive data availability over space and time. These indices reflect more ‘moderate’ extremes, as they do not include 1 in 100 year events, but events taking place as often as 5\% or 10\% of the time \citep{IPCC2013}.
+
+The indices used in this study are expressions of events occuring $1-45$ times a year , so including \enquote{high} to \enquote{moderate} precipitation extremes. Accordingly, the annual number of events is large enough to apply meaningfull trend analysis on 58 yr time series. Extreme events are defined using the 75,90,95,99,99.9 quantiles, so hours with the highest $25-0.1$\% intensities. Quantiles are cutpoints partitioning a probability distribution into contiguous intervals, expressed as the values above which $100$-$\tau$ (where $\tau$ is f.e. 75\%, the 75\% quantile) of the highest values are situated. For the entire dataset with all hourly values the 99-99.9 \% express \enquote{moderate} extremes (occuring 10-85 times a year, whereas dry hours occuring ~ 88\% of the time ),
+however, we only apply full trend analysis on data consisting of 2-day maxima (the reason therefore will be further explained in \ref{subsec:Interdependency_of_data}). The $75-99.9$ quantiles of this data set correspond to $1-45$ times a year and intensities of > $2-24$ mm hr$^{-1}$ of accumulated precipitation per hour. Here, the 99 and 99.9 \% quantiles represents the \enquote{high} extremes, with frequencies of approximately $0.18$ and 2 times per year. The 75, 90, 95 \% quantiles belong to values occuring $\pm$ 10, 18 and 45 times a year. These indices are chosen such that the extremes selected have impacting intensities($>$ $1.6-6$ mm hr$^{-1}$ for \enquote{moderate} extremes and > $\pm 8-50$ mm/hr for \enquote{high} extremes), while having enough data per year for trend analysis.
+
+\section{Trends}
+
+In chapter two trend analysis is applied on intensity and frequency (wet hours a day ? ) data for every station.
+
+
+\subsection{Simple linear trend}
+
+To detect and quantify historical climate trends often the linear component of the change over time is estimated. The strengths and weaknesses of this approach are well understood as it is frequently and widely applied (PAPERS!, IPCC2013). (von Storch and Zwiers, 1999; Wilks, 2006). In linear trend modelling the way in which the trend is dependent on the sampling distribution (Gaussian, lognormal or otherwise) and the residuals on the trend line has to be considered carefully. Moreover, uncertainty and serial correlation in the data have to be taken into account(Von Storch, 1999; Santer et al., 2008). Two different methods of linear regression are used in this study; fitting linear regression model by the ordinary least square approach and by linear quantile regression depending on the sampling distribution and the type of result interested in.
+
+\subsubsection{Least-square regression fitting}
+
+%From: http://www.ecd.bnl.gov/pubs/BNL-79819-2008-JA.pdf
+As illustrated in Figures 1..the ordinary least square (OLS) estimate of Y on X will minimize
+the  squared  vertical  distance,$\sum{y_i - \beta_0 - \beta_1 x_i}^2$ from  the  points  to  the  regression  line.  T
+he  OLS estimate of the slope is $\hat{\beta_1} = \frac{S_{xy}}{S_yy}$ This  is  the  case  when $\lambda = \inf$  in  the  general structural modelling  approach. Similarly, the OLS estimate of X on Y would minimize the horizontal distance to the regression line. The latter  is also called the reverse regression. The OLS is suitable when only one of the two variables is random.
+
+! write little piece
+%From IPCC, http://www.climatechange2013.org/images/report/WG1AR5_ALL_FINAL.pdf p. 179-180:
+The quantification and visualization of temporal changes are assessed in this chapter using a linear trend model that allows for firstorder autocorrelation in the residuals (Santer et al., 2008; Supplementary Material 2.SM.3).
+
+Confidence band; uncertainty are computed using ...
+(?? The 90\% confidence interval quoted is solely that arising from sampling uncertainty in estimating the trend.
+Parametric and other remaining uncertainties (Box 2.1), for which estimates are provided with some data sets, are not included in the trend estimates shown here, so that the same method can be applied to all data sets considered.)
+
+
+\subsubsection{Quantile regression}
+
+Quantile regression can be viewed as an optimatization of a linear $\tau$-dependent fit to a certain data set, thereby estimating the $\tau$-th quantiles of the response variable. As described in Koenker and Basset (1978 !!) we can describe the minimization problem to obtain the $\tau$-th sample quantile of data serie $y$ as
+
+\begin{equation} \label{eq:sample_quant}
+  \min_{\beta\in\R} \sum_{t=1}^{T} \rho_{\tau} (x_s(t) - \beta)
+\end{equation}
+
+where $\rho_{\tau}(u) = u(\tau - I (u<0))$
+To solve a linear quantile fit, we specify the $\tau$-th conditional quantile function as $Q_y(\tau|x) = x'\beta(\tau)$ and rewrite \ref{eq:sample_quant}
+
+\begin{equation} \label{eq:cond_quant}
+ \min_{\beta\in\R} \sum_{t=1}^{T} \rho_{\tau} (x_s(t) - x'\beta(\tau))
+\end{equation}
+
+Complementing the least square method in the use of estimating conditional mean models, quantile regression not only provides a more robust alternative for estimating the main tendency of the response, but also offers the possibility to investigate better the conditional distribution of the response \citep{Koenker2005}. Quantiles are more relevant for spatial comparison then counts of exceedance over thresholds (Klein Tank and Können 2003), as they correspond to the same part of the distribution for all stations, Multiple studies use linear regression for changes in seasonal or annual quantiles. However, when high quantiles are calculated from small samples these can be biased. Therefore, quantile regression is used to overcome this problem \citep{Wasko2014,Roth2015}.
 ((
-A couple of so-called ‘extreme indices’ are listed in AR5 which are widely used in literature. These indices are based on either the probability of occurrence of given quantities or on absolute or percentage threshold exceedances (relative to climatological reference period), but also some complex definitions about duration, intensity and persistence of extreme events are involved. \citep{IPCC2013}  These extreme indices have been selected on basis of their robust statistical properties, their applicability across a wide range of climate types and extensive data availability over space and time. These indices reflect more ‘moderate’ extremes, as they do not include 1 in 100 year events, but events taking place as often as 5\% or 10\% of the time. \citep{IPCC2013}  ((In general, statistical tests indicate changes in precipitation extremes are consistent with a wetter climate (Section 7.6.5), although with a less spatially coherent pattern of change than temperature, in that there are large areas that show increasing trends and large areas that show decreasing trends and a lower level of statistical significance than for temperature change \citep{Alexander2006,Donat2013a,Donat2013b}))
-))
+From \citet{Wasko2014} In this paper, we highlight limitations in the binning approach and present quantile regression as an alternative to the above process. Quantile regression allows estimation of this scaling directly and, unlike binning, is unbiased with sample size.
+A Mann-Kendall test could also be applied to test the hypothesis of a monotonic trend in the seasonal or annual quantiles. Though, this approach does not visualize the trend itself. Although, linear modelling is broadly accepted, it is not flexible enough when working with long measurement records which encounter possible phases of stagnation. In this case monotone quantile regression can be used. ))
+
+Quantile regression was performed using the R package \enquote{quantreg} \citep{Koenker2013}. The default method for computing quantile regression is a modified version of the Barrodale and Roberts algorithm for l1-regression, described in  detail in \citet{Koenker1987,Koenker1994}.For large data sets (n $> 10000$) we use Frisch-Newton interior point method (see \citet{Koenker2005} for more information) to calculate quantile regression.
 
 
-\subsection{Linear Trends}
-
-From IPCC, http://www.climatechange2013.org/images/report/WG1AR5_ALL_FINAL.pdf p. 179-180:
-Historical climate trends are frequently described and quantified by estimating the linear component of the change over time (e.g., AR4). Such linear trend modelling has broad acceptance and understanding based on its frequent and widespread use in the published research assessed in this report, and its strengths and weaknesses are well known (von Storch and Zwiers, 1999; Wilks, 2006). Challenges exist in assessing the uncertainty in the trend and its dependence on the assumptions about the sampling distribution (Gaussian or otherwise), uncertainty in the data, dependency models for the residuals about the trend line, and treating their serial correlation (Von Storch, 1999; Santer et al., 2008). The quantification and visualization of temporal changes are assessed in this chapter using a linear trend model that allows for firstorder autocorrelation in the residuals (Santer et al., 2008; Supplementary Material 2.SM.3). Trend slopes in such a model are the same as ordinary least squares trends; uncertainties are computed using an approximate method. The 90\% confidence interval quoted is solely that arising from sampling uncertainty in estimating the trend. Structural uncertainties, to the extent sampled, are apparent from the range of estimates from different data sets. Parametric and other remaining uncertainties (Box 2.1), for which estimates are provided with some data sets, are not included in the trend estimates shown here, so that the same method can be applied to all data sets considered.
-
-
-\subsection{Extreme values}
-Distribution, implications,
-link to quantile regression
-%
-% \subsection{Quantiles and quantile regression}
-% - Explain what are quantiles (elaborate),
-% - Explain what is quantile regression
-% - Pro s quantile regression
-% As quantiles correspond to the same part of the distribution for all stations, they are more relevant for spatial comparison then counts of exceedance over thresholds (Klein Tank and Können 2003). Multiple studie s use linear regression for changes in seasonal or annual quantiles. However, when high quantiles are calculated from small samples these can be biased. Therefore, quantile regression is used to overcome this problem (Roth, 2015).  A Mann-Kendall test could also be applied to test the hypothesis of a monotonic trend in the seasonal or annual quantiles. Though, this approach does not visualize the trend itself. Although, linear modelling is broadly accepted, it is not flexible enough when working with long measurement records which encounter possible phases of stagnation.
-% The default method for computing quantile regression is a modified version of the Barrodale and Roberts algorithm for l1-regression, described in  detail in Koenker and d’Orey (1987,1994).
-% For large data sets (n $> 10000$) we use Frisch-Newton interior point method to calculate quantile regression.
-%
 % - Extra: Monotone quantile regression
 
-% \subsection{Interdependency of data} \label{subsec:Interdependency_of_data}
-% Explain what is it, why important for linear trend analysis
-%
-% From: https://datajobs.com/data-science-repo/Time-Series-Analysis-Guide.pdf:
-% The model described in this chapter is auto-regressive, integrated, moving average, called an ARIMA (p, d, q) model. The auto-regressive element, p, represents the lingering effects of preceding scores. The integrated element, d, represents trends in the data, and the moving average element, q, represents the lingering effects of preceding random shocks. A big question is how lingering is lingering? That is, do you have to take into account just the previous score (or shock) or do you get a better model if you take into account two or more of the previous scores (or shocks)?
-% The first three steps in the analysis, identification, estimation, and diagnosis, are devoted to modeling the patterns in the data. The first step is identification in which autocorrelation functions (ACFs) and partial autocorrelation functions (PACFs) are examined to see which of the potential three patterns are present in the data. Autocorrelations are self-correlations of the series of scores with itself, removed one or more periods in time; partial autocorrelations are self-correlations with intermediate autocorrelations partialed out. Various auto-regressive and moving average patterns leave distinctive footprints on the autocorrelation and partial autocorrelation functions. When the time series is long, there are also tendencies for measures to vary periodically, called seasonality, periodicity, or cyclic in time-series jargon. For example, viral infections peak during the winter months, as do calories and alcohol consumed. Thus, seasonality is another form of autocorrelation frequently seen in data sets. Periodic variation occurs over shorter time periods as well. For example, quality of manufacturing differs over days of the week, peaking in mid-week. And calorie and alcohol consumption also increase over the weekend. These patterns are also identified using ACFs and PACFs and accounted for in the model. Time-series analysis is more appropriate for data with autocorrelation than, say, multiple regression, for two reasons. The first is that there is explicit violation of the assumption of independence of errors. The errors are correlated due to the patterns over time in the data. Type I error rate is substantially increased if regression is used when there is autocorrelation. The second is that the patterns may either obscure or spuriously enhance the effect of an intervention unless accounted for in the model. The second step in modeling the series is estimation in which the estimated size of a lingering auto-regressive or moving average effect is tested against the null hypothesis that it is zero. The third step is diagnosis, in which residual scores are examined to determine if there are still patterns in the data that are not accounted for. Residual scores are the differences between the scores predicted by the model and the actual scores for the series. If all patterns are accounted for in the model, the residuals are random. In many applications of time series, identifying and modeling the patterns in the data are sufficient to produce an equation, which is then used to predict the future of the process. This is called forecasting, the goal of many applications of time series in the economic arena. However, often the goal is to assess the impact of an intervention. The intervention
-% A word of caution about using multiple regression techniques with time series data: because of the autocorrelation nature of time series, time series violate the assumption of independence of errors.  Type I error rates will increase substantially when autocorrelation is present.  Also, inherent patterns in the data may dampen or enhance the effect of an intervention; in time series analysis, patterns are accounted for within the analysis. From: \url{http://userwww.sfsu.edu/efc/classes/biol710/timeseries/timeseries1.htm}
-% From \url{https://www.google.nl/url?sa=t&rct=j&q=&esrc=s&source=web&cd=3&ved=0ahUKEwic7NP69p_LAhXJYpoKHU6fAA4QFggsMAI&url=https%3A%2F%2Fwww.cfainstitute.org%2Flearning%2Fproducts%2Fpublications%2Finv%2FDocuments%2Fquantitative_chapter10.pptx&usg=AFQjCNG1xw0kJNkEfd7tTdJPtfW4MrcFoQ&sig2=avtIb9k9mAHA0I3rh5OF_Q&bvm=bv.115339255,d.bGs&cad=rja:}
-% Are the results of our trend model estimation valid?
-% Trend models, by their very construction, are likely to exhibit serial correlation.
-% In the presence of serial correlation, our linear regression estimates are inconsistent and potentially invalid.
-% Use the Durbin–Watson test to establish whether there is serial correlation in the estimated model.
-% If so, it may be necessary to transform our data or use other estimation techniques.
-% + explanation about AR (see pdf)
-%
-% \subsection{Autocorrelation and partial autocorrelation}
-% Blocks of length > lags, explain  method to make data independent
-% Options independent fit (no autoregression):
-% Option 1
-% On basis of acf/pacf choose period of high dependency → choose max value a 48hr, or a week , to have approx. independent variable
-% Then quantile regression
-% Maybe verify if residuals have still autocorrelation
-% Test of significance : take into account that a bit of dependency is still in there
-%
-% Significance autocorrelation precipitation: 2 dagen fysisch argument; winter depressie blijft 2 dagen
-%
-% Option 2
-% Make a regression fit
-% Examine ARIMA structure
-% Use maximum likelihood to simultaneously estimate the regression model using ARIMA for the residuals
-% Examine ARIMA structure of sample residuals from the model in step 3. If white noise is present, the model is complete. If not, continue to asjust the ARIMA model for the errors until the residuals are white noise.
-%
-% Papers
-%
-% \subsection{Testing and significance}
-% Testing: H0 hypothesis of Stationarity against linear trend
-% With QR we can test the null hypothesis that the quantile of interest is constant over time, i.e.
-% H0:  Qi == Beta
-% against the alternative that it is non-decreasing, i.e.
-% H1: Qi <= … <= Qn
-% with n representing the nth timestep.
-% ( Testing: H0 hypothesis of linear trend against monotone increasing trend
+\subsection{Time dependency of data} \label{subsec:Interdependency_of_data}
+Explain what is it, why important for linear trend analysis
+
+Linear regression estimates can be inconsisent and potentially invalid in the presence of serial correlation.
+%From \url{https://www.google.nl/url?sa=t&rct=j&q=&esrc=s&source=web&cd=3&ved=0ahUKEwic7NP69p_LAhXJYpoKHU6fAA4QFggsMAI&url=https%3A%2F%2Fwww.cfainstitute.org%2Flearning%2Fproducts%2Fpublications%2Finv%2FDocuments%2Fquantitative_chapter10.pptx&usg=AFQjCNG1xw0kJNkEfd7tTdJPtfW4MrcFoQ&sig2=avtIb9k9mAHA0I3rh5OF_Q&bvm=bv.115339255,d.bGs&cad=rja:}
+Koenker(2005, pp.128) pointed out that the typical IID (idependent and identically distributed errors) condition is most of the time imposed on the regression error terms for both the mean- and quantile regression. Therefore, it is important to correct for autocorrelation when applying quantile regression to detect a trend. Autocorrelation is serial correlation or cross-correlation of a signal with itself at different points in time. Partial autocorrelations are serial correlations with intermediate autocorrelations removed. Based on the autocorrelation function (acf) and partial autocorrelation function (pacf) repeating time dependent pattern can be recognized. To have a time independent dataset a sampling spacing larger than the significant lags of these patterns can be chosen. (?! maybe check with acf of residuals)
+
+
+
+\subsection{Testing and significance}
+
+Whether least square or quantile fits on the independent data are significant, has to be tested. First, we start with an hypothesis of stationary against a linear trend. In the case of stationarity the fitted value (f.e. the quantile of interest) is constant over time, i.e.
+\begin{equation}
+H_0: Q_i == \beta
+\end{equation}
+with the time step i,
+or
+\begin{equation}
+H_0: \alpha == 0
+\end{equation}
+
+This can be tested against the alternative that it is increasing or decreasing, i.e.
+\begin{equation}
+H_1: Q_{-n} \le Q_i \le Q_{n}
+\end{equation}
+or
+\begin{equation}
+H_1: Q_i = \alpha_0 + \alpha_1 * i, a\lpha_1 > 0
+\end{equation}
+with n indicating the nth timestep.
+
+% (( Testing: H0 hypothesis of linear trend against monotone increasing trend
 % H0: Qi = alpha_0 + alpha_1 * i, alpha_1 > 0
 % Against the one-sided montone trend alternative, i.e.
 % Qi = alpha_0 + i *n ,
-% with n as timestep. )
-% Significance: We apply a Monte Carlo permutation test to calculate the p-values needed to be able to reject or accept the H0 hypothesis. This test captures the spatio-temporal correlation structure of the data.
-% Significance test:
-% Define H0, H1
-% Choose test: Permutation test
-% Find test statistic distribution by Monte Carlo resampling
-% Compute p-value (test statistic)
-% Statistical decision (reject or accept H0)
+% with n as timestep. ))
+
+Here, we test whether the slopes of the fitted regression lines deviate significantly from zero. In a 9999-Monte Carlo permutation test we calculate the slopes of 9999 permutated versions of one time serie, to compare with the observed slope of one single regression. This test captures the spatio-temporal correlation structure of the data. The corresponding p-values are computed as $p= \frac{\sum \alpha_{obs} > \alpha_{perm)}{N}$, with $\alpha_{obs}$ the slopes of the observed values, \alpha_{perm) the slopes of the permutated series and N the number of of permutations. By comparing the p-value to the 1\%,5\%,95\% and 99\% confidence levels in the distribution of all slopes, the observed regression fits can be assigned a significant negative, positive or non-significant trend. Thereby rejecting or accepting the $H_0$ hypothesis.
+
+The reason a permutation test is chosen, is because this is a non-parametric test test. Parametric approaches (f.e. z-,t-, or F-test) assume that the data is normally distributed, while a non-parametric (f.e permutation test) can be applied without the assumption that the data follow a normal distribution \citep{Srinivasan}. A permutation (randomization) test is an resampling and exact test.(!! Explain what does this mean??). A basic premise of the permutation test is that the observations are exchangeable under the null hypothesis \citep{Srinivasan}, so there should be no difference in location or method of measurement between the data. Although one data set consist of measurements at only one location, there could be tiny changes in the measurement settings of that sites in 58 years.
+
+A major disadvantage of permutation tests is that they can be very demanding in computational power, therefore it is worthwile to use a Monte carlo approach. With this approach we mean a repeated random sampling (with an specific order). So instead of calculating the slope of every possible order of a serie of almost 9570 observated values (would give 9570! outcomes). As the data set consist of so many points, the chances to have an identical ordered serie in 9999 random sampling is extremely low ($(9999-1)!\frac{1}{9570!}*\frac{1}{9570!} --> \frac{1}{9141!}).
+
+
 %
-% Why permutation test: parametric approaches (f.e. z-, t- or F-test) assume that the data follow a normal distribution. Permutation test (randomization tests) can be applied without the assumption of normal distributed data. This approach is an resampling and exact test (what does this mean??).
-% ((Elaborate: Under H0 (the null hypothesis ), some of the data are exchangeable.  We permute (rearrange) the data by shuffling their labels of treatments, and then calculate our T.S. on each permutation. The collection of
-% T.S. from the permuted data constructs the distribution under H0.  …. We can see from this case normalization is useful for deal with real data in which is not perfectly “exchangeable” (Voetnoot nr 15)
+% \subsection{Extreme values}
+% Distribution, implications,
+% link to quantile regression
+
+
+\section{Mechanism}
+?! only intensity?
+A comprehenisve study into the mechanism behind the observed trends is carried out in chapter 4. First, we start with a theoretical framework to find precipitation-related variables. Moreover, we define key variables based on their correlation matrices and plotting patterns (precipitation over key variable x). Furthermore, lead-lag relationships are investigated and multiple regression is applied. (?! quantile regression is applied  to focus on the extreme part of the precipitation distribution. Finally, on the variable(s) which are the most likely to cause changes in precipitation, quantile regression in time carried out. The similarity in type and magnitude of a detected trend determines the likelyhood of an explanatory mechanism.
+
+\subsection{Identification}
+To investigate whether and what kind of relationships exist between the variables in our metadata we follow three steps in order to get closer to the key variables of interest. Correlation matrices of the variables which are related to precipitation based on literature gives a first-hand overview of the strength of any possible linear relationships. Plotting of the most promising variables against precipitation differentiated on season gives more information about the type and seasonal-dependance of the relation, whether this is linear(non-linear) and for which spectrum the correlation is best. To determine whether the relationships show any causality and in which direction, the correlation for each lag is considered. At last, trend analysis on the variable(s) explaining precipitation changes is applied to verify whether these are responsible for the intensification of hourly precipitation extremes. (?! and frequency)
+
+
+\subsubsection{Pearson and Spearman correlation}
+The correlations of the variables which are related to precipitation based on literature are shown in a heat map
+all data vs max -> extremes
+
+What is Pearson
+%https://statistics.laerd.com/statistical-guides/pearson-correlation-coefficient-statistical-guide.php
+
+Non-normality
+% http://d-scholarship.pitt.edu/8056/1/Chokns_etd2010.pdf
+% http://link.springer.com.proxy.library.uu.nl/article/10.1007/s10459-010-9222-y/fulltext.html
+% --> also for non-normal data Pearson can be used.
+
+But difference between Pearson and Spearman says something about linearity vs monotone increase of trends
+% From:http://www.gene-quantification.org/artusi-corr-2002.pdf,
+% http://www.degruyter.com.proxy.library.uu.nl/dg/viewarticle.fullcontentlink:pdfeventlink/$002fj$002fquageo.2011.30.issue-2$002fv10117-011-0021-1$002fv10117-011-0021-1.pdf?t:ac=j$002fquageo.2011.30.issue-2$002fv10117-011-0021-1$002fv10117-011-0021-1.xml
+%http://support.minitab.com/en-us/minitab-express/1/help-and-how-to/modeling-statistics/regression/supporting-topics/basics/a-comparison-of-the-pearson-and-spearman-correlation-methods/
+
+additional info
+% http://www.statisticssolutions.com/correlation-pearson-kendall-spearman/
+
+
+How to make simple heatmaps, also Spearman:
+%http://www.sthda.com/english/wiki/ggcorrplot-visualization-of-a-correlation-matrix-using-ggplot2
+%http://proven-inconclusive.com/blog/spearman_correlation_heat_map_with_correlation_coefficient_and_significance_in_r.html
+
+\subsubsection{Plotting}
+
+In order to study better linearity/monoticity of the relationships, we just plot the maxima of the important variables against precipitation maxima. Differences in the number of measurements for each unit of a variable can influence the fit, therefore we consider the distribution of each variable. When needed we apply binning of the variable to reduce the influence of distribution. The number of observations per bin must be $>$ .... For each bin the mean and the 95\% quantiles is calculated and a line is fitted through all the means and quantiles. As only the maxima are considered, the 95\% quantiles represent \enquote{high} extremes with values till 25 mm hr{-1}. Furthermore, all the three plots per variable are differentiated on season.
+
+
+
+\subsubsection{Spatial differences explained?}
+??!
+
+\subsection{Lead-lag relationships}
+
+correlation for every lag , frequency > ...
+for lag=0, looked at the delta P over delta variable, before and after max.
+
+
+
+
+\subsection{Quantile regression}
+?? more than quantile regression for P data
+
+
+\subsection{}
+
+Various auto-regressive and moving average patterns leave distinctive footprints on the autocorrelation and partial autocorrelation functions.  Time-series analysis is more appropriate for data with autocorrelation than, say, multiple regression, for two reasons. The first is that there is explicit violation of the assumption of independence of errors. The errors are correlated due to the patterns over time in the data. Type I error rate is substantially increased if regression is used when there is autocorrelation. The second is that the patterns may either obscure or spuriously enhance the effect of an intervention unless accounted for in the model.
+
+
+% % From: https://datajobs.com/data-science-repo/Time-Series-Analysis-Guide.pdf:
+% cite as Time-Series  Analysis.[Internet]  [cited  2014  July  8].  Available  from: https://datajobs.com/data-science-repo/Time-Series-Analysis-Guide.pdf
+% The first three steps in the analysis, identification, estimation, and diagnosis, are devoted to modeling the patterns in the data. The first step is identification in which autocorrelation functions (ACFs) and partial autocorrelation functions (PACFs) are examined to see which of the potential three patterns are present in the data.
 %
-%  The basic premise is to use only the assumption that it is possible that all of the treatment groups are equivalent, and that every member of them is the same before sampling began (i.e. the slot that they fill is not differentiable from other slots before the slots are filled). An important assumption behind a permutation test is that the observations are exchangeable under the null hypothesis. An important consequence of this assumption is that tests of difference in location (like a permutation t-test) require equal variance.   → Testing for 1 location each, so no location difference.
-% The major down-side to permutation tests are that they
-% Can be computationally intensive and may require "custom" code for difficult-to-calculate statistics. This must be rewritten for every case.  → therefore Monte Carlo
-% Are primarily used to provide a p-value. The inversion of the test to get confidence regions/intervals requires even more computation.
-% conclusion (which is either or ) is correct with probability at least as large as . ( will typically be chosen to be extremely small, e.g. 1/1000.) Stopping rules to achieve this have been developed[14] which can be incorporated with minimal additional computational cost.))
+% ARMA
+% % From: https://datajobs.com/data-science-repo/Time-Series-Analysis-Guide.pdf:
+% The model described in this chapter is auto-regressive, integrated, moving average, called an ARIMA (p, d, q) model. The auto-regressive element, p, represents the lingering effects of preceding scores. The integrated element, d, represents trends in the data, and the moving average element, q, represents the lingering effects of preceding random shocks. A big question is how lingering is lingering? That is, do you have to take into account just the previous score (or shock) or do you get a better model if you take into account two or more of the previous scores (or shocks)?
 %
-% As Permutation test  … we use the Monte Carlo approach.  (Voetnoot nr 15)
+% The second step in modeling the series is estimation in which the estimated size of a lingering auto-regressive or moving average effect is tested against the null hypothesis that it is zero. The third step is diagnosis, in which residual scores are examined to determine if there are still patterns in the data that are not accounted for. Residual scores are the differences between the scores predicted by the model and the actual scores for the series. If all patterns are accounted for in the model, the residuals are random. In many applications of time series, identifying and modeling the patterns in the data are sufficient to produce an equation, which is then used to predict the future of the process. This is called forecasting, the goal of many applications of time series in the economic arena. However, often the goal is to assess the impact of an intervention. The intervention
 %
 %
-% Two side permutation test, as we want know whether a trend is increasing (so not stationary, or decreasing.
-% One side: beta (slope of trend) = 0 or non zero.
-%
-% What is MC : http://www.jstor.org.proxy.library.uu.nl/stable/2346974?seq=1#page_scan_tab_contents
-%
-% Monte Carlo experiments: Monte Carlo methods (or Monte Carlo experiments) are a broad class of computational algorithms that rely on repeated random sampling to obtain numerical results. They are often used in physical and mathematical problems and are most useful when it is difficult or impossible to use other mathematical methods. Monte Carlo methods are mainly used in three distinct problem classes:[1] optimization, numerical integration, and generating draws from aprobability distribution.
-% Poisson distribution: is a discrete probability distribution that expresses the probability of a given number of events occurring in a fixed interval of time and/or space if these events occur with a known average rate and independently of the time since the last event.[1] The Poisson distribution can also be used for the number of events in other specified intervals such as distance, area or volume. The Poisson distribution has the following properties: – The mean of the distribution is equal to μ . – The variance is also equal to μ.
-%
-% In statistics, Markov chain Monte Carlo (MCMC) methods are a class of algorithms for sampling from a probability distribution based on constructing a Markov chain that has the desired distribution as its equilibrium distribution. The state of the chain after a number of steps is then used as a sample of the desired distribution. The quality of the sample improves as a function of the number of steps.
 %
 %
-Mechanism
-Starting with a theoretical framework in chapter 4 we decide which variables in our metadata can explain changes in precipitation. Moreover, we define key variables based on their correlation matrices and cross-correlation, on which quantile regression is applied (precipitation over key variable x) to focus on the extreme part of the precipitation distribution.
+%
+%
+% Multiple regression
+% % A word of caution about using multiple regression techniques with time series data: because of the autocorrelation nature of time series, time series violate the assumption of independence of errors.  Type I error rates will increase substantially when autocorrelation is present.  Also, inherent patterns in the data may dampen or enhance the effect of an intervention; in time series analysis, patterns are accounted for within the analysis. From: \url{http://userwww.sfsu.edu/efc/classes/biol710/timeseries/timeseries1.htm}
 \end{document}
