@@ -75,7 +75,7 @@ save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
 \chapter{Mechanism behind intensification of hourly precipitation extremes}
 
 \section{Introduction}
-In this chapter we will try to find an explanation for the observed intensification of hourly precipitation extremes, which agrees with a simultaneously decrease in overall precipitation time. In order to find a mechanism, we first identify key variables by describing their relationship to (extreme) precipitation. Secondly, for those variables measured or represented by our metadata, we  make simple linear correlation matrices and acf plots. For the most promising variables we apply quantile regression (Intensity or frequency against the variable in question) to validate the relation of the variable with the extreme spectra of precipitation. Lastly, to be able to assign the observed trends to a certain variable, we also regress the key variables against time and compare the magnitude of observed time trends with the positive trends in intensity and the negative trend in wet time.
+In this chapter we will try to find an explanation for the observed intensification of hourly precipitation extremes, which agrees with a simultaneously decrease in overall precipitation time. In order to find a mechanism, we first identify key variables by describing their relationship to (extreme) precipitation. Secondly, for those variables measured or represented by our metadata, we  make simple linear correlation matrices and acf plots. For the most promising variables we apply quantile regression (Intensity or frequency against the variable in question) to validate the relation of the variable with the extreme spectra of precipitation. Lastly, to be able to assign the observed trends to a certain variable, we also regress the key variables against time and compare the magnitude of observed time trends with the positive trends in intensity and the negative trend in wet time. Note, in this chapter the data for all five stations are bundled, except for section..., where we differentiate between stations.
 ?! Test for spatial and seasonal differences
 
 
@@ -95,13 +95,13 @@ Third, the urban heat island effect is a temperature-driven phenomenon with asso
 Lastly, vertical uplift is also determined by the temperature of the air. The higher the temperature of air at the surface relative the air above it, the more buoyant and vertical instable the air is. A measure of the vertical instability is the Convective Available Potential Energy (CAPE). As CAPE is also available in our metadata, we will further discuss it's relation to temperature in the following paragraph.
 
 
-\subsubsection{Specific or Relative humidity}
+\subsubsection{Relative humidity and Dewpoint temperature}
 \label{subsubsec:moist}
-The specific humidity is the ratio between the mass of the water vapour in the sample and the total mass of the sample. It gives the actual amount of water vapour in an air sample.\citep{Sumner1988}. The specific humidity gives an indication about the level of saturation for a certain temperature and pressure. An increase in water vapour of an saturated air parcel without changing temperature or pressure will result in oversaturation. In most of the natural cases air must be at least saturated for condensation to occur, leading to cloud or fog formation \citep{Sumner1988}. The moment that the saturation vapor pressure ($e_s$) rises till the point it exerts the water vapor pressure ($e=e_s$), an equilibrium exist between the rate of condensation and evaporation and air is said to be saturated with respect to a plane surface of pure water at temperature T, and the pressure $e_s$ \citep[12-13]{Markowski2010}, \citep[80-81]{Wallace2006}. The expression of $e_s$ in T, is called the Clausius-Clapeyron equation,
+The specific humidity is the ratio between the mass of the water vapour in the sample and the total mass of the sample. It gives the actual amount of water vapour in an air sample.\citep{Sumner1988}. The specific humidity gives an indication about the level of saturation for a certain temperature and pressure. An increase in water vapour of an saturated air parcel without changing temperature or pressure will result in oversaturation.  In most of the natural cases air must be at least saturated for condensation to occur, leading to cloud or fog formation \citep{Sumner1988}. The moment that the saturation vapor pressure ($e_s$) rises till the point it exerts the water vapor pressure ($e=e_s$), an equilibrium exist between the rate of condensation and evaporation and air is said to be saturated with respect to a plane surface of pure water at temperature T, and the pressure $e_s$ \citep[12-13]{Markowski2010}, \citep[80-81]{Wallace2006}. The expression of $e_s$ in T, is called the Clausius-Clapeyron equation,
 \begin{equation}
-\frac{d e_s}{d T} = \frac{l_v e_s}{R_v T^2},
+\frac{d e_s}{d T} = \frac{L_v e_s}{R_v T^2},
 \end{equation}
-in which $l_v$ is the specific latent heat of vaporization and $R_v$ the gas constant for water vapor ($R_v = 461.51 J kg^{-1} K^{-1}$) \citep{Bolton1980}.
+in which $L_v$ is the specific latent heat of vaporization and $R_v$ the gas constant for water vapor ($R_v = 461.51 J kg^{-1} K^{-1}$) \citep{Bolton1980}.
 
 <<Clausius>>=
 ### Clausius Clapyron
@@ -174,6 +174,13 @@ Figure \ref{fig:Des_dt} demonstrates that a certain increase in temperature has 
 For this reason, we would expect that any trends in extremes caused by global warming induced changes in moisture-holding capacity, are stronger visible for winter than for summer. (Look at magnitude differences between summer and winter trends!!). From Chapter 2 we learned that this is not the case. It could be because of different winter and summer mechanisms, where f.e. the summer precipitation is more dependent on relative humidity.
 
 (Reminding that $RH = e/e_s$, we can investigate what the percential change in relative humidity is for the whole temperature range for 1 degree Celsius increase.)
+
+Next to relative humidity, dewpoint temperature is a widely used measure for the amount of moisture in the air \citep{Lawence2005}. The dewpoint temperature is the temperature to which air at initial temperature and pressure must be cooled isobarically to become saturated, and can be expressed in terms of the vapor pressure $e_s(td) = e(t)$ \citep{Lawrence2005}. An expression of the dewpoint temperature in terms of relative humidity is,
+\begin{equation}
+T_d = T \left[ 1- \frac{T ln(\frac{RH}{100})}{\frac{L_v}{R_v}}  \right]^{-1}
+\end{equation},
+When relative humidity is assumed to be constant in time \citep{Pall2007} (! maybe more sources), then Td will ... ???
+
 
 \subsubsection{CAPE}
 \label{subsubsec:CAPE}
@@ -327,6 +334,8 @@ ggcorrplot(sp_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
   \caption{Heatmap consisting of correlation coefficients of the variables: intensity (I), wind strength (FH), measure of relative humidity (RH), hourly precipitation sum (P), temperature(T) and dewpoint temperature(TD). The heatmaps are computed according to the Pearson method (a,b) or the Spearman approac (c,d), for all hours (a,c) and only daily maxima (b,d). Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
 \end{figure}
 
+Explain all hour correlations, explain difference Pearson/ Spearman
+
 The highest correlations between the maximum hourly precipitation sum and the other variables, are those of maxima in T (0.412), TD (0.402). Also contributing, but less importance are correlation of FHmax(0.23) and RHmax (0.171) with Pmax. For intensity the relation with Tmax is even a bit higher (0.423), but for TD, FHmax and RHmax lower (respectievely 0.384,0.175 and 0.088).
 
 From section \ref{subsubsec:CAPE} can be deduced that CAPE, as a representative for the strength of vertical motion, is an important factor for convective precipitation. Due to the different length and resolution of this dataset we plot an extra heat map consisting of CAPE values and I, P, T and the number of CAPE measurements a day (N). We included T to investigate in more details the indirect relationship of T with P or I via CAPE.
@@ -351,26 +360,11 @@ save(Compare, file="./inst/tussenStap/Compare.rda")
 
 @
 
-<<CAPE>>=
+<<Ctime,cache=TRUE>>=
 load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
 #Compare[!is.na(sbCAPE)][, cor(sbCAPE,RH)]
 #=0.0208
 
-# As we are interested in the effect of CAPE variability on (extreme) precipitation
-# and considering that is known from literature that CAPE decrease again when it is already raining,
-# we investigate CAPE effect on RH with correlation matrices, in two ways
-# 1) comparing maxima CAPE values to max intensity, hourly rain and daily rain sum
-# 2) comparing the rain sum of all the hours after an hour of which the CAPE value is measured, with that (latest) CAPE value
-
-# 1) Maxima
-CAPE_day <- Compare[N>0][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE), RHsum=sum(RH), maxI=max(I), Tmax=max(T), N=mean(N)), by=Date]
-save(CAPE_day,file="./inst/tussenStap/CAPE_day.rda")
-CAPE <- subset(CAPE_day,select=c(CAPEmax,Tmax, RHsum, maxI, N))
-CAPE_corr <- round(cor(CAPE),2)
-pCAPE_heatmp <- cor_pmat(CAPE_corr)
-@
-
-<<Ctime,cache=TRUE>>=
 # 2) Cum RH after CAPE measurement
 DT_Ctime <- Ctime(Compare[N>0][(Year > 1993) | (Month > 2)])
 save(DT_Ctime,file="./inst/tussenStap/DT_Ctime.rda")
@@ -386,6 +380,22 @@ CAPE_cumRH <- merge(cumRH,sbCAPE_check, by="Ctime")
 #CAPE_cumRH[, cor(sbCAPE,RHsum)]
 #=0.0803031
 @
+
+<<CAPE>>=
+# As we are interested in the effect of CAPE variability on (extreme) precipitation
+# and considering that is known from literature that CAPE decrease again when it is already raining,
+# we investigate CAPE effect on RH with correlation matrices, in two ways
+# 1) comparing maxima CAPE values to max intensity, hourly rain and daily rain sum
+# 2) comparing the rain sum of all the hours after an hour of which the CAPE value is measured, with that (latest) CAPE value
+
+# 1) Maxima
+CAPE_day <- Compare[N>0][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE), RHsum=sum(RH), maxI=max(I), Tmax=max(T), N=mean(N)), by=Date]
+save(CAPE_day,file="./inst/tussenStap/CAPE_day.rda")
+CAPE <- subset(CAPE_day,select=c(CAPEmax,Tmax, RHsum, maxI, N))
+CAPE_corr <- round(cor(CAPE),2)
+pCAPE_heatmp <- cor_pmat(CAPE_corr)
+@
+
 
 <<PHeatmap_CAPE>>=
 ggcorrplot(CAPE_corr, hc.order = TRUE,type = "lower",lab=TRUE) #, p.mat=p.mat, insig="blank"
@@ -444,45 +454,52 @@ M_max <- hrKNMI[RH>0][, list(Pmax=max(RH), Imax=max(I), Tmax=max(T), TDmax=max(T
 M_Tmax <- subset(M_max,select=c(Pmax,Tmax,Season))[(Season=="Summer")|(Season=="Winter")]
 Q_Tbin <- M_Tmax[(Tmax>4.9) &(Tmax<21.1)][,T_bin := .bincode(Tmax, breaks=c(5,seq(7,19,2),21),include.lowest=TRUE)]
 
+# Calculate CC-lines
+# P = A exp(1.07T)
+# At T=0, P=A.      CC1 = 0.46*exp(0.07*TDmid),
+#Our starting condition is T=5, A0= Pmeanmax[1]
+
 # Calculate mean Pmax, 95 and 99% quantiles for each bin, per season
-Q_Tbin <- Q_Tbin[,list(Pmeanmax=mean(Pmax),freq=.N,Q95=quantile(Pmax,probs=0.95),Q99=quantile(Pmax,probs=0.99)),by=list(T_bin,Season)]
+Q_Tbin <- Q_Tbin[,list(Pmeanmax=mean(Pmax),Tmeanmax=mean(Tmax),freq=.N,Q95=quantile(Pmax,probs=0.95),Q99=quantile(Pmax,probs=0.99)),by=list(T_bin,Season)]
 # Show only summer and winter season, and for bins with N, number of measurements, higher than 200
 Q_Tbin <- Q_Tbin[order(T_bin)][freq>200]
-Q_Tbin[,Tmid := c(seq(6,12,by=2),seq(12,20,by=2))]
-# Determine intercept for Clausius Clapeyron Exponential relations
-StartCC <- Q_Tbin[Tmid==6]$Pmeanmax
-# Calculate CC-lines
-Q_Tbin[,":="(CC = Pmeanmax[1]*(1.07^(Tmid-Tmid[1])), CC95 = Q95[1]*(1.07^(Tmid-Tmid[1])),CC99 = Q99[1]*(1.07^(Tmid-Tmid[1])))]
+Q_Tbin[,Tmid := round(Tmeanmax,0),by=T_bin]
+# Clausius Clapeyron Exponential relations
+Q_Tbin[,":="(CC = Pmeanmax[1]*exp(0.07*(Tmid-5)), CC_2 = Pmeanmax[1]/2*exp(0.14*(Tmid-5)), CC95 = Q95[1]*exp(0.07*(Tmid-5)),CC95_2 = Q95[1]/2*exp(0.14*(Tmid-5)),CC99 = Q99[1]*exp(0.07*(Tmid-5)), CC99_2 = Q99[1]/2*exp(0.14*(Tmid-5)))]
 @
 
-<<Plot_PmaxvsTmax,fig.cap='The maxima in Precipitation are plotted against maxima in temperature (A). B shows the distribution of temperature maxima, and C demonstrates mean and the 95-percent quantile change in precipitation for every bin temperature. Temperature is binned with steps of 2 degrees.'>>=
+\begin{figure}
+<<Plot_PmaxvsTmax>>=
 # Plot point cloud Pmax vs Tmax
-plot1 <- ggplot(M_Tmax, aes(x=Tmax)) + geom_point(aes(y=Pmax,color=Season))
+plot1 <- ggplot(M_Tmax, aes(x=Tmax)) + geom_point(aes(y=Pmax,color=Season))+xlab("Tmax (degrees Celsius)") + ylab("Pmax (mm/hr)")
   # scale_colour_manual(values = c("#CC6600","#009966","#FF0000","darkblue"),breaks=c("Winter","Spring","Summer","Autumn"))
 # Plot histogram Tmax
-plot2 <- ggplot(M_Tmax) + geom_histogram(aes(x=Tmax,fill=Season),position="dodge",binwidth=2)
+plot2 <- ggplot(M_Tmax) + geom_histogram(aes(x=Tmax,fill=Season),position="dodge",binwidth=2) + xlab("Tmax (degrees Celsius)")
 # Plotted Pmax binned over Tmax (2 degrees bin)
 plot3 <- ggplot(Q_Tbin,aes(x=Tmid)) + geom_line(aes(y=Pmeanmax,color=Season), linetype=1)+
   geom_line(aes(y=Q95,color=Season),linetype=2) + geom_line(aes(y=Q99,color=Season),linetype=3) +
-  geom_line(aes(y=CC)) + geom_line(aes(y=CC95),linetype=2) + geom_line(aes(y=CC99),linetype=3) +xlab("Tmax") + ylab("Pmax")
+  geom_line(aes(y=CC),size=0.2) + geom_line(aes(y=CC95),linetype=2,size=0.2) + geom_line(aes(y=CC99),linetype=3,size=0.2) +
+ geom_line(aes(y=CC_2),size=0.1) + geom_line(aes(y=CC95_2),linetype=2,size=0.1) + geom_line(aes(y=CC99_2),linetype=3,size=0.1) +  xlab("Tmax (degrees Celsius)") + ylab("Pmax (mm/hr)") + scale_y_log10()
 
-plot_grid(plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), ncol = 1, nrow = 3))
+plot_grid(plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), hjust=0, ncol = 1, nrow = 3))
 
-#scale_y_log10()
+
 # ggplot(Q_Tbin,aes(x=Tmid)) + geom_line(aes(y=Pmeanmax))+ geom_point(aes(y=Q95),colour="green")+
 #   geom_point(aes(y=Q99),color="orange") + geom_point(aes(y=Q995),color="red") + facet_wrap(~Season)
+#  Old wrong calculation CC-lines
+# Q_TDbin[,":="(CC = Pmeanmax[1]*(1.07^(TDmid-TDmid[1])), CC95 = Q95[1]*(1.07^(TDmid-TDmid[1])),CC99 = Q99[1]*(1.07^(TDmid-TDmid[1])))]
 @
+  \caption{The maxima in Precipitation are plotted against maxima in temperature (A). B shows the distribution of temperature maxima, and C demonstrates mean and the 95-percent quantile change in precipitation for every bin temperature. Temperature is binned with steps of 2 degrees.}
+  \label{fig:PvsT}
+\end{figure}
 
-Point cloud -->   ,
-As the number of measurement per degree temperature differs and this might explain the exponential relation, we also plotted the mean precipitation maxima per bin. In order to include the \enquote{high} extremes we also plotted the 95\% and 99\% quantile lines.
+In figure \ref{fig:PvsT}A the increase of precipitation maxima with maxima in temperature in a non-linear way. Clear differences are visible between winter and summer. The winter precipitation are generally lower and the points slope more gently with respect to temperature maxima. The summer data resembles a triangle shape, with exponential increase till the maximum precipitation of 50 mm hr$^{-1}$ at approximately 20 degrees and an exponential decrease for further temperature increase. The summer and winter distributions of temperature are demonstrated in Figure \ref{fig:PvsT}B. They have similar Gaussian shapes, but are different positioned with respect to temperature. The maxima in number of winter data per bin of 2 degrees celsius is at 6-8 $^{\circ}$C, while the summer data is concentrated around 14-16 degrees celsius. The triangle shape observed in the summer data could be influenced by its distribution. However, the peak in precipitation data is then for higher temperature than expected and for winter data it does not hold. In order to remove any influence of the way temperature is distributed, we also plotted the mean precipitation maxima per bin. Moreover, the 95\% and 99\% quantile lines are plotted to visualize the temperature relation with \enquote{high} extremes in precipitation. The mean and quantile lines are compared to Clausius Clapeyron scaling. From Figure \ref{fig:PvsT}C can be deduced that the  super CC-scaling found by Lenderink is also observed here for not only the quantiles, but also for the mean. Note, that the mean here is a mean of maxima precipitation sum a day, with only wet hours considered. As we differentiated between summer and winter this difference can not be explained by change from winter to summer data with temperature, but it still might be induced from a shift between stratiform-dominated to convection-dominated precipitation as suggested by \citep{Berg2009}. As no data about synoptic conditions is included, this relationship is hard to verify. Although, stratiform and convective precipitation might be seperated on values of CAPE. (BRON!)
 
-Clausius clapeyron
-
-can't be explained by winter --> summer difference in precipitation maxima or ,
-but other factors may play a role (convective vs stratiform)
+From \section{}
 
 
 <<PmaxvsTDmax>>=
+load("./inst/tussenStap/M_allmax.rda")
 #MOISTURE
 ## Plots showing relation Pmax and TDmax, differentiated on season
 
@@ -493,34 +510,35 @@ M_TDmax <- subset(M_allmax,select=c(Pmax,TDmax,Season,W_maxP))[(Season=="Summer"
 Q_TD_bin <- M_TDmax[(TDmax>-0.1) &(TDmax<18.1)][,TD_bin := .bincode(TDmax, breaks=seq(0,18,2),include.lowest=TRUE)]
 
 # Calculate mean Pmax, 95 and 99% quantiles for each bin, per season
-Q_TDbin <- Q_TD_bin[,list(Pmeanmax=mean(Pmax),freq=.N,Q95=quantile(Pmax,probs=0.95),Q99=quantile(Pmax,probs=0.99)),by=list(TD_bin,Season)]
+Q_TDbin <- Q_TD_bin[,list(Pmeanmax=mean(Pmax),TDmeanmax=mean(TDmax),freq=.N,Q95=quantile(Pmax,probs=0.95),Q99=quantile(Pmax,probs=0.99)),by=list(TD_bin,Season)]
 # Show only summer and winter season, and for bins with N, number of measurements, higher than 200
 Q_TDbin <- Q_TDbin[order(TD_bin)][freq>200]
-Q_TDbin[,TDmid := seq(1,17,by=2)]
-# Calculate CC-lines
-Q_TDbin[,":="(CC = Pmeanmax[1]*(1.07^(TDmid-TDmid[1])), CC95 = Q95[1]*(1.07^(TDmid-TDmid[1])),CC99 = Q99[1]*(1.07^(TDmid-TDmid[1])))]
+Q_TDbin[,TDmid := round(TDmeanmax,0), by=TD_bin]
+# Clausius Clapeyron Exponential relations
+Q_TDbin[,":="(CC = Pmeanmax[1]*exp(0.07*(TDmid-5)), CC_2 = Pmeanmax[1]*exp(0.14*(TDmid-5)), CC95 = Q95[1]*exp(0.07*(TDmid-5)), CC95_2 = Q95[1]*exp(0.14*(TDmid-5)), CC99 = Q99[1]*exp(0.07*(TDmid-5)), CC99_2 = Q99[1]*exp(0.14*(TDmid-5)))]
 @
 
+\begin{figure}
 <<Plot_PmaxvsTDmax,fig.cap='The maxima in Precipitation are plotted against maxima in dewpoint temperature in A. B gives the distribution of dewpoint temperature maxima, and C demonstrates mean and the 95-percent quantile change in precipitation for every bin dewpoint temperature. Dewpoint temperature is binned with steps of 2 degrees.'>>=
 # Plot point cloud Pmax vs TDmax
 plot1 <- ggplot(M_TDmax, aes(x=TDmax)) + geom_point(aes(y=Pmax,color=Season))
-# scale_colour_manual(values = c("#CC6600","#009966","#FF0000","darkblue"),breaks=c("Winter","Spring","Summer","Autumn"))
+# scale_colour_manual(values = c("#CC6600","#009966","#FF0000","darkblue"),breaks=c("Winter","Spring","Summer","Autumn")) + xlab("TDmax (degrees Celsius)") + ylab("Pmax (mm/hr)")
 # Plot histogram TDmax
-plot2 <- ggplot(M_TDmax) + geom_histogram(aes(x=TDmax,fill=Season),position="dodge",binwidth=2)
+plot2 <- ggplot(M_TDmax) + geom_histogram(aes(x=TDmax,fill=Season),position="dodge",binwidth=2) + xlab("TDmax (degrees Celsius)")
 # Plotted Pmax binned over TDmax (2 degrees bin)
 plot3 <- ggplot(Q_TDbin,aes(x=TDmid)) + geom_line(aes(y=Pmeanmax,color=Season), linetype=1)+
   geom_line(aes(y=Q95,color=Season),linetype=2) + geom_line(aes(y=Q99,color=Season),linetype=3) +
-  geom_line(aes(y=CC)) + geom_line(aes(y=CC95),linetype=2) + geom_line(aes(y=CC99),linetype=3) +xlab("TDmax") + ylab("Pmax")
+  geom_line(aes(y=CC),size=0.2) + geom_line(aes(y=CC95),linetype=2,size=0.2) + geom_line(aes(y=CC99),linetype=3,size=0.2) + geom_line(aes(y=CC_2),size=0.1) + geom_line(aes(y=CC95_2),linetype=2,size=0.1) + geom_line(aes(y=CC99_2),linetype=3,size=0.1) + xlab("TDmax (degrees Celsius)")+ ylab("Pmax (mm/hr)") + scale_y_log10()
 
-#scale_y_log10()
-plot_grid(plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), ncol = 1, nrow = 3))
-
+plot_grid(plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), hjust=0, ncol = 1, nrow = 3))
 
 # Bin freq > 200 ? why not 100?? --> See LM08
 @
-
-
-Eplain
+  \caption{The maxima in Precipitation are plotted against maxima in temperature (A). B shows the distribution of temperature maxima, and C demonstrates mean and the 95-percent quantile change in precipitation for every bin temperature. Temperature is binned with steps of 2 degrees.}
+  \label{fig:PvsT}
+\end{figure}
+In contrast with temperature, dewpoint temperature maxima as x-variable versus precipitation maxima shows a less proncounced peak (\ref{fig:})
+Explain
 
 <<PmaxvsCAPEmax>>=
 #CAPE
@@ -528,8 +546,7 @@ Eplain
 ## Plots showing relation Pmax and CAPE, differentiated on season
 load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
 
-CAPE_day <- Compare[N>0][(HH==11)|(HH=17)][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE),
-                                                     RHsum=sum(RH), Pmax=max(RH),Imax=max(I), N=mean(N)),by=list(Date,Season)]
+CAPE_day <- Compare[N>0][(HH==11)|(HH=17)][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE),RHsum=sum(RH), Pmax=max(RH),Imax=max(I), N=mean(N)),by=list(Date,Season)]
 M_CAPEmax <- subset(CAPE_day,select=c(Pmax,CAPEmax,Season))[(Season=="Summer")|(Season=="Winter")][CAPEmax<2500]
 Q_CAPEbin <- M_CAPEmax[,CAPE_bin := .bincode(CAPEmax, breaks=seq(0,2500,50),include.lowest=TRUE)]
 
@@ -543,17 +560,16 @@ Q_CAPEbin <- Q_CAPEbin[order(CAPE_bin)][freq>100]
 `
 <<Plot_PmaxvsCAPEmax,fig.cap='The maxima in Precipitation are plotted against CAPE values (A), B shows the distribution of CAPE maxima, and C demonstrates mean and the 95-percent quantile change in precipitation for every CAPE. CAPE is binned with steps of 50 J kg$^{-1}$.'>>=
 # Plot point cloud Pmax vs CAPEmax
-plot1 <- ggplot(M_CAPEmax, aes(x=CAPEmax)) + geom_point(aes(y=Pmax,color=Season))+facet_wrap(~Season) + scale_x_continuous(breaks=c(0,1000,2000))
+plot1 <- ggplot(M_CAPEmax, aes(x=CAPEmax)) + geom_point(aes(y=Pmax,color=Season))+facet_wrap(~Season) + scale_x_continuous(breaks=c(0,1000,2000)) + xlab("CAPEmax (J per kg)")+ ylab("Pmax (mm/hr)")
 # scale_colour_manual(values = c("#CC6600","#009966","#FF0000","darkblue"),breaks=c("Winter","Spring","Summer","Autumn"))
 # Plot histogram CAPEmax
-plot2 <- ggplot(M_CAPEmax)+ geom_histogram(aes(x=CAPEmax,fill=Season),binwidth=50,position="dodge")
+plot2 <- ggplot(M_CAPEmax)+ geom_histogram(aes(x=CAPEmax,fill=Season),binwidth=50,position="dodge") + xlab("CAPEmax (J per kg)")
 # Plotted Pmax binned over CAPEmax (2 degrees bin)
 plot3 <- ggplot(Q_CAPEbin,aes(x=CAPEmeanmax)) + geom_line(aes(y=Pmeanmax,color=Season), linetype=1)+
   geom_line(aes(y=Q95,color=Season),linetype=2)  + ylim(0,8) +
-  xlab("CAPEmax") + ylab("Pmax")
+  xlab("CAPEmax (J per kg)") + ylab("Pmax (mm/hr)") + scale_y_log10()
   # geom_line(aes(y=Q99,color=Season),linetype=3) +geom_smooth(aes(y=Pmeanmax,color=Season))  --> too few data
-#scale_y_log10()
-plot_grid(plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), ncol = 1, nrow = 3))
+plot_grid(plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), hjust=0, ncol = 1, nrow = 3))
 @
 
 explain CAPE
@@ -570,30 +586,29 @@ Q_TDbinW <- Q_TD_bin[,list(Pmeanmax=mean(Pmax),TDmeanmax=mean(TDmax),freq=.N,Q95
 # Show only summer and winter season, and for bins with N, number of measurements, higher than 200
 Q_TDbinW <- Q_TDbinW[order(TD_bin)][freq>50]
 Q_TDbinW[,TDmid := round(TDmeanmax,0),by=TD_bin]
-Q_TDbinW[,":="(CC1 = 0.46*exp(0.07*TDmid), CC2 = Pmeanmax[1]*exp(0.07*TDmid), CC95 = Q95[1]*exp(0.07*TDmid),CC99 = Q99[1]*exp(0.07*TDmid))]
-Q_TDbinW <- within(Q_TDbinW, Q95[freq<100] <- NA)
-Q_TDbinW <- within(Q_TDbinW, Q99[freq<100] <- NA)
 # Calculate CC-lines
 # P = A exp(1.07T)
-# At T=0, P=A.  A=
-M_allmax[TDmax==0][,mean(Pmax)]
-A = 0.46
-# In our case we start at Tmid=5, we take A=P0
-# Q_TDbinW[,":="(CC = Pmeanmax[1]*(1.07^(TDmid-TDmid[1])), CC95 = Q95[1]*(1.07^(TDmid-TDmid[1])),CC99 = Q99[1]*(1.07^(TDmid-TDmid[1])))]
+# At T=0, P=A.  Our starting condition is T=5, A0= Pmeanmax[1]
+
+#(M_allmax[TDmax==0][,mean(Pmax)] A = 0.46 CC1 = 0.46*exp(0.07*TDmid))
+Q_TDbinW <- within(Q_TDbinW, Q95[freq<100] <- NA)
+Q_TDbinW <- within(Q_TDbinW, Q99[freq<100] <- NA)
+
+Q_TDbinW[,":="(CC = Pmeanmax[1]*exp(0.07*(TDmid-3)), CC_2 = Pmeanmax[1]*exp(0.14*(TDmid-3)), CC95 = Q95[4]*exp(0.07*(TDmid-5)), CC95_2 = Q95[4]*exp(0.14*(TDmid-5)), CC99 = Q99[4]*exp(0.07*(TDmid-5)), CC99_2 = Q99[4]*exp(0.14*(TDmid-5)))]
 @
 
 <<Wind_TDplotting>>=
 # Plot point cloud Pmax vs TDmax
-plot1 <- ggplot(M_allmax, aes(x=TDmax)) + geom_point(aes(y=Pmax,color=W_maxP)) + facet_wrap(~W_maxP)
+plot1 <- ggplot(M_allmax, aes(x=TDmax)) + geom_point(aes(y=Pmax,color=W_maxP)) +xlab("TDmax (degrees Celsius)") + ylab("Pmax (mm/hr)") + facet_wrap(~W_maxP)
 # scale_colour_manual(values = c("#CC6600","#009966","#FF0000","darkblue"),breaks=c("Winter","Spring","Summer","Autumn"))
 # Plot histogram TDmax
-plot2 <- ggplot(M_allmax) + geom_histogram(aes(x=TDmax,fill=W_maxP),position="dodge",binwidth=2) #+ facet_wrap(~W_maxP)
+plot2 <- ggplot(M_allmax) + geom_histogram(aes(x=TDmax,fill=W_maxP),position="dodge",binwidth=2) + xlab("TDmax (degrees Celsius)") #+ facet_wrap(~W_maxP)
 # Plotted Pmax binned over TDmax (2 degrees bin)
 plot3 <- ggplot(Q_TDbinW,aes(x=TDmid)) + geom_line(aes(y=Pmeanmax,color=W_maxP), linetype=1) + #geom_line(aes(y=CC1)) +
- geom_line(aes(y=Q95,color=W_maxP),linetype=2) + geom_line(aes(y=Q99,color=W_maxP),linetype=3) + geom_line(aes(y=CC2)) + geom_line(aes(y=CC95),linetype=2) + geom_line(aes(y=CC99),linetype=3) +xlab("TDmax") + ylab("Pmax") + scale_y_log10()  + facet_wrap(~W_maxP)
+ geom_line(aes(y=Q95,color=W_maxP),linetype=2) + geom_line(aes(y=Q99,color=W_maxP),linetype=3) + geom_line(aes(y=CC),size=0.2) + geom_line(aes(y=CC95),linetype=2,size=0.2) + geom_line(aes(y=CC99),linetype=3,size=0.2) + geom_line(aes(y=CC_2),size=0.1) + geom_line(aes(y=CC95_2),linetype=2,size=0.1) + geom_line(aes(y=CC99_2),linetype=3,size=0.1) + xlab("TDmax (degrees Celsius)") + ylab("Pmax (mm/hr)") + scale_y_log10()  + facet_wrap(~W_maxP)
 
 #scale_y_log10()
-plot_grid(plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), ncol = 1, nrow = 3))
+plot_grid(plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), hjust=0, ncol = 1, nrow = 3))
 
 # Bin freq > 200 ? why not 100?? --> See LM08
 @
