@@ -6,8 +6,8 @@
 
 #' @export
 KNMI_loading <- function(file){
-  tmp <- fread(file)
-  setnames(tmp,c("STN", "YYYYMMDD", "HH", "DD","FH", "T", "TD", "DR", "RH", "U", "WW"))
+  tmp <- fread(file,skip=22L)
+  setnames(tmp,c("STN", "YYYYMMDD", "HH", "DD","FH", "T", "TD", "DR", "P", "RH", "WW"))
   #tmp <- data.table(tmp)
   #Date <- as.PCICt(strptime(tmp$YYYYMMDD,"%Y%m%d"),cal="gregorian")
   tmp[, Date := as.Date(as.POSIXlt(as.PCICt(strptime(YYYYMMDD,"%Y%m%d"),cal="gregorian")))]
