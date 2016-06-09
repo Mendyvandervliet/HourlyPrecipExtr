@@ -61,7 +61,7 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 # Go to http://projects.knmi.nl/klimatologie/uurgegevens/selectie.cgi
 # Select period: 1-1-1958 till 21-12-2015 (1-24 hrs)
 # Select variables: DD (wind direction), T(temperature), TD (dewpoint temperature),
-# DR (duration of rain event), RH (hourly rain sum), U(relative humidity), WW (weather code)
+# DR (duration of rain event), RH (hourly rain sum) --> called P, U(relative humidity)--> called RH, WW (weather code)
 # Select stations: 225 De Kooy, 260 De Bilt, 280 Eelde, 310 Vlissingen, 380 Maastricht
 # For description weather codes (WW) see: http://bibliotheek.knmi.nl/scholierenpdf/weercodes_Nederland,
 # these code are  only used to study specific extreme events
@@ -246,11 +246,11 @@ Interesting CH1 local/seasonal variability ? still unexplained?
 
 <<Mechanism_dt>>=
 load("./inst/tussenStap/hrKNMI.rda")
-# Create datatable of all wet hours and corresponding metadata (P, I, Temperature, dewpoint temp., RH, U)
+# Create datatable of all wet hours and corresponding metadata (P, I, Temperature, dewpoint temp., P, U)
 # relation P/I of wet hours with other variables
-M <- hrKNMI[RH>0][, list(P=RH, I=I,T, TD, RH=U,FH=FH)]
+M <- hrKNMI[P>0][, list(P=P, I=I,T, TD, RH=RH,FH=FH)]
 # relation max P/I of wet days with max in other variables
-M_max <- hrKNMI[, list(Pmax=max(RH), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(U),FHmax=max(FH),DD_maxP=DD[which.max(RH)],WW_maxP=WW[which.max(RH)]),by=list(Date,Season)]
+M_max <- hrKNMI[, list(Pmax=max(P), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(RH),FHmax=max(FH),DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)]),by=list(Date,Season)]
 M_max <- M_max[Pmax>0]
 save(M_max,file="./inst/tussenStap/M_max.rda")
 M_maxi <- subset(M_max, select=c(Pmax, Imax, Tmax, TDmax,RHmax,FHmax))
@@ -364,36 +364,36 @@ save(Compare, file="./inst/tussenStap/Compare.rda")
 
 <<Ctime,cache=TRUE>>=
 load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
-#Compare[!is.na(sbCAPE)][, cor(sbCAPE,RH)]
+#Compare[!is.na(sbCAPE)][, cor(sbCAPE,P)]
 #=0.0208
 
-# 2) Cum RH after CAPE measurement
+# 2) Cum P after CAPE measurement
 DT_Ctime <- Ctime(Compare[N>0][(Year > 1993) | (Month > 2)])
 save(DT_Ctime,file="./inst/tussenStap/DT_Ctime.rda")
 @
 
-<<cumRH>>=
+<<cumP>>=
 load("./inst/tussenStap/DT_Ctime.rda")
-cumRH <- DT_Ctime[, list(RHsum=sum(RH)), by=Ctime]
+cumP <- DT_Ctime[, list(Psum=sum(P)), by=Ctime]
 sbCAPE_check <- CAPE[(Year > 1993) | (Month > 2)][sbCAPE<5000][, list(sbCAPE,Dat)]
 sbCAPE_check[, Ctime := c(1:length(sbCAPE))]
 
-CAPE_cumRH <- merge(cumRH,sbCAPE_check, by="Ctime")
-#CAPE_cumRH[, cor(sbCAPE,RHsum)]
+CAPE_cumP <- merge(cumP,sbCAPE_check, by="Ctime")
+#CAPE_cumP[, cor(sbCAPE,Psum)]
 #=0.0803031
 @
 
 <<CAPE>>=
 # As we are interested in the effect of CAPE variability on (extreme) precipitation
 # and considering that is known from literature that CAPE decrease again when it is already raining,
-# we investigate CAPE effect on RH with correlation matrices, in two ways
+# we investigate CAPE effect on P with correlation matrices, in two ways
 # 1) comparing maxima CAPE values to max intensity, hourly rain and daily rain sum
 # 2) comparing the rain sum of all the hours after an hour of which the CAPE value is measured, with that (latest) CAPE value
 
 # 1) Maxima
-CAPE_day <- Compare[N>0][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE), RHsum=sum(RH), Imax=max(I), Pmax=max(RH),Tmax=max(T), N=mean(N)), by=Date]
+CAPE_day <- Compare[N>0][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE), Psum=sum(P), Imax=max(I), Pmax=max(P),Tmax=max(T), N=mean(N)), by=Date]
 save(CAPE_day,file="./inst/tussenStap/CAPE_day.rda")
-CAPE <- subset(CAPE_day,select=c(CAPEmax,Tmax, RHsum, maxI, N))
+CAPE <- subset(CAPE_day,select=c(CAPEmax,Tmax, Psum, maxI, N))
 CAPE_corr <- round(cor(CAPE),2)
 pCAPE_heatmp <- cor_pmat(CAPE_corr)
 CAPE_spcorr <- round(cor(CAPE,method="spearman"),2)
@@ -451,7 +451,7 @@ save(M_allmax,file="./inst/tussenStap/M_allmax.rda")
 
 <<PmaxvsTmax>>=
 #Subset for maxima data
-M_max <- hrKNMI[RH>0][, list(Pmax=max(RH), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(U),FHmax=max(FH)),by=list(Date,Season)]
+M_max <- hrKNMI[P>0][, list(Pmax=max(P), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(RH),FHmax=max(FH)),by=list(Date,Season)]
 
 # TEMPERATURE
 ## Plots showing relation Pmax and Tmax, differentiated on season
@@ -513,7 +513,7 @@ To analyse the relationship between CAPE and precipitation maxima, we also plott
 ## Plots showing relation Pmax and CAPE, differentiated on season
 load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
 
-CAPE_day <- Compare[N>0][(HH==11)|(HH=17)][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE),RHsum=sum(RH), Pmax=max(RH),Imax=max(I), N=mean(N)),by=list(Date,Season)]
+CAPE_day <- Compare[N>0][(HH==11)|(HH=17)][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE),Psum=sum(P), Pmax=max(P),Imax=max(I), N=mean(N)),by=list(Date,Season)]
 M_CAPEmax <- subset(CAPE_day,select=c(Pmax,CAPEmax,Season))[(Season=="Summer")|(Season=="Winter")][CAPEmax<2500]
 Q_CAPEbin <- M_CAPEmax[,CAPE_bin := .bincode(CAPEmax, breaks=seq(0,2500,50),include.lowest=TRUE)]
 
@@ -772,7 +772,7 @@ Cross-correlation of univariate series with lags
 Dewpoint temperature
 
 <<lagTD>>=
-lagTD <- hrKNMI[RH>0][, list(Pmax=max(RH),TDmax=max(TD),TD_HH=HH[which.max(TD)],P_HH=HH[which.max(RH)]),by=list(Date,Season)]
+lagTD <- hrKNMI[P>0][, list(Pmax=max(P),TDmax=max(TD),TD_HH=HH[which.max(TD)],P_HH=HH[which.max(P)]),by=list(Date,Season)]
 lagTD[, lag := P_HH-TD_HH]
 lagTD[lag==0][, cor(TDmax,Pmax)]
 ggplot(lagTD) + geom_histogram(aes(x=lag,group=Season),bins=100) + facet_wrap(~Season)
