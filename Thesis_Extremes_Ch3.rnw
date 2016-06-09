@@ -249,12 +249,27 @@ load("./inst/tussenStap/hrKNMI.rda")
 # Create datatable of all wet hours and corresponding metadata (P, I, Temperature, dewpoint temp., P, U)
 # relation P/I of wet hours with other variables
 M <- hrKNMI[P>0][, list(P=P, I=I,T, TD, RH=RH,FH=FH)]
-# relation max P/I of wet days with max in other variables
+# relation max P/I with max in other variables
 M_max <- hrKNMI[, list(Pmax=max(P), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(RH),FHmax=max(FH),DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)]),by=list(Date,Season)]
-M_max <- M_max[Pmax>0]
+M_max <- M_max[Pmax>0]  #only wet days
 save(M_max,file="./inst/tussenStap/M_max.rda")
 M_maxi <- subset(M_max, select=c(Pmax, Imax, Tmax, TDmax,RHmax,FHmax))
 @
+
+<<d2>>=
+load("./inst/tussenStap/data2d.rda")
+load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
+#Compare[, L := length(HH), by=Date] -->
+# On 10 days there are 2 measurements in 1 hour (on 1 day 2x) --> to remove duplicate hours, take max CAPE value of the two hours, as we are high CAPE values are were we are interested in
+Compare[, sbCAPE := max(sbCAPE), by=date]
+Compare <- unique(Compare)
+CAPE2d <- data2d(Compare,STN1=0)
+
+max2d <- CAPE2d[, list(Pmax2d=max(P), Tmax2d=max(T),TDmax2d=max(TD),CAPEmax2d=max(sbCAPE),max2d=max(max2d),Year=unique(Year),YM=unique(YM),month=unique(month)),by=d2]
+max2d[,yr_Pmean := mean(Pmax2d),by=Year]
+save(max2d, file="./inst/tussenStap/max2d.rda")
+@
+
 
 In this chapter we start with a study of correlations. Next,the type of relationship (e.g. linear or non-linear) is studied, thereby we account for the influence of how the data is distributed. Our analysis is followed by plotting and interpreting lags. To find the best model for precipitation data the most promising variables are combined in multiregression plots. Lastly, we compare trends in the key variable(s) to the observed trend in hourly intensity.
 Note, in this chapter we include duration data to find the true intensity (I). Here, P is the hourly precipitation sum.
@@ -362,12 +377,19 @@ save(Compare, file="./inst/tussenStap/Compare.rda")
 
 @
 
+
+% As we are interested in the effect of CAPE variability on (extreme) precipitation
+% and considering that is known from literature that CAPE decrease again when it is already raining,
+% we investigate CAPE effect on P with correlation matrices, in two ways
+% 1) comparing the rain sum of all the hours after an hour of which the CAPE value is measured, with that (latest) CAPE value
+%  2) comparing maxima CAPE values to max intensity, hourly rain and daily rain sum
+
 <<Ctime,cache=TRUE>>=
 load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
 #Compare[!is.na(sbCAPE)][, cor(sbCAPE,P)]
 #=0.0208
 
-# 2) Cum P after CAPE measurement
+# 1) Cum P after CAPE measurement
 DT_Ctime <- Ctime(Compare[N>0][(Year > 1993) | (Month > 2)])
 save(DT_Ctime,file="./inst/tussenStap/DT_Ctime.rda")
 @
@@ -383,21 +405,23 @@ CAPE_cumP <- merge(cumP,sbCAPE_check, by="Ctime")
 #=0.0803031
 @
 
-<<CAPE>>=
-# As we are interested in the effect of CAPE variability on (extreme) precipitation
-# and considering that is known from literature that CAPE decrease again when it is already raining,
-# we investigate CAPE effect on P with correlation matrices, in two ways
-# 1) comparing maxima CAPE values to max intensity, hourly rain and daily rain sum
-# 2) comparing the rain sum of all the hours after an hour of which the CAPE value is measured, with that (latest) CAPE value
-
-# 1) Maxima
+<<CAPE_max>>=
+# 2) Maxima
+#Only days on which CAPE is measured, so N>0
 CAPE_day <- Compare[N>0][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE), Psum=sum(P), Imax=max(I), Pmax=max(P),Tmax=max(T), N=mean(N)), by=Date]
 save(CAPE_day,file="./inst/tussenStap/CAPE_day.rda")
-CAPE <- subset(CAPE_day,select=c(CAPEmax,Tmax, Psum, maxI, N))
+@
+
+<<Cor_CAPE>>=
+load("./inst/tussenStap/CAPE_day.rda")
+CAPE <- subset(CAPE_day,select=c(CAPEmax,Tmax, Psum, Pmax, Imax, N))
 CAPE_corr <- round(cor(CAPE),2)
 pCAPE_heatmp <- cor_pmat(CAPE_corr)
 CAPE_spcorr <- round(cor(CAPE,method="spearman"),2)
 
+#Only correlations between CAPE and other variables
+Cmat <- as.matrix(CAPE_corr[2:6,1])
+dimnames(Cmat) <- list(c("Tmax","Psum","Pmax","Imax","N"),c("CAPEmax"))
 @
 
 
@@ -412,16 +436,24 @@ ggcorrplot(CAPE_spcorr, hc.order = TRUE,type = "lower",lab=TRUE) #, p.mat=p.mat,
 @
 Explain what kind of correlation for CAPE, and cumsum gives 0.0803031
 
+<<PHeatrow_CAPE>>=
+ggcorrplot(Cmat,lab=TRUE)
+@
+
+\subsection{Trends in key variables}
+
+quantile regression time
+
+<<QR_Temp>>=
+ggplot(hrKNMI,aes(x=Date,y=T)) + geom_quantile(formula=y~x,quantiles=c(0.25,0.50,0.75,0.95))
+@
+
+<<QR_DewTemp>>=
+ggplot(hrKNMI,aes(x=Date,y=TD)) + geom_quantile(formula=y~Date,quantiles=c(0.25,0.50,0.75,0.95))
+@
 
 \subsubsection{Plotting key variables}
 In this part we start with a coarse way of observing the different relationships. In Figure ... all variables are plotted against each other, which already hint on whether a relationship is likely and what kind of relationship it is. The clear relationship between T and TD (dewpoint temperature) is straight forward; following the definition of dew point temperature itself for moist air (RH$>50$\%), $Td=T-(\frac{100-85}{5}$) \citep{Wallace2006}. As the data considered in this chapter only contains the wet hours, most of them will fulfill the assumption of a moist air and therefore a linear line is shown. The slope of a linear line between the hourly precipitation sum (P) and the intensity (I) depend on the duration, D ($I*D=P$). Next to these more linear features, some of the subplots (T, TD, RH and FH versus P or I) demonstrate non-linear behaviour. The relationships between relative humidity (RH) and FH (wind strength) mutually and with TD or T are less clear and as we focuss on explaining precipitation changes we will not cover these relationships in much more depth.
-
-<<Plotting_points_allvariables,cache=TRUE>>=
-M_trial <- subset(M_allmax, select=c("Tmax", "TDmax","CAPEmax","FHmax","Pmax"))
-plot(M_trial)
-@
-
-For the most important factors (maxima in T, TD and CAPE) regarding the correlation heat maps (\ref{subsubsec:correlationmatrices}) we plotted the relationship between hourly precipitation sums and the variables as point clouds. As the type of relationship can be influenced by how the data is distributed, we also plotted the distribution. We differentiated between summer and winter to have a better understanding of seasonal differences in precipitation explained by the key variables.
 
 <<Wind>>=
 #Code to include wind (is later used to make subplots per wind regime)
@@ -448,6 +480,14 @@ M_allmax <- within(M_allmax, W_maxP[(Wind_maxP=="S")|(Wind_maxP=="SW")] <- "S & 
 
 save(M_allmax,file="./inst/tussenStap/M_allmax.rda")
 @
+
+<<Plotting_points_allvariables,cache=TRUE>>=
+M_trial <- subset(M_allmax, select=c("Tmax", "TDmax","CAPEmax","FHmax","Pmax"))
+plot(M_trial)
+@
+
+For the most important factors (maxima in T, TD and CAPE) regarding the correlation heat maps (\ref{subsubsec:correlationmatrices}) we plotted the relationship between hourly precipitation sums and the variables as point clouds. As the type of relationship can be influenced by how the data is distributed, we also plotted the distribution. We differentiated between summer and winter to have a better understanding of seasonal differences in precipitation explained by the key variables.
+
 
 <<PmaxvsTmax>>=
 #Subset for maxima data
@@ -792,18 +832,6 @@ Include leag lag plots
 Quantile regression of precipitation on key variables
 
 
-
-\subsection{Trends in key variables}
-
-quantile regression time
-% \begin{thebibliography}{9}
-% \bibitem{lamport94}
-%   Leslie Lamport,
-%   \emph{\LaTeX: a document preparation system},
-%   Addison Wesley, Massachusetts,
-%   2nd edition,
-%   1994.
-% \end{thebibliography}
 
 \printbibliography
 
