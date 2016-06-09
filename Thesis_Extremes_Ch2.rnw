@@ -11,6 +11,7 @@
 \usepackage{a4wide}
 \usepackage{colortbl}
 \overfullrule=2cm             %To spot overfull hboxes
+\usepackage{multirow}
 
 %------------------------------------------------------------------------------------------------------------------------
 
@@ -22,7 +23,7 @@
 % install.packages("xtable")
 
 <<setup, include=FALSE, cache=FALSE, echo=FALSE>>=
-\section*{library(PCICt)
+library(PCICt)
 library(reshape2)
 library(ggplot2)
 library(knitr)
@@ -235,7 +236,8 @@ plot2 <- QR2d_plotting(data=QR_max2d[STN == 260], title="De Bilt",point=FALSE,ym
 plot3 <- QR2d_plotting(data=QR_max2d[STN == 280], title="Eelde",point=FALSE,ymax)
 plot4 <- QR2d_plotting(data=QR_max2d[STN == 310], title="Vlissingen",point=FALSE,ymax)
 plot5 <- QR2d_plotting(data=QR_max2d[STN == 380], title="Maastricht",point=FALSE,ymax)
-
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
+             ncol= 1)
 @
   \caption{Quantile regression fits with $\tau = 75, 90, 95, 99, 99.9$ \% on 2 day maxima in
 hourly precipitation intensities (mm/hr) and a line giving the yearly means, for all stations.}
@@ -245,7 +247,6 @@ hourly precipitation intensities (mm/hr) and a line giving the yearly means, for
 Figure \ref{fig:QR_max2d} suggest that particularly (the 99 and 99 \% ) quantiles for De Bilt regress in time. Whether the 99 and 99.9 \% trends for de Bilt are significant is investigated by a Monte Carlo 9999 permutation test of the linear regression coefficient. The corresponding distribution plot of the permuted slopes is shown in the following figure.
 
 <<label=setupMC,cache=TRUE>>=
-hallo=1+1
 permdist99 <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.99)
 permdist999 <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.999)
 save(permdist99, file="./inst/tussenStap/permdist99.rda")
@@ -279,7 +280,7 @@ plot_permdist(permdist999)
     \subcaption{99.9\% fit}
     \label{fig:MC_fit999}
   \end{minipage}
-  \caption{Density distribution for a 9999MC Permutation for the $\tau = 99$(upper), $99.9$\%(bottom)-fits on 2 day maxima in hourly precipitation intensities (mm/hr) for De Bilt. The purple (black) line gives the upper-tail slope at the 95\%(99\%) confidence level. The pink line gives the 90\% confidence level and the red line indicates the observed regression coefficient of the 99\% and 99.9\% quantile regression fits.}
+  \caption{Density distribution for a 9999MC Permutation for the $\tau = 99$(upper), $99.9$\%(bottom)-fits on 2 day maxima in hourly precipitation intensities (mm/hr) for De Bilt. The purple (gray) line gives the upper-tail slope at the 95\%(99\%) confidence level. The black line indicates the observed regression coefficient of the 99\% (a) and 99.9\% (b) quantile regression fits.}
   \label{fig:MC_max2d}
 \end{figure}
 
@@ -289,6 +290,7 @@ p <- p_test(data=max2d,tau=0.50)
 setnames(p,c("STN","Q50"))
 p[, ":="(Q75 = p_test(data=max2d,tau=0.75)$V1,
          Q90 = p_test(data=max2d,tau=0.90)$V1)]
+
 p[, ":="(Q95 = p_test(data=max2d,tau=0.95)$V1,
          Q99 = p_test(data=max2d,tau=0.99)$V1,
          Q999 = p_test(data=max2d,tau=0.999)$V1)]
@@ -296,6 +298,7 @@ p[, ":="(Q95 = p_test(data=max2d,tau=0.95)$V1,
 
 <<p_tbl,cache=FALSE>>=
 save(p, file="./inst/tussenStap/p.rda")
+#load("./inst/tussenStap/p.rda")
 @
 
 %<<p_tbl>>=
@@ -303,7 +306,26 @@ save(p, file="./inst/tussenStap/p.rda")
 %#tbl <- xtable(p)  --> to print latex format
 %@
 
-
+\begin{table}[h!]
+  \centering
+  \caption{Significance table for all fits on hourly intensity data}
+  \begin{tabular}{l|r|r|r|r|r|r|r}
+  \hline\hline
+    \multicolumn{2}{c}{Location}
+    %\multicolumn{1}{c}{STN} &
+    \vline
+    & \multicolumn{6}{c}{Quantiles of fit} \\
+    \hline
+    Station   & STN & 50\% & 75\% & 90\% & 95\% & Q99\% & 99.9\% \\
+    \hline
+    De Kooy   & 235 &                  0.84 &                   0.06 & \cellcolor{green} 0.97 & \cellcolor{green} 1.00 &                   0.84 & 0.16 \\
+    De Bilt   & 260 & \cellcolor{green}0.98 & \cellcolor{green} 0.99 & \cellcolor{green} 1.00 &                   0.92 & \cellcolor{green} 0.98 & 0.88 \\
+    Eelde     & 280 &                  0.78 & \cellcolor{green} 0.96 &                   0.92 &                   0.91 &                   0.76 & 0.33 \\
+    Vlissingen& 310 & \cellcolor{green}0.98 &                   0.08 &                   0.27 & \cellcolor{green} 0.96 & \cellcolor{green} 0.99 & 0.59 \\
+    Maastricht& 380 &                  0.20 &                   0.14 & \cellcolor{green} 0.98 & \cellcolor{green} 0.95 &                   0.20 & 0.67 \\
+     \hline
+  \end{tabular}
+\end{table}
 
 
 
@@ -394,39 +416,48 @@ save(p_S, file="./inst/tussenStap/p_SW.rda")
 save(p_W, file="./inst/tussenStap/p_SW.rda")
 @
 
-<<loading9,cache=FALSE>>=
-load("./inst/tussenStap/p_S.rda")
-load("./inst/tussenStap/p_W.rda")
-@
-
-
-
 <<p_SWtbl>>=
-#setnames(p_SW, c("Station","50%","75%","90%","95%","99%","99.9%","50%","75%","90%","95%","99%","99.9%"))
-#tbl <- xtable(p_W)
-# print(tbl,
+#tblS <- xtable(p_S)
+#tblW <- xtable(p_W)
+# print(tblW,
 #     only.contents=TRUE,
 #     include.rownames=FALSE,
 #     type="latex", #digits(tbl) <- c(0,1,1)
-#     file="p_SWtbl.tex")
+#     file="p_Wtbl.tex")
 @
 
-% \begin{table}[h!]
-%   \centering
-%   \caption{Significance table for all fits}
-%   \begin{tabular}{l|r|r|r|r|r|r}
-%   \hline\hline
-%      & \multicolumn{13}{c}{Quantiles of fit}\\
-%      & \multicolumn{1}{c}{Station}
-%      & \multicolumn{6}{c}{Summer}
-%      & \multicolumn{6}{c}{Winter}\\
-%      \\
-%   \hline
-%   \input{p_SWtbl}
-%   \hline
-%   \end{tabular}
-%   \label{tab:p_SWtbl}
-% \end{table}
+<<loading9,cache=FALSE>>=
+load("./inst/tussenStap/p_S.rda")
+load("./inst/tussenStap/p_W.rda")
+
+@
+
+\begin{table}[h!]
+  \centering
+  \caption{Significance table for all fits and specified to summer and winter intensity data}
+  \begin{tabular}{l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r}
+  \hline\hline
+  \multicolumn{2}{c}{Location} \vline & \multicolumn{6}{c}{Quantiles of fit}\\
+  \multicolumn{2}{c}{} \vline & \multicolumn{6}{c}{Summer}\\
+  \hline
+  Station & STN & 50\% & 75\% & 90\% & 95\% & Q99\% & 99.9\% \\
+  \hline
+    De Kooy     & 235 & 0.93 & \cellcolor{green}0.97 & \cellcolor{green}0.99 & \cellcolor{green}0.95 & 0.42 & 0.11 \\
+    De Bilt     & 260 & 0.89 & \cellcolor{green}0.98 & 0.87                  & 0.79                  & 0.89 & 0.29 \\
+    Eelde       & 280 & 0.92 & \cellcolor{green}0.95 & \cellcolor{green}0.95 & 0.66                  & 0.94 & 0.82 \\
+    Vlissingen  & 310 & 0.91 & 0.78                  & \cellcolor{green}0.95 & \cellcolor{green}0.97 & 0.80 & 0.16 \\
+    Maastricht  & 380 & 0.21 & 0.71                  & 0.90                  & 0.78                  & 0.54 & 0.80 \\
+  \hline
+  \multicolumn{2}{c}{} \vline & \multicolumn{6}{c}{Winter}\\
+  \hline
+    De Kooy     & 235 & 0.67                  & 0.18                  & \cellcolor{green}0.96 & \cellcolor{green}0.97 & 0.59 & 0.57 \\
+    De Bilt     & 260 & \cellcolor{green}1.00 & 0.94                  & \cellcolor{green}0.97 & 0.65                  & 0.81 & 0.31 \\
+    Eelde       & 280 & 0.09                  & \cellcolor{green}0.96 & \cellcolor{green}0.99 & 0.84                  & 0.52 & 0.45 \\
+    Vlissingen  & 310 & \cellcolor{green}0.96 & 0.89                  & 0.79                  & 0.37                  & \cellcolor{red}0.05 & 0.25 \\
+    Maastricht  & 380 & 0.84                  & \cellcolor{green}0.99 & 0.93                  & \cellcolor{green}0.97 & 0.30 & 0.47 \\
+    \hline
+  \end{tabular}
+\end{table}
 
 
 
@@ -634,6 +665,50 @@ save(p_freq, file="./inst/tussenStap/p_freq.rda")
 load("./inst/tussenStap/p_freq.rda")
 @
 
+<<p_freqtbl>>=
+# setnames(p_freq, c("STN","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
+# tbl <- xtable(p_freq)
+#setnames(p_Wfreqall, c("50%","75%","90%","95","99%","99.9%"))
+#xtable(p_Sfreqall)
+#xtable(p_Wfreqall)
+@
+
+\begin{table}[h!]
+  \centering
+  \caption{Significance table for all fits on frequency data}
+  \begin{tabular}{l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r}
+  \hline\hline
+  \multicolumn{2}{c}{Location} \vline & \multicolumn{6}{c}{Quantiles of fit}\\
+  \multicolumn{2}{c}{} \vline & \multicolumn{6}{c}{All year} \\
+  \hline
+  Station & STN & 50\% & 75\% & 90\% & 95\% & Q99\% & 99.9\% \\
+  \hline
+    De Kooy     & 235 & 0.36                & 0.19                & 0.64                & 0.37                & 0.14 & 0.25 \\
+    De Bilt     & 260 & \cellcolor{red}0.03 & \cellcolor{red}0.02 & \cellcolor{red}0.02 & 0.51                & 0.34 & 0.51 \\
+    Eelde       & 280 & \cellcolor{red}0.05 & 0.08                & 0.12                & 0.27                & 0.29 & 0.34 \\
+    Vlissingen  & 310 & 0.15                & 0.39                & 0.22                & 0.10                & 0.25 & 0.32 \\
+    Maastricht  & 380 & \cellcolor{red}0.02 & 0.10                & \cellcolor{red}0.02 & \cellcolor{red}0.05 & 0.17 & 0.10 \\
+  \hline
+  \multicolumn{2}{c}{} \vline & \multicolumn{6}{c}{Summer}\\
+  \hline
+    De Kooy     & 235 & 0.46                & 0.58 & 0.54 & 0.93 &                0.58 & 0.69 \\
+    De Bilt     & 260 & 0.36                & 0.32 & 0.10 & 0.12 &                0.34 & 0.19  \\
+    Eelde       & 280 & \cellcolor{red}0.05 & 0.12 & 0.46 & 0.32 &                0.24 & 0.19 \\
+    Vlissingen  & 310 & 0.85                & 0.12 & 0.22 & 0.36 &                0.86 & 0.78 \\
+    Maastricht  & 380 & 0.17                & 0.15 & 0.10 & 0.32 & \cellcolor{red}0.05 & \cellcolor{red}0.05 \\
+  \hline
+  \multicolumn{2}{c}{} \vline & \multicolumn{6}{c}{Winter}\\
+  \hline
+    De Kooy     & 235 & 0.47 & 0.32 & 0.07 &                0.22 & 0.68 & 0.56 \\
+    De Bilt     & 260 & 0.36 & 0.11 & 0.31 &                0.19 & 0.49 & 0.58 \\
+    Eelde       & 280 & 0.71 & 0.29 & 0.15 & \cellcolor{red}0.05 & 0.56 & 0.58 \\
+    Vlissingen  & 310 & 0.63 & 0.17 & 0.51 &                0.24 & 0.68 & 0.59 \\
+    Maastricht  & 380 & 0.14 & 0.61 & 0.75 &                0.39 & 0.44 & 0.37 \\
+    \hline
+  \end{tabular}
+\end{table}
+
+
 <<p_test_freqall>>=
 p_Sfreqall <- p_test(data=freq_Swet,tau=0.50,freq=TRUE, STN=FALSE)
 setnames(p_Sfreqall,c("Q50s"))
@@ -653,6 +728,25 @@ save(p_Sfreqall, file="./inst/tussenStap/p_Sfreqall.rda")
 save(p_Wfreqall, file="./inst/tussenStap/p_Wfreqall.rda")
 @
 
+
+\begin{table}[h!]
+  \centering
+  \caption{Significance table for all fits and specified to summer an winter frequency data, all stations combined}
+  \begin{tabular}{l|r|r|r|r|r|r}
+  \hline\hline
+    & \multicolumn{6}{c}{Quantiles of fit}\\
+  \hline
+Season & 50\% & 75\% & 90\% & 95\% & 99\% & 99.9\% \\
+  \hline
+Summer & 0.14               & \cellcolor{red}0.05 & \cellcolor{red}0.05 & \cellcolor{red}0.02 & 0.25 & 0.27 \\
+Winter & 0.24               & 0.07                & 0.10                &                0.08 & 0.19 & 0.49 \\
+ \hline
+\end{tabular}
+\end{table}
+
+
+
+
 <<p_LM>>=
 p_flm <- p_test(data=freq_wet,freq=TRUE,lm=TRUE,STN=TRUE)
 setnames(p_flm,c("STN","All year"))
@@ -666,14 +760,36 @@ save(p_flm, file="./inst/tussenStap/p_flm.rda")
 save(p_flm_all, file="./inst/tussenStap/p_flm_all.rda")
 @
 
-<<p_freqtbl>>=
-# setnames(p_freq, c("STN","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
-# tbl <- xtable(p_freq)
-#setnames(p_Wfreqall, c("50%","75%","90%","95","99%","99.9%"))
-#xtable(p_Sfreqall)
-#xtable(p_Wfreqall)
 
-@
+\begin{table}[ht]
+\centering
+\begin{tabular}{l|r|r|r|r}
+  \hline
+ & STN & All year & Summer & Winter \\
+  \hline
+1 & 235 & 0.20 & 0.75 & 0.32 \\
+  2 & 260 & \cellcolor{red}0.05 & 0.19 & 0.25 \\
+  3 & 280 & \cellcolor{red}0.03 & 0.08 & 0.17 \\
+  4 & 310 &                0.08 & 0.46 & 0.41 \\
+  5 & 380 & \cellcolor{red}0.02 & 0.20 & 0.12 \\
+   \hline
+\end{tabular}
+\end{table}
+
+
+Linear regression, all stn combined
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrr}
+  \hline
+ & All year & Summer & Winter \\
+  \hline
+1 & \cellcolor{red}0.02 & 0.10 & 0.15 \\
+   \hline
+\end{tabular}
+\end{table}
+
 
 
 Table ... shows multiple significant positive trends for intensity and decreasing trends in frequency. However, trends are not uniform for every quantile and spatially. So not a simple shift of the precipitation distribution, but changes in form. Note, that for frequency data only 60 points are considered, so the change of the overall shape can be influenced by few points.
@@ -975,7 +1091,7 @@ fit10 <- lm(fraction ~ YM, data = fraction_10_allhr)
 ggplotRegression(fit10)
 @
   \caption{Ordinary least-square regression on monthly fraction of wet events (intensity of 10-20 mm/hr). R2, Intercept and slope are given, as well as the p-value giving the significance level.}
-  \label{fig:QR_max2d}
+  \label{fig:LM_10-20}
 \end{figure}
 
 
