@@ -8,7 +8,7 @@
 QR_plotting <- function(data,title,ymax,individual=FALSE){
   if(individual==FALSE){
   ggplot(data, aes(x = Year)) +        # data
-    #geom_point(data=data[RH > quantile(RH,probs=0.999)],aes(y=RH),color="gray",size=0.3)+
+    #geom_point(data=data[P > quantile(P,probs=0.999)],aes(y=P),color="gray",size=0.3)+
     #geom_line(aes(y=m50), color="black") +
     #geom_line(aes(y=m75), color="purple") +
     geom_smooth(aes(y=yr_mean),method=lm, color="black")+

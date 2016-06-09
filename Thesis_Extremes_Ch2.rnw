@@ -83,11 +83,11 @@ ggplot(dt,aes(x=x,y=y)) +
 # Go to http://projects.knmi.nl/klimatologie/uurgegevens/selectie.cgi
 # Select period: 1-1-1958 till 21-12-2015 (1-24 hrs)
 # Select variables: DD (wind direction), T(temperature), TD (dewpoint temperature),
-# DR (duration of rain event), RH (hourly rain sum), U(relative humidity), WW (weather code)
+# DR (duration of rain event), RH (hourly rain sum) --> called P, U(relative humidity)--> called RH, WW (weather code)
 # Select stations: 225 De Kooy, 260 De Bilt, 280 Eelde, 310 Vlissingen, 380 Maastricht
 # For description weather codes (WW) see: http://bibliotheek.knmi.nl/scholierenpdf/weercodes_Nederland,
 # these code are  only used to study specific extreme events
-hrKNMI <- loaddata("./inst/extData/KNMI_rainhr.txt")
+hrKNMI <- KNMI_loading("./inst/extData/KNMI_rainhr.txt")
 save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
 @
 
@@ -105,10 +105,10 @@ This chapter focusses on linear trends in hourly precipitation extremes. Whether
 
 % Fit data via quantile regression
 <<setup_trends,cache=TRUE>>=
-tmp <- subset(hrKNMI,select=c("STN", "YYYYMMDD","Date","date","Year","Day","RH"))
+tmp <- subset(hrKNMI,select=c("STN", "YYYYMMDD","Date","date","Year","Day","P"))
 QR_hrKNMI <- QR_stn(data=tmp)
 
-QR_hrKNMI[, ":="(yr_mean = mean(RH)), by = list(STN, Year)]
+QR_hrKNMI[, ":="(yr_mean = mean(P)), by = list(STN, Year)]
 
 
 save(QR_hrKNMI, file="./inst/tussenStap/QR_hrKNMI.rda")
@@ -163,7 +163,7 @@ The following figures show the autocorrelation plots for the hourly datasets of 
   \begin{minipage}[0.15\textheight]{0.48\textwidth}
     \centering
 <<label=B_autocor,cache=TRUE>>=
-acf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
+acf(hrKNMI[STN==260]$P,lag.max=80,main=NA)
  @
     \vspace{-0.5cm}
     \subcaption{De Bilt}
@@ -174,7 +174,7 @@ acf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
  \begin{minipage}[0.15\textheight]{0.48\textwidth}
    \centering
 <<label=B_pautocor,cache=TRUE>>=
-pacf(hrKNMI[STN==260]$RH,lag.max=80,main=NA)
+pacf(hrKNMI[STN==260]$P,lag.max=80,main=NA)
  @
    \vspace{-0.5cm}
    \subcaption{De Bilt}
@@ -198,7 +198,7 @@ load("./inst/tussenStap/data2d.rda")
 
 <<label=setupmax2d,cache=TRUE>>=
 data2d$YM <- format(data2d$Date,format="%Y-%m")
-data2d[,":="(Year=Year,YM=YM, month=round(mean(Month),digits=0),day=mean(Day), max2d=max(RH)),by=list(d2,STN)]
+data2d[,":="(Year=Year,YM=YM, month=round(mean(Month),digits=0),day=mean(Day), max2d=max(P)),by=list(d2,STN)]
 save(data2d, file="./inst/tussenStap/data2d.rda")
 max2d <- data2d[, list(max2d=unique(max2d), Year=unique(Year),YM=unique(YM),month=unique(month)),by= list(d2,STN)]
 #max2d[,mon_mean := mean(max2d),by=month]
@@ -466,9 +466,9 @@ load("./inst/tussenStap/p_W.rda")
 Impact events; order of 5-50 mm/hr  (15,5 mm/hr as mean) . Above 90 (and 75) quantile can impact sewage (from 20 mm/hr) or traffic problems ($\> 30$ mm/hr)
 
 <<AggregateByYear>>=
-yearlyMax <- hrKNMI[, list(RHmax = max(RH),yr_mean = mean(RH)), by = list(STN, Year)]
-#yearlyMax <- hrKNMI[, list(DD= unique(DD), T = unique(T), TD = unique(TD), RHmax = max(RH)), by = list(STN, Year)]
-#yearlyMax[, list(RHmax=unique(RHmax)), by=list(Year,STN)]
+yearlyMax <- hrKNMI[, list(Pmax = max(P),yr_mean = mean(P)), by = list(STN, Year)]
+#yearlyMax <- hrKNMI[, list(DD= unique(DD), T = unique(T), TD = unique(TD), Pmax = max(P)), by = list(STN, Year)]
+#yearlyMax[, list(Pmax=unique(Pmax)), by=list(Year,STN)]
 @
 
 \begin{figure}[H]
@@ -476,7 +476,7 @@ yearlyMax <- hrKNMI[, list(RHmax = max(RH),yr_mean = mean(RH)), by = list(STN, Y
   \textbf{Trends in quantiles of yearly maxima per station}\par\medskip
 <<Yearlymax>>=
 cols <- c("25%"="purple","50%"="blue","75%"="green")
-ggplot(yearlyMax, aes(x = Year, y = RHmax)) + geom_point() +
+ggplot(yearlyMax, aes(x = Year, y = Pmax)) + geom_point() +
   #geom_smooth(aes(y=yr_mean, colour='black'),method=lm)+
   geom_quantile(formula= y~x,quantiles=0.25, aes(colour="25%"))+
   geom_quantile(formula= y~x,quantiles=0.50, aes(colour="50%"))+
@@ -497,7 +497,7 @@ In the following figure the data of all stations are combined, as this can give 
   \textbf{Trends in quantiles of yearly maxima}\par\medskip
 <<Yearlymax_allcombined>>=
 cols <- c("25%"="purple","50%"="blue","75%"="green","90%"="orange")
-ggplot(yearlyMax, aes(x = Year, y = RHmax)) + geom_point() +
+ggplot(yearlyMax, aes(x = Year, y = Pmax)) + geom_point() +
   #geom_smooth(aes(y=yr_mean, colour='black'),method=lm)+
   geom_quantile(formula= y~x,quantiles=0.25, aes(colour="25%"))+
   geom_quantile(formula= y~x,quantiles=0.50, aes(colour="50%"))+
@@ -515,9 +515,9 @@ ggplot(yearlyMax, aes(x = Year, y = RHmax)) + geom_point() +
 Next to changes in intensity of extreme rain events, is it also relevant to study whether precipitation events occur more, equally or less often in time. In this part analysis of frequency data is reported. First, the number of wet hours a year, a summer, a winter are plotted in the figure below.
 
 <<label=freq,cache=TRUE>>=
-freq_wet <-  hrKNMI[RH > 0][ , ':='(f = .N),by = list(Year,STN)]
-freq_Swet <- hrKNMI[RH > 0][Month==6| Month==7 | Month==8][ , ':='(f = .N),by = list(Year,STN)]
-freq_Wwet <- hrKNMI[RH > 0][Month==12| Month==1 | Month==2][ , ':='(f = .N),by = list(Year,STN)]
+freq_wet <-  hrKNMI[P > 0][ , ':='(f = .N),by = list(Year,STN)]
+freq_Swet <- hrKNMI[P > 0][Month==6| Month==7 | Month==8][ , ':='(f = .N),by = list(Year,STN)]
+freq_Wwet <- hrKNMI[P > 0][Month==12| Month==1 | Month==2][ , ':='(f = .N),by = list(Year,STN)]
 
 freq_wet <- freq_wet[, list(f = unique(f),T = mean(T), TD = mean(TD), WD = mean(DD)),by=list(Year,STN)]
 freq_Swet <- freq_Swet[, list(f = unique(f),T = mean(T), TD = mean(TD), WD = mean(DD)),by=list(Year,STN)]
@@ -799,8 +799,8 @@ Table ... shows multiple significant positive trends for intensity and decreasin
 
 To investigate the frequency of extreme events with a high potential impact, we will investigate the frequency of wet hours with an intensity between 5-10, 10-15, 15-20 and >20 mm/hr. For more intense hourly values there is to little data.
 ! Amount of extreme events a year
-RH > 75\%, 90\%, 95\%, 99\%
-1. Make new data set for intensity (not as mean hourly rate), by combining DR and RH --> calculate intensity
+P > 75\%, 90\%, 95\%, 99\%
+1. Make new data set for intensity (not as mean hourly rate), by combining DR and P --> calculate intensity
 1. determine Q90 for certain station
 2. calculate events a year
 3. LM
@@ -852,17 +852,17 @@ ggplot(freq_I20, aes(x = Year,y = f)) +        # data
 @
 
  <<label=freqthreshold,cache=TRUE>>=
-# freq_5 <- hrKNMI[(RH > 5) & (RH <10)][, ':='(f = .N),by = Year]
+# freq_5 <- hrKNMI[(P > 5) & (P <10)][, ':='(f = .N),by = Year]
 # freq_5 <-  freq_5[, list(Year=unique(Year)),by = f]
 # setkey(freq_5,Year)
 # #freq_5 <- QR_freqall(freq_5,STN=FALSE)
 #
-# freq_10 <-  hrKNMI[(RH > 10) & (RH <15)][, ':='(f = .N),by = Year]
+# freq_10 <-  hrKNMI[(P > 10) & (P <15)][, ':='(f = .N),by = Year]
 # freq_10 <-  freq_10[, list(Year=unique(Year)),by = f]
 # setkey(freq_10,Year)
 #freq_10 <- QR_freqall(freq_10,STN=FALSE)
 
-# Percentage of wet hours a month, with RH > 10 and <20,
+# Percentage of wet hours a month, with P > 10 and <20,
 
 #freq_10 <- QR_freqall(freq_10,STN=FALSE)
 # save(freq_5, file="./inst/tussenStap/freq_5.rda")
@@ -924,12 +924,12 @@ ggplot(freq_10, aes(x = Year,y = f)) +        # data
 When the data of the different stations are combined quantile regression on (yearly resolution) frequency data is possible. This allows us to study extremes which can have significant moderate to high impact (hourly intensity of 10-20 mm/hr and >20 mm/hr).
 
  <<label=freqthreshold2,cache=TRUE>>=
-freq_15 <-  hrKNMI[(RH > 15) & (RH <20)][, ':='(f = .N),by = Year]
+freq_15 <-  hrKNMI[(P > 15) & (P <20)][, ':='(f = .N),by = Year]
 freq_15 <-  freq_15[, list(Year=unique(Year)),by = f]
 setkey(freq_15,Year)
 #freq_15 <- QR_freqall(freq_15,STN=FALSE)
 
-freq_20 <-  hrKNMI[RH > 20][, ':='(f = .N),by = Year]
+freq_20 <-  hrKNMI[P > 20][, ':='(f = .N),by = Year]
 freq_20 <-  freq_20[, list(Year=unique(Year)),by = f]
 setkey(freq_20,Year)
 #freq_20 <- QR_freqall(freq_20,STN=FALSE)
@@ -1073,7 +1073,7 @@ hrKNMI$YM <- as.yearmon(hrKNMI$YM)
 hrKNMI[, ":="(montotal=.N),by = YM]
 all <- hrKNMI[, list(YM=unique(YM)),by = montotal]
 setorder(all, by=YM)
-count10 <- count(hrKNMI[(RH>10)&(RH<20)],vars="YM")
+count10 <- count(hrKNMI[(P>10)&(P<20)],vars="YM")
 
 
 fraction_10_allhr <- merge(all,count10,by="YM")
