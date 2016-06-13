@@ -262,14 +262,24 @@ load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
 #Compare[, L := length(HH), by=Date] -->
 # On 10 days there are 2 measurements in 1 hour (on 1 day 2x) --> to remove duplicate hours, take max CAPE value of the two hours, as we are high CAPE values are were we are interested in
 Compare[, sbCAPE := max(sbCAPE), by=date]
-Compare <- unique(Compare)
+
+#Compare <- unique(Compare)
 CAPE2d <- data2d(Compare,STN1=0)
+CAPE2d <- within(CAPE2d, d2[d2==0] <- 4200)
+save(CAPE2d,file="./inst/tussenStap/CAPE2d.rda")
 
-max2d <- CAPE2d[, list(Pmax2d=max(P), Tmax2d=max(T),TDmax2d=max(TD),CAPEmax2d=max(sbCAPE),max2d=max(max2d),Year=unique(Year),YM=unique(YM),month=unique(month)),by=d2]
-max2d[,yr_Pmean := mean(Pmax2d),by=Year]
-save(max2d, file="./inst/tussenStap/max2d.rda")
+CAPEexclNA <- CAPE2d[, list(sbCAPE = sbCAPE[!is.na(sbCAPE)]),by=d2]
+CAPEexclNA <- CAPEexclNA[,list(CAPEmax2d = max(sbCAPE)),by=d2]
+allmax2d <- CAPE2d[, list(Pmax2d=max(P), Imax2d=max(I),Tmax2d=max(T),TDmax2d=max(TD),RHmax2d=max(RH),FHmax2d=max(FH),DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)]),by=d2]
+#,Year=unique(Year),Month=unique(Month)),by=d2] #YM=unique(YM)
+#allmax2d[,yr_Pmean := mean(Pmax2d),by=Year]
+save(allmax2d, file="./inst/tussenStap/allmax2d.rda")
+
+#Merge set for which there is max sbCAPE, from 4173 --> 4164 data points
+Allmax2d <-merge(CAPEexclNA,allmax2d,by="d2")
+save(Allmax2d, file="./inst/tussenStap/Allmax2d.rda")
+Allmax2d_mat <- subset(allmax2d, select=c(Pmax2d, Imax2d, Tmax2d,TDmax2d,CAPEmax2d,RHmax2d,FHmax2d))
 @
-
 
 In this chapter we start with a study of correlations. Next,the type of relationship (e.g. linear or non-linear) is studied, thereby we account for the influence of how the data is distributed. Our analysis is followed by plotting and interpreting lags. To find the best model for precipitation data the most promising variables are combined in multiregression plots. Lastly, we compare trends in the key variable(s) to the observed trend in hourly intensity.
 Note, in this chapter we include duration data to find the true intensity (I). Here, P is the hourly precipitation sum.
@@ -304,11 +314,18 @@ sp_corr <- round(cor(M,method="spearman"), 2)
 sp_pmatrix <- cor_pmat(sp_corr)
 sp_corr_max <- round(cor(M_maxi,method="spearman"), 2)
 sp_pmatrix_max <- cor_pmat(sp_corr_max)
+
+#Corr 2d max
+
+p_corr_max2d <- round(cor(Allmax2d_mat,method="pearson"), 2)
+sp_corr_max2d <- round(cor(Allmax2d_mat,method="spearman"), 2)
+
 # cormatrix = rcorr(as.matrix(M_maxi), type='spearman')
 # cordata = melt(cormatrix$r)
 # ggplot(cordata, aes(x=Var1, y=Var2, fill=value))+   geom_tile() + xlab("") + ylab("")
 # or
 @
+
 
 \begin{figure}[H]
   \centering
@@ -350,6 +367,17 @@ ggcorrplot(sp_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
   \end{minipage}
   \caption{Heatmap consisting of correlation coefficients of the variables: intensity (I), wind strength (FH), measure of relative humidity (RH), hourly precipitation sum (P), temperature(T) and dewpoint temperature(TD). The heatmaps are computed according to the Pearson method (a,b) or the Spearman approac (c,d), for all hours (a,c) and only daily maxima (b,d). Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
 \end{figure}
+
+<<PHeatmap_maxi>>=
+# Maxima a day
+ggcorrplot(p_corr_max2d, hc.order = FALSE,type = "lower",lab=TRUE)
+@
+
+<<SPHeatmap_maxi>>=
+# Maxima a day
+ggcorrplot(sp_corr_max2d, hc.order = FALSE,type = "lower",lab=TRUE)
+@
+
 
 Explain all hour correlations, explain difference Pearson/ Spearman
 
@@ -444,12 +472,24 @@ ggcorrplot(Cmat,lab=TRUE)
 
 quantile regression time
 
+Plot distirbution
+--> normal? LS fitting (T and TD)
+--> lognormal/not-normal --> quantile regression (CAPE, FH?)
+
+% Make rq
 <<QR_Temp>>=
-ggplot(hrKNMI,aes(x=Date,y=T)) + geom_quantile(formula=y~x,quantiles=c(0.25,0.50,0.75,0.95))
+QR_all(allmax2d)
+
+
+#too large, will give errors
+#ggplot(hrKNMI,aes(x=Date,y=T)) + geom_quantile(formula=y~x,quantiles=c(0.25,0.50,0.75,0.95))
+
+# To see differences in slope per quantile , from: http://data.library.virginia.edu/getting-started-with-quantile-regression/
+#plot(summary(qr3), parm="x")
 @
 
 <<QR_DewTemp>>=
-ggplot(hrKNMI,aes(x=Date,y=TD)) + geom_quantile(formula=y~Date,quantiles=c(0.25,0.50,0.75,0.95))
+#ggplot(hrKNMI,aes(x=Date,y=TD)) + geom_quantile(formula=y~Date,quantiles=c(0.25,0.50,0.75,0.95))
 @
 
 \subsubsection{Plotting key variables}
@@ -587,6 +627,8 @@ The values of CAPE are very seasonal dependent, as can been deduced from figure 
 
 
 In section \ref{subsubsec:moist} relative humidity and dewpoint temperature are described as measures for atmospheric moisture. As relative humidity is assumed to stay constant and we are interested in variables explaining trends in intensification of precipitation extremes, we consider the relationship between precipitation and dewpoint temperature.
+
+% split in two periods
 
 
 <<PmaxvsTDmax>>=
