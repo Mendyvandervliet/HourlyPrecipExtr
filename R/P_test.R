@@ -32,7 +32,7 @@ p_test <- function(data,tau,N=9999, freq=FALSE, lm=FALSE, method="fn", STN=TRUE)
     setnames(tmp, c("reps","obs"))
     p <- tmp[, list(unique((1+sum(obs > reps))/(N+1)))]
   }
-  else if((freq==TRUE) & (lm==FALSE)& (STN==FALSE)){
+  else if((freq==TRUE) & (lm==FALSE)& (STN==TRUE)){
     N <- 58
     reps <- data[, list(replicate(N, round(as.numeric(coef(rq(sample(f) ~ Year, tau=tau,method="br"))[2]),digits=7))),by=STN]
     obs <- data[, list(round(as.numeric(coef(rq(f ~ Year, tau=tau,method="br"))[2]),digits=7)),by=STN]
@@ -51,3 +51,5 @@ p_test <- function(data,tau,N=9999, freq=FALSE, lm=FALSE, method="fn", STN=TRUE)
   }
   return(p)
 }
+
+
