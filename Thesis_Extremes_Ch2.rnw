@@ -190,13 +190,13 @@ For lags till 48 hours the autocorrelation and partial autocorrelation values ar
 <<label=setupdata2d,cache=TRUE>>=
 data2d <- data2d(hrKNMI)
 data2d$YM <- format(data2d$Date,format="%Y-%m")
-data2d[,":="(Year=Year,YM=YM, month=round(mean(Month),digits=0),day=mean(Day), max2d=max(P)),by=list(d2,STN)]
+data2d[,":="(Year=Year,YM=YM, month=round(mean(Month),digits=0),day=mean(Day), max2d=max(P),Psum=sum(P)),by=list(d2,STN)]
 save(data2d, file="./inst/tussenStap/data2d.rda")
 @
 
 <<label=setupmax2d,cache=TRUE>>=
 load("./inst/tussenStap/data2d.rda")
-max2d <- data2d[, list(max2d=unique(max2d), Year=unique(Year),YM=unique(YM),month=unique(month)),by= list(d2,STN)]
+max2d <- data2d[, list(max2d=unique(max2d), Psum=unique(Psum), Year=unique(Year),YM=unique(YM),month=unique(month)),by= list(d2,STN)]
 #max2d[,mon_mean := mean(max2d),by=month]
 max2d[,yr_mean := mean(max2d),by=Year]
 save(max2d, file="./inst/tussenStap/max2d.rda")
@@ -515,6 +515,11 @@ freq_wet <-  hrKNMI[P > 0][ , ':='(f = .N),by = list(Year,STN)]
 freq_Swet <- hrKNMI[P > 0][Month==6| Month==7 | Month==8][ , ':='(f = .N),by = list(Year,STN)]
 freq_Wwet <- hrKNMI[P > 0][Month==12| Month==1 | Month==2][ , ':='(f = .N),by = list(Year,STN)]
 
+load("./inst/tussenStap/data2d.rda")
+#freq_wet2d <- data2d[, ":="(f=length(HH[P>0])),by=list(d2,STN)]
+freq_wet2d <- data2d[, ":="(f=sum(code)),by=.(d2,STN)]
+freq_wet2d <- freq_wet2d[,list(f=unique(f),Psum=unique(Psum)),by=list(d2,STN)]
+
 freq_wet <- freq_wet[, list(f = unique(f),T = mean(T), TD = mean(TD), WD = mean(DD)),by=list(Year,STN)]
 freq_Swet <- freq_Swet[, list(f = unique(f),T = mean(T), TD = mean(TD), WD = mean(DD)),by=list(Year,STN)]
 freq_Wwet <- freq_Wwet[, list(f = unique(f),T = mean(T), TD = mean(TD), WD = mean(DD)),by=list(Year,STN)]
@@ -522,31 +527,35 @@ freq_Wwet <- freq_Wwet[, list(f = unique(f),T = mean(T), TD = mean(TD), WD = mea
 save(freq_wet, file="./inst/tussenStap/freq_wet.rda")
 save(freq_Swet, file="./inst/tussenStap/freq_Swet.rda")
 save(freq_Wwet, file="./inst/tussenStap/freq_Wwet.rda")
+save(freq_wet2d, file="./inst/tussenStap/freq_wet2d.rda")
 @
 
 <<label=loading10,cache=FALSE>>=
 load("./inst/tussenStap/freq_wet.rda")
 load("./inst/tussenStap/freq_Swet.rda")
 load("./inst/tussenStap/freq_Wwet.rda")
+load("./inst/tussenStap/freq_wet2d.rda")
 @
 
 <<label=QRfreq,cache=TRUE>>=
 QR_freq <- QR_freqall(freq_wet)
 QR_Sfreq <- QR_freqall(freq_Swet)
 QR_Wfreq <- QR_freqall(freq_Wwet)
-
+QR_freq2d <- QR_freqall(freq_wet2d,Year=FALSE)
 Legendgrob3 <- legendGrob(c("LM","25%","50%","75%"), pch=15,
                           gp=gpar(col=c("black","purple","blue","green"),cex=1), ncol=2)
 
 save(QR_freq, file="./inst/tussenStap/QR_freq.rda")
 save(QR_Sfreq, file="./inst/tussenStap/QR_Sfreq.rda")
 save(QR_Wfreq, file="./inst/tussenStap/QR_Wfreq.rda")
+save(QR_freq2d, file="./inst/tussenStap/QR_freq2d.rda")
 @
 
 <<label=loading11,cache=FALSE>>=
 load("./inst/tussenStap/QR_freq.rda")
 load("./inst/tussenStap/QR_Sfreq.rda")
 load("./inst/tussenStap/QR_Wfreq.rda")
+load("./inst/tussenStap/QR_freq2d.rda")
 @
 
 \begin{figure}[H]
@@ -629,36 +638,61 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2)
 The distribution of wet hours a year approaches a Gaussian distribution, therefore linear regression can be applied on this data. All linear regression fits demonstrate a negative trend in the amount of wet hours a year, except for the summer data of De Kooy. For hours a year the coefficient for de Kooy is the lowest, which is due to the negative trend in summer wet hours (\ref{fig:Qfreq_sum}).
 Most of the quantile fits show negative trends in the amount of wet hours a year, but spatial difference are visible especially in the 90\% quantile fit, giving the trend for the 10\% wettest years. Next to all year and summer data for De Kooy, this 90\% quantile fit is positive for summer data of Eelde and winter data of Maastricht. In Chapter 3 we hope to find an explanation for this spatial difference. To investigate whether these trends are significant a 9999 Monte Carlo permutation is applied.
 
+% 2 day freq
+% confidence band ??
+<<label=QR2d_freqplotting,cache=FALSE>>=
+ymin <- 0
+ymax <- 15
+plot1 <- QR_freqplotting(data=QR_freq2d[STN == 235], title="De Kooy",ymin,ymax,Year=FALSE)
+plot2 <- QR_freqplotting(data=QR_freq2d[STN == 260], title="De Bilt",ymin,ymax,Year=FALSE)
+plot3 <- QR_freqplotting(data=QR_freq2d[STN == 280], title="Eelde",ymin,ymax,Year=FALSE)
+plot4 <- QR_freqplotting(data=QR_freq2d[STN == 310], title="Vlissingen",ymin,ymax,Year=FALSE)
+plot5 <- QR_freqplotting(data=QR_freq2d[STN == 380], title="Maastricht",ymin,ymax,Year=FALSE)
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2),
+             ncol= 1)
+@
+
+% 58 length --> N=58?  order?
+% N <- 58
+% tmp <- data[, list(replicate(N, list(sample(f)))),by=STN]
+% duplicated(tmp)  ,by=STN]
+
 
 % Significance test
-<<p_testfreq,cache=TRUE>>=
+<<p_testfreq,cache=F>>=
 p_freq <- p_test(data=freq_wet,tau=0.50,freq=TRUE)
 setnames(p_freq,c("STN","Q50"))
 p_freq[, ":="(Q75 = p_test(data=freq_wet,tau=0.75,freq=TRUE)$V1, Q90 = p_test(data=freq_wet,tau=0.90,freq=TRUE)$V1)]
 p_freq[, ":="(Q95 = p_test(data=freq_wet,tau=0.95,freq=TRUE)$V1, Q99 = p_test(data=freq_wet,tau=0.99,freq=TRUE)$V1, Q999 = p_test(data=freq_wet,tau=0.999,freq=TRUE)$V1)]
+save(p_freq, file="./inst/tussenStap/p_freq.rda")
 @
 
-<<p_test_freqS,cache=TRUE>>=
-p_freq[, ":="(Q50s = p_test(data=freq_Swet,tau=0.50,freq=TRUE)$V1,
-         Q75s = p_test(data=freq_Swet,tau=0.75,freq=TRUE)$V1,
+<<p_test_freqS,cache=F>>=
+p_Sfreq <- p_test(data=freq_Swet,tau=0.50,freq=TRUE)
+setnames(p_Sfreq,c("STN","Q50s"))
+p_Sfreq[, ":="(Q75s = p_test(data=freq_Swet,tau=0.75,freq=TRUE)$V1,
          Q90s = p_test(data=freq_Swet,tau=0.90,freq=TRUE)$V1)]
-p_freq[, ":="(Q95s = p_test(data=freq_Swet,tau=0.95,freq=TRUE)$V1,
+p_Sfreq[, ":="(Q95s = p_test(data=freq_Swet,tau=0.95,freq=TRUE)$V1,
          Q99s = p_test(data=freq_Swet,tau=0.99,freq=TRUE)$V1,
          Q999s = p_test(data=freq_Swet,tau=0.999,freq=TRUE)$V1)]
+save(p_Sfreq, file="./inst/tussenStap/p_Sfreq.rda")
 @
 
-<<p_test_freqW,cache=TRUE>>=
-p_freq[, ":="(Q50w = p_test(data=freq_Wwet,tau=0.50,freq=TRUE)$V1,
-         Q75w = p_test(data=freq_Wwet,tau=0.75,freq=TRUE)$V1,
+<<p_test_freqW,cache=F>>=
+p_Wfreq <- p_test(data=freq_Wwet,tau=0.50,freq=TRUE)
+setnames(p_Wfreq,c("STN","Q50w"))
+p_Wfreq[, ":="(Q75w = p_test(data=freq_Wwet,tau=0.75,freq=TRUE)$V1,
          Q90w = p_test(data=freq_Wwet,tau=0.90,freq=TRUE)$V1)]
 p_freq[, ":="(Q95w = p_test(data=freq_Wwet,tau=0.95,freq=TRUE)$V1,
          Q99w = p_test(data=freq_Wwet,tau=0.99,freq=TRUE)$V1,
          Q999w = p_test(data=freq_Wwet,tau=0.999,freq=TRUE)$V1)]
-save(p_freq, file="./inst/tussenStap/p_freq.rda")
+save(p_Wfreq, file="./inst/tussenStap/p_Wfreq.rda")
 @
 
 <<loading12,cache=FALSE>>=
 load("./inst/tussenStap/p_freq.rda")
+load("./inst/tussenStap/p_Sfreq.rda")
+load("./inst/tussenStap/p_Wfreq.rda")
 @
 
 <<p_freqtbl>>=
@@ -741,8 +775,6 @@ Winter & 0.24               & 0.07                & 0.10                &       
 \end{table}
 
 
-
-
 <<p_LM>>=
 p_flm <- p_test(data=freq_wet,freq=TRUE,lm=TRUE,STN=TRUE)
 setnames(p_flm,c("STN","All year"))
@@ -812,7 +844,9 @@ save(freq_I10, file="./inst/tussenStap/freq_I10.rda")
 
 <<Plot_realint>>=
 YearlymaxI <- hrKNMI[, list(max_yrI = max(I)), by=Year]
-ggplot(YearlymaxI,aes(x=Year)) + geom_point(aes(y=max_yrI))
+#ggplot(YearlymaxI,aes(x=max_yrI)) + geom_histogram(bins=50)
+#--> looks normal, use LM
+ggplot(YearlymaxI,aes(x=Year,y=max_yrI)) + geom_point() + geom_smooth(method=lm, color="black") + ylab("Yearly max I ")
 @
 
 <<F_I20>>=
@@ -825,21 +859,32 @@ save(freq_I20, file="./inst/tussenStap/freq_I20.rda")
 
 @
 
+<<Load_FI>>=
+load("./inst/tussenStap/freq_I10.rda")
+load("./inst/tussenStap/freq_I20.rda")
+@
+
 <<I10>>=
+# ggplot(freq_I10, aes(x = f)) +        # data
+#     geom_histogram(bins=100)
+# quite normal distribution --> use LM
 ggplot(freq_I10, aes(x = Year,y = f)) +        # data
     geom_point(color="Gray")+
-    # geom_smooth(aes(y=f),method=lm, color="black")+
-    # geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
+    geom_smooth(method=lm, color="black")+
+    #geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
     # geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
-    # geom_quantile(formula= y~x,quantiles=0.75, color="green")+
+    #geom_quantile(formula= y~x,quantiles=0.75, color="green")+
     xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
     theme_bw()
 @
 
 <<I20>>=
+# ggplot(freq_I20, aes(x = f)) +        # data
+#     geom_histogram(bins=100)
+# quite normal distribution --> use LM
 ggplot(freq_I20, aes(x = Year,y = f)) +        # data
     geom_point(color="Gray")+
-    #geom_smooth(aes(y=f),method=lm, color="black")+
+    geom_smooth(aes(y=f),method=lm, color="black")+
     #geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
     #geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
     #geom_quantile(formula= y~x,quantiles=0.75, color="green")+
@@ -1074,7 +1119,6 @@ count10 <- count(hrKNMI[(P>10)&(P<20)],vars="YM")
 
 fraction_10_allhr <- merge(all,count10,by="YM")
 fraction_10_allhr[, ":="(fraction = freq/montotal),by=YM]
-
 # ggplot(fraction_10_wethr,aes(x=YM,y=fraction)) + geom_point() + geom_quantile(formula= y~x) +
 #   geom_smooth(method=lm, color="red") + theme_bw()
 @
