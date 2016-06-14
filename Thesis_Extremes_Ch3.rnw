@@ -470,15 +470,32 @@ ggcorrplot(Cmat,lab=TRUE)
 
 \subsection{Trends in key variables}
 
-quantile regression time
+quantile regression time of normal and 2day max in time
 
 Plot distirbution
 --> normal? LS fitting (T and TD)
 --> lognormal/not-normal --> quantile regression (CAPE, FH?)
 
+<<>>=
+# All max2d (except CAPE --> as it has other resolution)
+max2d_all <- data2d[, list(Pmax2d=max(P),Imax2d=max(I),Tmax2d=max(T),TDmax2d=max(TD),RHmax2d=max(RH),FHmax2d=max(FH),DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)]),by= list(d2,STN)]
+
+allmax2d <- CAPE2d[, list(),by=d2]
+@
+
+<<>>=
+
+
+
+@
+
+
+% See comments QR_all, for quantile fits
+
 % Make rq
 <<QR_Temp>>=
 QR_all(allmax2d)
+
 
 
 #too large, will give errors
