@@ -126,8 +126,7 @@ To detect and quantify historical climate trends often the linear component of t
 
 %From: http://www.ecd.bnl.gov/pubs/BNL-79819-2008-JA.pdf
 As illustrated in Figures 1..the ordinary least square (OLS) estimate of Y on X will minimize
-the  squared  vertical  distance,$\sum{y_i - \beta_0 - \beta_1 x_i}^2$ from  the  points  to  the  regression  line.  T
-he  OLS estimate of the slope is $\hat{\beta_1} = \frac{S_{xy}}{S_yy}$ This  is  the  case  when $\lambda = \inf$  in  the  general structural modelling  approach. Similarly, the OLS estimate of X on Y would minimize the horizontal distance to the regression line. The latter  is also called the reverse regression. The OLS is suitable when only one of the two variables is random.
+the  squared  vertical  distance,$\sum{y_i - \beta_0 - \beta_1 x_i}^2$ from  the  points  to  the  regression  line.  The  OLS estimate of the slope is $\hat{\beta_1} = \frac{S_{xy}}{S_yy}$ This  is  the  case  when $\lambda = \inf$  in  the  general structural modelling  approach. Similarly, the OLS estimate of X on Y would minimize the horizontal distance to the regression line. The latter  is also called the reverse regression. The OLS is suitable when only one of the two variables is random.
 
 ! write little piece
 %From IPCC, http://www.climatechange2013.org/images/report/WG1AR5_ALL_FINAL.pdf p. 179-180:
@@ -152,6 +151,32 @@ To solve a linear quantile fit, we specify the $\tau$-th conditional quantile fu
 \begin{equation} \label{eq:cond_quant}
  \min_{\beta\in\R} \sum_{t=1}^{T} \rho_{\tau} (x_s(t) - x'\beta(\tau))
 \end{equation}
+
+To illustrate how quantile regression works we plotted Figure \ref{fig:QR_example}.
+
+<<Example_DT,cache=TRUE>>=
+#
+dt <- data.table(x = c(1:100),y = rnorm(100))
+@
+
+\begin{figure}[H]
+  \centering
+  \textbf{Example quantile regression }\par\medskip
+<<Example_QR,cache=FALSE>>=
+#
+ggplot(dt,aes(x=x,y=y)) +
+  geom_point(data=dt[(y < quantile(y,probs=0.50)) & (y > (quantile(y,probs=0.25)))],aes(x,y),color="black") +
+  geom_point(data=dt[(y < quantile(y,probs=0.75)) & (y > (quantile(y,probs=0.50)))],aes(x,y),color="blue") +
+  geom_point(data=dt[y > (quantile(y,probs=0.75))],aes(x,y),color="green") +
+   stat_quantile(formula= y~x,quantiles=0.25, aes(colour='black'))+
+   stat_quantile(formula= y~x,quantiles=0.50, aes(colour='blue'))+
+   stat_quantile(formula= y~x,quantiles=0.75, aes(colour='green'))+
+   scale_colour_manual(name = 'Quantiles', values=c('black','blue','green'),labels = c('25%','50%','75%'))+
+    theme_bw()
+@
+  \caption{For a random dataset of 100 values for all x (number of 1 to 100) the colored lines (black-green) give quantile regression fits with respectively $\tau = 25, 50, 75\%. The dots in black give all values higher than the 25\%-quantile. Note, these dots are overplot by the blue dots which indicate all values higher than the 50\%-quantile, which are also overplot by the green dots giving all values higher than the 75\%-quantile.}
+  \label{fig:QR_example}
+\end{figure}
 
 Complementing the least square method in the use of estimating conditional mean models, quantile regression not only provides a more robust alternative for estimating the main tendency of the response, but also offers the possibility to investigate better the conditional distribution of the response \citep{Koenker2005}. Quantiles are more relevant for spatial comparison then counts of exceedance over thresholds (Klein Tank and Können 2003), as they correspond to the same part of the distribution for all stations, Multiple studies use linear regression for changes in seasonal or annual quantiles. However, when high quantiles are calculated from small samples these can be biased. Therefore, quantile regression is used to overcome this problem \citep{Wasko2014,Roth2015}.
 ((
