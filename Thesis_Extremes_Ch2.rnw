@@ -160,7 +160,7 @@ pacf(hrKNMI[STN==260]$P,lag.max=80,main=NA)
 \caption{Autocorrelation and partial autocorrelation function for all hour precipitation data of station De Bilt. For the other stations we did not include the same figures as for both there are no significant differences between the stations.}
 \end{figure}
 
-For lags of 1 to 48 hours the autocorrelation and partial autocorrelation values are significant ($>$0.05). Moreover, a winter depression will not last longer than 2 days (and summer rain events are mainly on the scale of several hours). Therefore, we will now apply quantile regression on the maximum value for periods of 2 days to remove significant serial correlation(\ref{fig:QR_max2d}). Whereas in Figure \ref{fig:QR_allhr} only for the 99.9\% quantile lines linear regression was visible with the eye, in this plot the 99\% quantile line also seems to regress linearly next to the 99.9\%-quantile line. This arise from the new time scale. As here only the maxima of 2 days are considered, the 99.9\% is not the same as in the previous figure. In Figure \ref{fig:QR_max2d} the 99\%-quantile and 99.9\% are computed from a minimization function to values higher than 9-10 mm/hr and 16-20 mm/hr respectively. We can already deduce from this figure that spatial differences exist in the magnitude and type (positive/negative) of trend and that they are higher for the 99.9\%-quantile, than for the 99\%-quantile. The 99.9\% quantile line for de Kooy and Eelde decreases linearly in time with rates of 0.1 and 0.05 mm/hr/yr respectively, while the same quantile line increases for De Bilt and Maastricht (at rates of 0.13 and 0.07 mm/hr/yr) and remains almost constant for Vlissingen ($\sim$ 0.02 mm/hr/yr). No visible trends are observed for the yearly mean intensity and the 75\%,90\%,95\%- quantile.
+For lags of 1 to 48 hours the autocorrelation and partial autocorrelation values are significant ($>$0.05). Moreover, a winter depression will not last longer than 2 days (and summer rain events are mainly on the scale of several hours). Therefore, we will now apply quantile regression on the maximum value for periods of 2 days to remove significant serial correlation(\ref{fig:QR_max2d}). Note, all 2 day periods (not only wet 2 day periods) are included in this trend analysis. Whereas in Figure \ref{fig:QR_allhr} only for the 99.9\% quantile lines linear regression was visible with the eye, in this plot the 99\% quantile line also seems to regress linearly next to the 99.9\%-quantile line. This arise from the new time scale. As here only the maxima of 2 days are considered, the 99.9\% is not the same as in the previous figure. In Figure \ref{fig:QR_max2d} the 99\%-quantile and 99.9\% are computed from a minimization function to values higher than 9-10 mm/hr and 16-20 mm/hr respectively. We can already deduce from this figure that spatial differences exist in the magnitude and type (positive/negative) of trend and that they are higher for the 99.9\%-quantile, than for the 99\%-quantile. The 99.9\% quantile line for de Kooy and Eelde decreases linearly in time with rates of 0.1 and 0.05 mm/hr/yr respectively, while the same quantile line increases for De Bilt and Maastricht (at rates of 0.13 and 0.07 mm/hr/yr) and remains almost constant for Vlissingen ($\sim$ 0.02 mm/hr/yr). No visible trends are observed for the yearly mean intensity and the 75\%,90\%,95\%- quantile.
 
 <<label=setupdata2d,cache=TRUE>>=
 data2d <- data2d(hrKNMI)
@@ -530,12 +530,18 @@ freq_wet <-  hrKNMI[P > 0][ , ':='(f = .N),by = list(Year,STN)]
 freq_Swet <- hrKNMI[P > 0][Month==6| Month==7 | Month==8][ , ':='(f = .N),by = list(Year,STN)]
 freq_Wwet <- hrKNMI[P > 0][Month==12| Month==1 | Month==2][ , ':='(f = .N),by = list(Year,STN)]
 
+# Load data set in which 2day units are included
 load("./inst/tussenStap/data2d.rda")
+# Count number of wet hours per 2 day period and per station
+# sum over code (0 or 1 indicating dry or wet hour), as to include frequencies of 0 (when a consecutive dry period of 48 hours occurs)
+# This approach is not needed for years, as there are no years in which there is no rain at all.
+
 #freq_wet2d <- data2d[, ":="(f=length(HH[P>0])),by=list(d2,STN)]
 freq_wet2d <- data2d[, ":="(f=sum(code)),by=.(d2,STN)]
+# Shift to resolution of values per 2 days
 freq_wet2d <- freq_wet2d[,list(f=unique(f),Psum=unique(Psum),yr=mean(Year)),by=list(d2,STN)]
 
-freq_wet <- freq_wet[, list(f = unique(f),T = mean(T), TD = mean(TD), WD = mean(DD)),by=list(Year,STN)]
+#f create data tables with per year only 1 f value and mean T/TD/WD value
 freq_wet <- freq_wet[, list(f = unique(f),T = mean(T), TD = mean(TD), WD = mean(DD)),by=list(Year,STN)]
 freq_Swet <- freq_Swet[, list(f = unique(f),T = mean(T), TD = mean(TD), WD = mean(DD)),by=list(Year,STN)]
 freq_Wwet <- freq_Wwet[, list(f = unique(f),T = mean(T), TD = mean(TD), WD = mean(DD)),by=list(Year,STN)]
@@ -554,6 +560,7 @@ load("./inst/tussenStap/freq_wet2d.rda")
 @
 
 <<label=QRfreq,cache=TRUE>>=
+# compute quantiles from quantile regression
 QR_freq <- QR_freqall(freq_wet)
 QR_Sfreq <- QR_freqall(freq_Swet)
 QR_Wfreq <- QR_freqall(freq_Wwet)
@@ -580,6 +587,7 @@ load("./inst/tussenStap/QR_freq2d.rda")
   \begin{minipage}{0.48\textwidth}
     \flushleft
 <<Density_2dayfreq>>=
+# density plot --> to study distribution
 plot(density(freq_wet2d$f), type='l', col='blue', lwd=3, main=NA,
               xlab="F (counts/2day)", ylab="Density")
 @
@@ -590,7 +598,7 @@ plot(density(freq_wet2d$f), type='l', col='blue', lwd=3, main=NA,
   \begin{minipage}{0.48\textwidth}
     \flushright
 <<label=QR2d_freqplotting,cache=FALSE,warning=FALSE>>=
-# warning=false ; because we remove points which are not fitted in the plot by ymax
+# !!! BIAS geom_smooth: warning=false ; because we remove points which are not fitted in the plot by ymax
 ymin <- 0
 ymax <- 15
 plot1 <- QR_freqplotting(data=QR_freq2d[STN == 235], title="De Kooy",ymin,ymax,Year=FALSE)

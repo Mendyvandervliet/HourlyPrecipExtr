@@ -244,12 +244,21 @@ Interesting CH1 local/seasonal variability ? still unexplained?
 
 \subsection{Identification of relationships}
 
+In this chapter we start with a study of correlations. Next,the type of relationship (e.g. linear or non-linear) is studied, thereby we account for the influence of how the data is distributed. Our analysis is followed by plotting and interpreting lags. To find the best model for precipitation data the most promising variables are combined in multiregression plots. Lastly, we compare trends in the key variable(s) to the observed trend in hourly intensity.
+Note, in this chapter we include duration data to find the true intensity (I). Here, P is the hourly precipitation sum.
+
+
+\subsubsection{Correlation matrices}
+\label{subsubsec:correlationmatrices}
+
+To have an easy and clear overview of the strength of possible relationships between multiple variables, we plotted heatmaps of the correlation coefficients calculated with either the Pearson or the Spearman method.
+
 <<Mechanism_dt>>=
 load("./inst/tussenStap/hrKNMI.rda")
 # Create datatable of all wet hours and corresponding metadata (P, I, Temperature, dewpoint temp., P, U)
-# relation P/I of wet hours with other variables
+# create data table to study relation P/I of wet hours with other variables
 M <- hrKNMI[P>0][, list(P=P, I=I,T, TD, RH=RH,FH=FH)]
-# relation max P/I with max in other variables
+# create data table to study relation max P/I with max in other variables
 M_max <- hrKNMI[, list(Pmax=max(P), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(RH),FHmax=max(FH),DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)]),by=list(Date,Season)]
 M_max <- M_max[Pmax>0]  #only wet days
 save(M_max,file="./inst/tussenStap/M_max.rda")
@@ -279,30 +288,6 @@ save(allmax2d, file="./inst/tussenStap/allmax2d.rda")
 Allmax2d <-merge(CAPEexclNA,allmax2d,by="d2")
 save(Allmax2d, file="./inst/tussenStap/Allmax2d.rda")
 Allmax2d_mat <- subset(allmax2d, select=c(Pmax2d, Imax2d, Tmax2d,TDmax2d,CAPEmax2d,RHmax2d,FHmax2d))
-@
-
-In this chapter we start with a study of correlations. Next,the type of relationship (e.g. linear or non-linear) is studied, thereby we account for the influence of how the data is distributed. Our analysis is followed by plotting and interpreting lags. To find the best model for precipitation data the most promising variables are combined in multiregression plots. Lastly, we compare trends in the key variable(s) to the observed trend in hourly intensity.
-Note, in this chapter we include duration data to find the true intensity (I). Here, P is the hourly precipitation sum.
-
-
-\subsubsection{Correlation matrices}
-\label{subsubsec:correlationmatrices}
-
-To have an easy and clear overview of the strength of possible relationships between multiple variables, we plotted heatmaps of the correlation coefficients calculated with either the Pearson or the Spearman method.
-<<correctformat_heatmap>>=
-# # Helper function to reorder the correlation matrix :
-# reorder_cormat <- function(cormat){
-#   # Use correlation between variables as distance
-#   dd <- as.dist((1-cormat)/2)
-#   hc <- hclust(dd)
-#   cormat <-cormat[hc$order, hc$order]
-# }
-#
-# # Get upper triangle of the correlation matrix
-# get_upper_tri <- function(cormat){
-#   cormat[lower.tri(cormat)]<- NA
-#   return(cormat)
-# }
 @
 
 <<corr_Pearson+Spearman>>=
@@ -365,7 +350,7 @@ ggcorrplot(sp_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
     \caption{Maxima}
     \label{fig:Heatmap_maxisp }
   \end{minipage}
-  \caption{Heatmap consisting of correlation coefficients of the variables: intensity (I), wind strength (FH), measure of relative humidity (RH), hourly precipitation sum (P), temperature(T) and dewpoint temperature(TD). The heatmaps are computed according to the Pearson method (a,b) or the Spearman approac (c,d), for all hours (a,c) and only daily maxima (b,d). Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
+  \caption{Heatmap consisting of correlation coefficients of the variables: intensity (I), wind strength (FH), measure of relative humidity (RH), hourly precipitation sum (P), temperature(T) and dewpoint temperature(TD). The heatmaps are computed according to the Pearson method (a,b) or the Spearman approac (c,d), for all wet hours (a,c) and daily maxima of wet days (b,d). Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
 \end{figure}
 
 <<PHeatmap_maxi>>=
@@ -379,9 +364,12 @@ ggcorrplot(sp_corr_max2d, hc.order = FALSE,type = "lower",lab=TRUE)
 @
 
 
-Explain all hour correlations, explain difference Pearson/ Spearman
+Explain all wet hour correlations,
+explain difference Pearson/ Spearman
 
-The highest correlations between the maximum hourly precipitation sum and the other variables, are those of maxima in T (0.412), TD (0.402). Also contributing, but less importance are correlation of FHmax(0.23) and RHmax (0.171) with Pmax. For intensity the relation with Tmax is even a bit higher (0.423), but for TD, FHmax and RHmax lower (respectievely 0.384,0.175 and 0.088).
+The highest correlations between the maximum hourly precipitation sum of wet-days only and the other variables, are those of maxima in T (0.412), TD (0.402). Also contributing, but less importance are correlation of FHmax(0.23) and RHmax (0.171) with Pmax. For intensity the relation with Tmax is even a bit higher (0.423), but for TD, FHmax and RHmax lower (respectievely 0.384,0.175 and 0.088).
+
+Eplain all 2day maxima
 
 From section \ref{subsubsec:CAPE} can be deduced that CAPE, as a representative for the strength of vertical motion, is an important factor for convective precipitation. Due to the different length and resolution of this dataset we plot an extra heat map consisting of CAPE values and I, P, T and the number of CAPE measurements a day (N). We included T to investigate in more details the indirect relationship of T with P or I via CAPE.
 
@@ -472,7 +460,7 @@ ggcorrplot(Cmat,lab=TRUE)
 
 quantile regression time of normal and 2day max in time
 
-Plot distirbution
+Plot distribution
 --> normal? LS fitting (T and TD)
 --> lognormal/not-normal --> quantile regression (CAPE, FH?)
 
@@ -543,13 +531,13 @@ M_trial <- subset(M_allmax, select=c("Tmax", "TDmax","CAPEmax","FHmax","Pmax"))
 plot(M_trial)
 @
 
-For the most important factors (maxima in T, TD and CAPE) regarding the correlation heat maps (\ref{subsubsec:correlationmatrices}) we plotted the relationship between hourly precipitation sums and the variables as point clouds. As the type of relationship can be influenced by how the data is distributed, we also plotted the distribution. We differentiated between summer and winter to have a better understanding of seasonal differences in precipitation explained by the key variables.
+For the most important factors (maxima in T, TD and CAPE) regarding the correlation heat maps (\ref{subsubsec:correlationmatrices}) we plotted the relationship between the daily maximum hourly precipitation sums and the maxima of other variables as point clouds. As the type of relationship can be influenced by how the data is distributed, we also plotted the distribution. We differentiated between summer and winter to have a better understanding of seasonal differences in precipitation explained by the key variables.
 
 
 <<PmaxvsTmax>>=
 #Subset for maxima data
-M_max <- hrKNMI[P>0][, list(Pmax=max(P), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(RH),FHmax=max(FH)),by=list(Date,Season)]
-
+M_max <- hrKNMI[, list(Pmax=max(P), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(RH),FHmax=max(FH)),by=list(Date,Season)]
+M_max[Pmax>0] #only wet days
 # TEMPERATURE
 ## Plots showing relation Pmax and Tmax, differentiated on season
 
@@ -594,14 +582,14 @@ plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), hjust=0, ncol = 1, nrow =
 #  Old wrong calculation CC-lines
 # Q_TDbin[,":="(CC = Pmeanmax[1]*(1.07^(TDmid-TDmid[1])), CC95 = Q95[1]*(1.07^(TDmid-TDmid[1])),CC99 = Q99[1]*(1.07^(TDmid-TDmid[1])))]
 @
-  \caption{The maxima in Precipitation are plotted against maxima in temperature (A). B shows the distribution of temperature maxima, and C demonstrates mean and the 95-percent quantile change in precipitation for every bin temperature. Temperature is binned with steps of 2 degrees.}
+  \caption{The daily maxima in precipitation of wet days are plotted against maxima in temperature (A). B shows the distribution of temperature maxima, and C demonstrates mean and the 95-percent quantile change in precipitation for every bin temperature. Temperature is binned with steps of 2 degrees.}
   \label{fig:PvsT}
 \end{figure}
 
-In figure \ref{fig:PvsT}A the increase of precipitation maxima with maxima in temperature in a non-linear way. Clear differences are visible between winter and summer. The winter precipitation are generally lower and the points slope more gently with respect to temperature maxima. The summer data resembles a triangle shape, with exponential increase till the maximum precipitation of 50 mm hr$^{-1}$ at approximately 20 degrees and an exponential decrease for further temperature increase. The summer and winter distributions of temperature are demonstrated in Figure \ref{fig:PvsT}B. They have similar Gaussian shapes, but are different positioned with respect to temperature. The maxima in number of winter data per bin of 2 degrees celsius is at 6-8 $^{\circ}$C, while the summer data is concentrated around 14-16 degrees celsius. The triangle shape observed in the summer data could be influenced by its distribution. However, the peak in precipitation data is then for higher temperature than expected and for winter data it does not hold. In order to remove any influence of the way temperature is distributed, we also plotted the mean precipitation maxima per bin. Moreover, the 95\% and 99\% quantile lines are plotted to visualize the temperature relation with \enquote{high} extremes in precipitation. The mean and quantile lines are compared to Clausius Clapeyron (CC) scaling. From Figure \ref{fig:PvsT}C can be deduced that the  super CC-scaling (twice what is expected from the CC equation) found by Lenderink is also observed here for the summer mean and the quantiles. Note, that the mean here is a mean of maxima precipitation sum a day, with only wet hours considered. For the winter data the colder part scales with Clausius Clapeyron, while for temperatures higher than 7$^{\circ}$C the mean shows a rate which is slightly weaker than the double CC-scaling. The reason for the off-set between summer and winter data in mean and quantiles can be explained by .. ? (data number difference)
+In figure \ref{fig:PvsT}A the precipitation maxima of wet days only increase with maxima in temperature in a non-linear way. Clear differences are visible between winter and summer. The winter precipitation are generally lower and the points slope more gently with respect to temperature maxima. The summer data resembles a triangle shape, with exponential increase till the maximum precipitation of 50 mm hr$^{-1}$ at approximately 20 degrees and an exponential decrease for further temperature increase. The summer and winter distributions of temperature are demonstrated in Figure \ref{fig:PvsT}B. They have similar Gaussian shapes, but are different positioned with respect to temperature. The maxima in number of winter data per bin of 2 degrees celsius is at 6-8 $^{\circ}$C, while the summer data is concentrated around 14-16 degrees celsius. The triangle shape observed in the summer data could be influenced by its distribution. However, the peak in precipitation data is then for higher temperature than expected and for winter data it does not hold. In order to remove any influence of the way temperature is distributed, we also plotted the mean precipitation maxima per bin. Moreover, the 95\% and 99\% quantile lines are plotted to visualize the temperature relation with \enquote{high} extremes in precipitation. The mean and quantile lines are compared to Clausius Clapeyron (CC) scaling. From Figure \ref{fig:PvsT}C can be deduced that the super CC-scaling (twice what is expected from the CC equation) found by Lenderink is also observed here for the summer mean and the quantiles. Note, that the mean here is a mean of maxima precipitation sum a day, with only wet hours considered. For the winter data the colder part scales with Clausius Clapeyron, while for temperatures higher than 7$^{\circ}$C the mean shows a rate which is slightly weaker than the double CC-scaling. The reason for the off-set between summer and winter data in mean and quantiles can be explained by .. ? (data number difference)
 The increase of precipitation maxima with temperature maxima might be induced from a shift between stratiform-dominated to convection-dominated precipitation as suggested by \citep{Berg2009}. As no data about synoptic conditions is included, this relationship seems hard to verify. However, stratiform and convective precipitation might be seperated on values of CAPE. (BRON!)
 
-To analyse the relationship between CAPE and precipitation maxima, we also plotted the point clouds, distribution of CAPE and binned mean and quantile lines.
+To analyse the relationship between daily CAPE and precipitation maxima (for days with CAPE measurements), we also plotted the point clouds, distribution of CAPE and binned mean and quantile lines.
 
 
 <<PmaxvsCAPEmax>>=
@@ -609,8 +597,9 @@ To analyse the relationship between CAPE and precipitation maxima, we also plott
 # Hourly precipitation sums
 ## Plots showing relation Pmax and CAPE, differentiated on season
 load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
-
-CAPE_day <- Compare[N>0][(HH==11)|(HH=17)][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE),Psum=sum(P), Pmax=max(P),Imax=max(I), N=mean(N)),by=list(Date,Season)]
+# calculate max CAPE (and max of other variables) for days on which CAPE-measurements are available
+# study between [(HH==11)|(HH=17)] ??
+CAPE_day <- Compare[N>0][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE),Psum=sum(P), Pmax=max(P),Imax=max(I), N=mean(N)),by=list(Date,Season)]
 M_CAPEmax <- subset(CAPE_day,select=c(Pmax,CAPEmax,Season))[(Season=="Summer")|(Season=="Winter")][CAPEmax<2500]
 Q_CAPEbin <- M_CAPEmax[,CAPE_bin := .bincode(CAPEmax, breaks=seq(0,2500,50),include.lowest=TRUE)]
 
@@ -619,7 +608,6 @@ Q_CAPEbin <- Q_CAPEbin[,list(Pmeanmax=mean(Pmax),CAPEmeanmax=mean(CAPEmax),freq=
 # Show only summer and winter season, and for bins with N, number of measurements, higher than 200
 Q_CAPEbin <- Q_CAPEbin[order(CAPE_bin)][freq>100]
 #Q_CAPEbin[,CAPEmid := c(rep(seq(25,325,by=50),each=2),seq(375,1225,by=50),1375,1425,1525)]
-
 @
 
 \begin{figure}
@@ -640,7 +628,7 @@ plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), hjust=0, ncol = 1, nrow =
   \label{fig:PvsCAPE}
 \end{figure}
 
-The values of CAPE are very seasonal dependent, as can been deduced from figure \ref{fig:PvsCAPE}. No clear patterns can be detected in A. However, the winterdata is confined in precipitation maxima till 10 mmhr$^{-1}$ and CAPE maxima till 600 Jkg$^{-1}$, whereas the summer has precipitation maxima till 33 mmhr$^{-1}$ and the highest CAPE maxima exceed the 4000 Jkg$^{-1}$. The distribution are lognormal, with an intenser exponential decrease with increasing CAPE for winter than summer.
+The values of CAPE maxima are very seasonal dependent, as can been deduced from figure \ref{fig:PvsCAPE}. No clear patterns can be detected in A. However, the winterdata is confined in precipitation maxima till 10 mmhr$^{-1}$ and CAPE maxima till 600 Jkg$^{-1}$, whereas the summer has precipitation maxima till 33 mmhr$^{-1}$ and the highest CAPE maxima exceed the 4000 Jkg$^{-1}$. The distribution are lognormal, with an intenser exponential decrease with increasing CAPE for winter than summer.
 
 
 In section \ref{subsubsec:moist} relative humidity and dewpoint temperature are described as measures for atmospheric moisture. As relative humidity is assumed to stay constant and we are interested in variables explaining trends in intensification of precipitation extremes, we consider the relationship between precipitation and dewpoint temperature.
@@ -871,10 +859,11 @@ Cross-correlation of univariate series with lags
 Dewpoint temperature
 
 <<lagTD>>=
-lagTD <- hrKNMI[P>0][, list(Pmax=max(P),TDmax=max(TD),TD_HH=HH[which.max(TD)],P_HH=HH[which.max(P)]),by=list(Date,Season)]
+lagTD <- hrKNMI[, list(Pmax=max(P),TDmax=max(TD),TD_HH=HH[which.max(TD)],P_HH=HH[which.max(P)]),by=list(Date,Season)]
+lagTD <- lagTD[Pmax>0]
 lagTD[, lag := P_HH-TD_HH]
 lagTD[lag==0][, cor(TDmax,Pmax)]
-ggplot(lagTD) + geom_histogram(aes(x=lag,group=Season),bins=100) + facet_wrap(~Season)
+ggplot(lagTD) + geom_histogram(aes(x=lag,group=Season),binwidth=1,center=0) + geom_vline(xintercept = 0,colour="red",linetype=2) + facet_wrap(~Season)
 
 laglist <- lagTD[, list(cor = cor(TDmax,Pmax), N = .N), by=list(lag,Season)][order(-N)][N>200]
 @
@@ -883,6 +872,7 @@ laglist <- lagTD[, list(cor = cor(TDmax,Pmax), N = .N), by=list(lag,Season)][ord
 ggplot(laglist,aes(x=lag,y=cor)) + geom_point() + facet_wrap(~Season) + ggtitle("Lead-lag max TD vs P (>0, Pt+n and TDn)")
 @
 
+Lag of Pmax and Tmax on wet days
 
 Include leag lag plots
 
