@@ -51,13 +51,13 @@ In this section an overview is given of the method involved in this work. Firstl
 \subsection{Data}
 
 \subsubsection{Time and place}
-For the first part of this thesis rain gauge data on an hourly resolution is used from five stations in the Netherlands.  Taking into consideration the need for having a long as possible consistent time serie as well as data which is spatially representative for different parts of the country, we were left with data from the following stations: de Kooy(235), De Bilt(260), Eelde(280), Vlissingen(310) and Maastricht(380), of which the location is shown in Figure \ref{fig:KaartStationsKNMI}. For each station metadata is available on hourly resolution of which the following variables are used in this study: time, hourly precipitation sum, temperature, dew point temperature, wind direction … As our focus of interest is precipitation extremes and their lifetime is often on the subhourly to hourly scale, we take into consideration a high resolution as well as a long enough time period to be able to detect trends. For the period from 01-01-1958 till 31-12-2015 coherent time series are present, which are easy to be compared and simultaneous analysed. Only CAPE data is more restricted in time and place. These Surface-based Cape observations are derived from radiosonde measurements at the Bilt from 01-03-1993 to 17-12-2015 is investigated, calculated as follows;….  In contrast to the other data, CAPE data also differs in resolution, from a mean of 4 a day to 1 a day in the course of time, with a maximum of 6 on days which were thought to be meteorological interesting.
+For the first part of this thesis rain gauge data on an hourly resolution is used from five stations in the Netherlands.  Taking into consideration the need for having a long as possible consistent time serie as well as data which is spatially representative for different parts of the country, we were left with data from the following stations: de Kooy(235), De Bilt(260), Eelde(280), Vlissingen(310) and Maastricht(380), of which the location is shown in Figure \ref{fig:KaartStationsKNMI}. Coordinates and altitude of the stations is listed in Table \ref{tab:location}. For each station metadata is available on hourly resolution of which the following variables are used in this study: time, hourly precipitation sum, temperature, dew point temperature, wind direction … As our focus of interest is precipitation extremes and their lifetime is often on the subhourly to hourly scale, we take into consideration a high resolution as well as a long enough time period to be able to detect trends. For the period from 01-01-1958 till 31-12-2015 coherent time series are present, which are easy to be compared and simultaneous analysed. Only CAPE data is more restricted in time and place. These Surface-based Cape observations are derived from radiosonde measurements at the Bilt from 01-03-1993 to 17-12-2015 is investigated, calculated as follows;….  In contrast to the other data, CAPE data also differs in resolution, from a mean of 4 a day to 1 a day in the course of time, with a maximum of 6 on days which were thought to be meteorological interesting.
 
 Implement: The reason to look at the statistics of wet events only is that these are less dependent on variations in the atmospheric circulation (Lenderink et al.,2007), which gives better statistics and enables us to better detect the influence
 of atmospheric moisture on precipitation extremes. From: http://www.hydrol-earth-syst-sci.net/15/3033/2011/hess-15-3033-2011.pdf
 
 
-\begin{figure}
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.7\linewidth]{/usr/people/vliet/Documents/HourlyPrecipExtr/figure/KaartStationsKNMI.png}
   \caption{A map of the Netherlands showing the locations of the five stations; de Kooy(235), De Bilt(260), Eelde(280), Vlissingen(310) and Maastricht(380).}
@@ -90,17 +90,62 @@ ggplot(Nmean) + geom_bar(aes(x=Year,y=Nmean),stat="identity") + theme_bw()
   \end{minipage}
 \end{figure}
 
+\begin{table}[ht]
+  \centering
+  \caption{Station location and altitude}
+  \begin{tabular}{l|r|r|r|r}
+  \hline\hline
+    Station   & STN & LON(east) & LAT(north) & ALT (m)\\
+    \hline
+    De Kooy   & 235 & 4.785     & 52.924     & 0.50 \\
+    De Bilt   & 260 & 5.177     & 52.101     & 2.00 \\
+    Eelde     & 280 & 6.586     & 53.125     & 3.50 \\
+    Vlissingen& 310 & 3.596     & 51.442     & 8.00 \\
+    Maastricht& 380 & 5.768     & 50.910     & 114.00 \\
+     \hline
+  \end{tabular}
+  \label{tab:location}
+\end{table}
+
+
 \subsubsection{Type of data and instruments}
 
-In this thesis the variables investigated are listed in the following table.
+In this thesis the variables investigated are listed in the following table (\ref{tab:typeofdata}). Precipitation intensity is defined as the mean hourly intensity in mm hr^{-1}, so the accumulated rain amount divided by 1 hour time. CAPE is defined as the amount of energy available for free convection, and computed as the amount of work done by the buoyancy force in a parcel of air that is lifted from the lifting condensation level to the level of no buoyancy (REF Yuh-Lang Lin),
+\begin{equation}
+CAPE = \int^{z_{LNB}_z_{LFC} g(\frac{T-\bar{T}}{\bar{T}})dz}
+\end{equation}.
+
+\begin{table}[ht]
+  \centering
+  \caption{Data characterstics}
+  \begin{tabular}{l|r|r|r|r|r|r|r}
+    \hline\hline
+    Name                            & Resolution \& Unit    & Rounding        & Instrument  \\
+    \hline
+    Precipitation                   & Hourly sum in mm      & 0.1 mm          &
+                                    & (=liter m$^{-2$})     &                 &
+    Duration                        & part of the hour      & 0.1 hour        &
+    Temperature                     & $^{\circ}$C           & 0.1 $^{\circ}$C &
+    Dewpoint temperature            & $^{\circ}$C           & 0.1 $^{\circ}$C &
+    CAPE                            & J kg$^{-1}$           & 1 J kg$^{-1}$   & Radiosonde
+    Relative humidity (1.5m hoogte) & \%                    & 1 \%            &
+    Wind strength                   & Hourly mean m/s       & 0.1 m/s         &
+    Wind direction                  & Mean of last 10 min.  & 1 degree        &
+                                    & of the hour, degrees  &                 &
+    Weather code                    & Number 0-99           & n/a             &
+    \hline
+  \end{tabular}
+  \label{tab:typeofdata}
+\end{table}
+
+Beschrijving handmatige en automatisch meter; p. 8 en 9  uit http://www2.knmi.nl/samenw/hawa/pdf/Handboek_H06.pdf. Beschrijving opstelling p.16
 
 
-table
 
-name, unit - type of instrument - resolution
 
-on hourly resolution includes precipitation in mm,
-Precipitation intensity is defined as the mean hourly intensity in mm hr^{-1}, so the accumulated rain amount divided by 1 hour time. CAPE is computed from ... .
+
+
+
 
 
 \subsubsection{Data quality}
@@ -229,7 +274,8 @@ Here, we test whether the slopes of the fitted regression lines deviate signific
 
 The reason a permutation test is chosen, is because this is a non-parametric test test. Parametric approaches (f.e. z-,t-, or F-test) assume that the data is normally distributed, while a non-parametric (f.e permutation test) can be applied without the assumption that the data follow a normal distribution \citep{Srinivasan}. A permutation (randomization) test is an resampling and exact test.(!! Explain what does this mean??). A basic premise of the permutation test is that the observations are exchangeable under the null hypothesis \citep{Srinivasan}, so there should be no difference in location or method of measurement between the data. Although one data set consist of measurements at only one location, there could be tiny changes in the measurement settings of that sites in 58 years.
 
-A major disadvantage of permutation tests is that they can be very demanding in computational power, therefore it is worthwile to use a Monte carlo approach. With this approach we mean a repeated random sampling (with an specific order). So instead of calculating the slope of every possible order of a serie of almost 10940 observated values (would give 10940! outcomes). As the data set consist of so many points, the chances to have an identical ordered serie in 9999 random sampling is extremely low ($(9999-1)!\frac{1}{10940!}*\frac{1}{10940!} --> \frac{1}{..!}).
+A major disadvantage of permutation tests is that they can be very demanding in computational power, therefore it is worthwile to use a Monte carlo approach. With this approach we mean a repeated random sampling (with an specific order). So instead of calculating the slope of every possible order of a serie of almost 10940 observated values (would give 10940! outcomes). As the data set consist of so many points, the chances to have an identical ordered serie in 9999 random sampling is extremely low ($(9999-1)!\frac{1}{10940!}*\frac{1}{10940!} --> \frac{1}{..!}). -->
+Even for 58
 
 
 %
