@@ -6,7 +6,7 @@
 #'
 #' @export
 Trend_plotting <- function(data,title,ymin,ymax,Year=FALSE,var){
-  if(var=T){
+  if(var==T){
     if(Year==FALSE){
       ggplot(data, aes(x = d2,y=Tmax2d)) +        # data
         #geom_point(data=data,aes(y=f),color="gray",size=0.3)+
@@ -34,7 +34,7 @@ Trend_plotting <- function(data,title,ymin,ymax,Year=FALSE,var){
     #     theme_bw()
   #}
   }
-  if(var=TD){
+  if(var==TD){
     if(Year==FALSE){
       ggplot(data, aes(x = d2,y=TDmax2d)) +        # data
         #geom_point(data=data,aes(y=f),color="gray",size=0.3)+
@@ -49,19 +49,19 @@ Trend_plotting <- function(data,title,ymin,ymax,Year=FALSE,var){
         theme_bw()
     }
   }
-  if(var=){
-    if(Year==FALSE){
-      ggplot(data, aes(x = d2,y=TDmax2d)) +        # data
-        #geom_point(data=data,aes(y=f),color="gray",size=0.3)+
-        geom_quantile(formula= y~x,quantiles=0.25, aes(colour="25%"), color="purple")+
-        geom_quantile(formula= y~x,quantiles=0.50, aes(colour="50%"), color="blue")+
-        geom_quantile(formula= y~x,quantiles=0.75, aes(colour="75%"), color="green")+
-        geom_smooth(method=lm, color="black")+
-        ggtitle(title) + # title
-        #ylim(c(ymin,ymax)) +
-        annotate("text",label=paste("Coef=",round(coef(lm(TDmax2d ~ d2,data))[[2]],digits=5)),x=Inf,y=Inf, hjust=1.25,vjust=2) +
-        xlab("Time") + ylab("2d max T (Celsius")+ # x and y-axis label
-        theme_bw()
-    }
-  }
+  # if(var==){
+  #   if(Year==FALSE){
+  #     ggplot(data, aes(x = d2,y=TDmax2d)) +        # data
+  #       #geom_point(data=data,aes(y=f),color="gray",size=0.3)+
+  #       geom_quantile(formula= y~x,quantiles=0.25, aes(colour="25%"), color="purple")+
+  #       geom_quantile(formula= y~x,quantiles=0.50, aes(colour="50%"), color="blue")+
+  #       geom_quantile(formula= y~x,quantiles=0.75, aes(colour="75%"), color="green")+
+  #       geom_smooth(method=lm, color="black")+
+  #       ggtitle(title) + # title
+  #       #ylim(c(ymin,ymax)) +
+  #       annotate("text",label=paste("Coef=",round(coef(lm(TDmax2d ~ d2,data))[[2]],digits=5)),x=Inf,y=Inf, hjust=1.25,vjust=2) +
+  #       xlab("Time") + ylab("2d max T (Celsius")+ # x and y-axis label
+  #       theme_bw()
+  #   }
+  # }
 }
