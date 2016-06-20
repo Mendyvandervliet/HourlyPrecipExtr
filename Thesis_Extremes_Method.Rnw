@@ -51,11 +51,7 @@ In this section an overview is given of the method involved in this work. Firstl
 \subsection{Data}
 
 \subsubsection{Time and place}
-For the first part of this thesis rain gauge data on an hourly resolution is used from five stations in the Netherlands.  Taking into consideration the need for having a long as possible consistent time serie as well as data which is spatially representative for different parts of the country, we were left with data from the following stations: de Kooy(235), De Bilt(260), Eelde(280), Vlissingen(310) and Maastricht(380), of which the location is shown in Figure \ref{fig:KaartStationsKNMI}. Coordinates and altitude of the stations is listed in Table \ref{tab:location}. For each station metadata is available on hourly resolution of which the following variables are used in this study: time, hourly precipitation sum, temperature, dew point temperature, wind direction … As our focus of interest is precipitation extremes and their lifetime is often on the subhourly to hourly scale, we take into consideration a high resolution as well as a long enough time period to be able to detect trends. For the period from 01-01-1958 till 31-12-2015 coherent time series are present, which are easy to be compared and simultaneous analysed. Only CAPE data is more restricted in time and place. These Surface-based Cape observations are derived from radiosonde measurements at the Bilt from 01-03-1993 to 17-12-2015 is investigated, calculated as follows;….  In contrast to the other data, CAPE data also differs in resolution, from a mean of 4 a day to 1 a day in the course of time, with a maximum of 6 on days which were thought to be meteorological interesting.
-
-Implement: The reason to look at the statistics of wet events only is that these are less dependent on variations in the atmospheric circulation (Lenderink et al.,2007), which gives better statistics and enables us to better detect the influence
-of atmospheric moisture on precipitation extremes. From: http://www.hydrol-earth-syst-sci.net/15/3033/2011/hess-15-3033-2011.pdf
-
+For the first part of this thesis rain gauge data on an hourly resolution is used from five stations in the Netherlands.  Taking into consideration the need for having a long as possible consistent time serie as well as data which is spatially representative for different parts of the country, we were left with data from the following stations: de Kooy(235), De Bilt(260), Eelde(280), Vlissingen(310) and Maastricht(380), of which the location is shown in Figure \ref{fig:KaartStationsKNMI}. Coordinates and altitude of the stations is listed in Table \ref{tab:location}. For each station metadata is available on hourly resolution of which the following variables are used in this study: time, hourly precipitation sum, temperature, dew point temperature, wind direction … As our focus of interest is precipitation extremes and their lifetime is often on the subhourly to hourly scale, we take into consideration a high resolution as well as a long enough time period to be able to detect trends. For the period from 01-01-1958 till 31-12-2015 coherent time series are present, which are easy to be compared and simultaneous analysed. Only CAPE data is more restricted in time and place. These CAPE observations are derived from radiosonde measurements at the Bilt in the period 01-03-1993 to 31-12-2015.  In contrast to the other data, CAPE data also differs in resolution, from a mean of 4 a day to 1 a day in the course of time, with a maximum of 6 on days which were thought to be meteorological interesting.
 
 \begin{figure}[H]
   \centering
@@ -140,17 +136,14 @@ CAPE = \int^{z_{LNB}_z_{LFC} g(\frac{T-\bar{T}}{\bar{T}})dz}
 
 Beschrijving handmatige en automatisch meter; p. 8 en 9  uit http://www2.knmi.nl/samenw/hawa/pdf/Handboek_H06.pdf. Beschrijving opstelling p.16
 
-
-
-
-
-
-
-
+Note, to have a consistent rouding of hourly precipitation sums to 0.1 mm, the hours with amounts of <0.05 mm are treated as being zero in this study. This leads to more dry hours (~8\% of total amount of hours). For frequency analysis we could argue to include these hours and code them as wet, however for intensity analysis this is not desired. The exact amounts are namely not known. Therefore, we choose for a consistent data set, in which wet hours are defined as hours in which precipitation accumulates to amounts higher than 0.05 mm. In chapter (REF CH1) we sometimes consider only wet hours, when we are only interested in characterstics of rain events. In chapter 3 we are interested in the correlation between precipitation and other variables, and therefore, when considering daily maxima we only take into account wet days (days in which the total amount of precipitation is higher than zero). Another reason to investigate the statistics of wet events only is that these are less dependent on changes in the atmospheric circulation \citep{Lenderink2007}, which can be handy when studying local factors such as moisture availibility and CAPE.
 
 \subsubsection{Data quality}
 For trend analysis a high quality data set is desired, especially one whose variability consist solely of changes in weather and climate. This is the definition of an homogeneous climate time series \citep{Freitas2013}. Nonetheless, long instrumental records are rarely homogeneous, for example due to station relocations, changes of rain gauge type, and changes in the rain gaug site \citep{Buishand2013,Freitas2013}. Although much attention has been devoted to homogeneity testing and adjusting for inhomogeneities, methods thereof are not considered here for multiple reasons. First of all, inventing and applying homogenization tests for hourly data is a time consuming and difficult task and would not fit within the framework of this thesis. Secondly, there are no excisting homogenization tests programs available on hourly resolution to implement easily.Thirdly, homogenization tests in which neighbouring stations are used in pairwise comparison would not be suited here due to the large spatial distance between the stations (and there are no other neigbouring stations matching in resolution and length of dataset). A possible way of correcting for instrumental errors is by comparing the automatic rain gauges with the hand rain gauges, as a study of \citet{Brandsma2014} concludes that the former measures annually 5-8\% lower than the latter. This can be explained by errors in evaporation values due to a warming element in the automatic rain gauge and comparitively less favorable aerodynamic shape \citep{STOWA2004}. However, there are several limitations to this correction. The timing of manual measurement is less thrustworthy, especially in case of extreme precipitation resulting in large absolute differences. Moreover, the correction factor as applied by \citet{Buishand1988} (multiplying every hour by the factor, $f=D/P$, with D the daiy sum of the manual rain gauge and P of the automatic rain gauge.) is not valid when errors are bigger for higher rain intensities or wind speeds. Besides, an underestimation of automatic is not that relevant for trends in extremes. As the underestimation is consistent in time, we can still deduce a trend. In addition, the manual and automatic rain gauges at all sites are placed further from each other in the course of time (?! De Bilt 1994). The larger the distance and the more local the rain events of interest, the smaller the value of this correction technique. As intense convective rain events can be very local, this is a serious limitation. This leads us to the conclusion that the proposed types of correction are not worthwhile to apply on our data. (?! But time periods)
 
+
+To consider all possible changes --> historical overview per station (table)
+projects.knmi.nl/klimatologie/metadata
 
 \section{Definition Extremes}
 A couple of so-called ‘extreme indices’ are listed in the Fifth Assessment Report of the IPCC report which are widely used in literature. These indices are based on either the probability of occurrence of given quantities or on absolute or percentage threshold exceedances (relative to climatological reference period), but also some complex definitions about duration, intensity and persistence of extreme events are involved. \citep{IPCC2013}  These extreme indices have been selected on basis of their robust statistical properties, their applicability across a wide range of climate types and extensive data availability over space and time. These indices reflect more ‘moderate’ extremes, as they do not include 1 in 100 year events, but events taking place as often as 5\% or 10\% of the time \citep{IPCC2013}.
@@ -165,17 +158,21 @@ In chapter two trend analysis is applied on intensity and frequency (wet hours a
 
 \subsection{Simple linear trend}
 
-To detect and quantify historical climate trends often the linear component of the change over time is estimated. The strengths and weaknesses of this approach are well understood as it is frequently and widely applied (PAPERS!, IPCC2013). (von Storch and Zwiers, 1999; Wilks, 2006). In linear trend modelling the way in which the trend is dependent on the sampling distribution (Gaussian, lognormal or otherwise) and the residuals on the trend line has to be considered carefully. Moreover, uncertainty and serial correlation in the data have to be taken into account(Von Storch, 1999; Santer et al., 2008). Two different methods of linear regression are used in this study; fitting linear regression model by the ordinary least square approach and by linear quantile regression depending on the sampling distribution and the type of result interested in.
+To detect and quantify historical climate trends often the linear component of the change over time is estimated. The strengths and weaknesses of this approach are well understood as it is frequently and widely applied (PAPERS!, IPCC2013). (von Storch and Zwiers, 1999; Wilks, 2006). In linear trend modelling the way in which the trend is dependent on the sampling distribution (Gaussian, lognormal or otherwise) and the residuals on the trend line, has to be considered carefully. Moreover, uncertainty and serial correlation in the data have to be taken into account(Von Storch, 1999; Santer et al., 2008). Two different methods of linear regression are used in this study; fitting a linear regression model by the ordinary least square approach and by linear quantile regression. The choice for a certain method is based on the sampling distribution and the type of result interested in.
 
 \subsubsection{Least-square regression fitting}
 
 %From: http://www.ecd.bnl.gov/pubs/BNL-79819-2008-JA.pdf
-As illustrated in Figures 1..the ordinary least square (OLS) estimate of Y on X will minimize
-the  squared  vertical  distance,$\sum{y_i - \beta_0 - \beta_1 x_i}^2$ from  the  points  to  the  regression  line.  The  OLS estimate of the slope is $\hat{\beta_1} = \frac{S_{xy}}{S_yy}$ This  is  the  case  when $\lambda = \inf$  in  the  general structural modelling  approach. Similarly, the OLS estimate of X on Y would minimize the horizontal distance to the regression line. The latter  is also called the reverse regression. The OLS is suitable when only one of the two variables is random.
+The ordinary least square (OLS) method is a minimization function of the square vertical distance, $\sum{y_i - \beta_0 - \beta_1 x_i}^2$ from  the  data points  to  the  regression  line (citep{})). Figure \ref{fig:LR} illustrates this. The slope of this regression $\hat{\beta_1}$ is given by  $ \frac{\sum{(x_i - \bar(x))(y_i - \bar(y))}}{\sum{(x_i -\bar(x))^2} = \frac{S_{xy}}{S_yy}$. In a similar way the OLS estimate of X on Y minimizes the horizontal distance between the points and the regeression line. The latter is also named the reverse regression. Ordinary least regression is only  applicable when only one of two variables is random citep{}.
 
-! write little piece
-%From IPCC, http://www.climatechange2013.org/images/report/WG1AR5_ALL_FINAL.pdf p. 179-180:
-The quantification and visualization of temporal changes are assessed in this chapter using a linear trend model that allows for firstorder autocorrelation in the residuals (Santer et al., 2008; Supplementary Material 2.SM.3).
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{/usr/people/vliet/Documents/HourlyPrecipExtr/figure/Linearregression.png}
+  \caption{Ordinary least square regression, which minimize the vertical (a) or horizontal (b) distance between the data points and the regression line.}
+  \label{fig:LR}
+\end{figure}
+
+
 
 Confidence band; uncertainty are computed using ...
 (?? The 90\% confidence interval quoted is solely that arising from sampling uncertainty in estimating the trend.
@@ -208,7 +205,6 @@ dt <- data.table(x = c(1:100),y = rnorm(100))
   \centering
   \textbf{Example quantile regression }\par\medskip
 <<Example_QR,cache=FALSE>>=
-#
 ggplot(dt,aes(x=x,y=y)) +
   geom_point(data=dt[(y < quantile(y,probs=0.50)) & (y > (quantile(y,probs=0.25)))],aes(x,y),color="black") +
   geom_point(data=dt[(y < quantile(y,probs=0.75)) & (y > (quantile(y,probs=0.50)))],aes(x,y),color="blue") +
