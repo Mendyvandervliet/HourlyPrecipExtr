@@ -241,6 +241,10 @@ Lightning occurs in vigorous convective clouds, in which ice particles and hail 
 
 Interesting CH1 local/seasonal variability ? still unexplained?
 
+From CH1:
+Far more likely is that the slight higher (summer) temperature and the relief {REF method chapter} present in Limburg stimulates vertical motion (updrafts), which leads to more local and intense rain events. We will test this relation by analysing the correlation of extreme precipitation with CAPE.
+
+No CAPE differences , but altitude intensity relation?
 
 \subsection{Identification of relationships}
 

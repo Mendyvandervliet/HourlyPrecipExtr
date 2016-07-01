@@ -14,7 +14,7 @@
 \usepackage{multirow}
 \usepackage{hyperref}
 \usepackage[backend=bibtex, sorting=none]{biblatex}
-\bibliography{References}
+\bibliography{references}
 %------------------------------------------------------------------------------------------------------------------------
 
 % install.packages("PCICt")
@@ -81,25 +81,26 @@ load("./inst/tussenStap/hrKNMI.rda")
 @
 
 \section{Introduction}
-This chapter focusses on linear trends in hourly precipitation extremes. Whether the hourly intensity (calculated from the hourly precipitation sum as the mean rate of one hour) of extremes regresses linearly in time or not, is investigated for the period 1958 to 2015. Next to intensity, trends in the frequency of hourly extremes are considered. Both type of trends are compared to the regression of the mean hourly value in time, thereby studying the proportional change. In chapter (REF CH1) we concluded that spatial differences are in general not that high in the Netherlands, however, for extremes significant differences exist. Therefore, it is interesting to consider the trends individual for every station. Moreover, when a signal is present at multiple stations, this enhance the robustness of the trend observed.
+This chapter focusses on linear trends in hourly precipitation extremes. Whether the hourly intensity (calculated from the hourly precipitation sum as the mean rate of one hour) of extremes increases or decreases linearly in time or remains constant, is investigated for the period 1958 to 2015. Next to intensity, trends in the frequency of hourly extremes are considered. The latter is counted as the number of wet hours for every 2 day period and for every year. Both type of trends are compared to the regression of the mean in time, thereby studying the proportional change. In Chapter 1 (REF CH1) we concluded that spatial differences are in general not that high in the Netherlands, however, significant differences exist for extremes. Therefore, it is interesting to consider the trends individual for every station. Moreover, the presence of a signal at multiple stations, enhances the robustness of the trend observed.
 
 % Fit data via quantile regression
 <<setup_trends,cache=TRUE>>=
 tmp <- subset(hrKNMI,select=c("STN", "YYYYMMDD","Date","date","Year","Day","P"))
+# Calculate quantile fits, see function QR_stn for method of quantile regression
 QR_hrKNMI <- QR_stn(data=tmp)
-
+# Calculate yearly mean of P
 QR_hrKNMI[, ":="(yr_mean = mean(P)), by = list(STN, Year)]
-
 
 save(QR_hrKNMI, file="./inst/tussenStap/QR_hrKNMI.rda")
 @
 
+% Create legend
 <<legend, cache=TRUE>>=
 Legendgrob1 <- legendGrob(c("90%","95%","99%","99.9%"), pch=15,
                           gp=gpar(col=c("blue" ,"green","orange","red"),cex=1), ncol=3)
 @
 
-% Load QR-fitted data
+% Load QR-fitted data (in case the first chuck is not evaluated rigthly)
 <<loading2, cache=FALSE>>=
 load("./inst/tussenStap/QR_hrKNMI.rda")
 @
@@ -107,7 +108,7 @@ load("./inst/tussenStap/QR_hrKNMI.rda")
 \section{Intensity}
 \subsection{All hours} \label{subsec:allhours} \par\medskip
 
-First, we study the regression of the quantiles for every station in Figure \ref{fig:QR_allhr}, based on the intensity of every hour in the period 1958 to 2015. As the data consist of dry hours for ~88\% of the time, the quantile values corresponding to the 50\% and 75\% fits are always zero, therefore they are not included in this figure.
+First, we study the regression of the quantiles for every station in Figure \ref{fig:QR_allhr}, based on the intensity of every hour in the period 1958 to 2015. As the data consist of dry hours (P $<$ 0.05 mm/hr) for ~88\% of the time (REF CH1), the quantile values corresponding to the 50\% and 75\% fits are always zero, therefore they are not included in this figure.
 
 % 5 figures, for every station 1 plot showing the quantile fits
 \begin{figure}[H]
@@ -128,10 +129,10 @@ hourly precipitation intensities (mm/hr), for all stations.}
   \label{fig:QR_allhr}
 \end{figure}
 
-From this figure we can not clearly observe trends for the different quantiles, except for the 99.9\% fit, corresponding to values higher than 11-27 mm/hr, occuring 0.1\% of the time ($\sim$ 9 hours per year). In fact, these trends differ highly between the five stations. As these trends are based on $\sim$ 510 data points it might be that the trends are not significant. We will discuss in more detail the significance of the plotted quantile lines at the end of this paragraph. Next to the amount of data points, trends can be influenced by biases. The assumption of independence of errors is violated by time series with an autocorrelation nature. The magnitude of the trend is influenced by serial correlation, when present %\ref{Yue2002}.
-Therefore, we now investigate whether there is any autocorrelation and partial autocorrelation present in the hourly data.
+From this figure \ref{fig:QR_allhr} we can not clearly observe trends for the different quantiles, except for the 99.9\% fit, corresponding to values higher than 11-27 mm/hr, occuring 0.1\% of the time ($\sim$ 9 hours per year). In fact, these 99.9\%-quantile trends differ highly between the five stations. As these trends are based on $\sim$ 510 data points in total, it might be that the trends are not significant. We will discuss in more detail the significance of the plotted quantile lines at the end of this paragraph. Next to the amount of data points, trends can be biased. The assumption of independence of errors may be violated by the autocorrelation nature of time series. The magnitude of the trend is influenced by serial correlation, when present in the data set \citep{Yue2002}.
+Therefore, we now investigate whether there is any significant autocorrelation and partial autocorrelation present in the hourly intensity values.
 
-The following figures show the autocorrelation plots for the hourly datasets of all stations.
+Figure \ref{fig:acfpacf} shows the autocorrelation and partial autocorrelation plot for the hourly dataset of De Bilt.For the other stations we did not include the same figures, because for both functions there are no significant differences between the stations.
 \begin{figure}[H]
   \centering
   \textbf{Autocorrelation all hours}\par\medskip
@@ -157,10 +158,11 @@ pacf(hrKNMI[STN==260]$P,lag.max=80,main=NA)
    \label{fig:B_pautocor}
  \end{minipage}
 \vspace{1cm}
-\caption{Autocorrelation and partial autocorrelation function for all hour precipitation data of station De Bilt. For the other stations we did not include the same figures as for both there are no significant differences between the stations.}
+  \caption{Autocorrelation and partial autocorrelation function for all hour precipitation data of station De Bilt.}
+  \label{fig:acfpacf}
 \end{figure}
 
-For lags of 1 to 48 hours the autocorrelation and partial autocorrelation values are significant ($>$0.05). Moreover, a winter depression will not last longer than 2 days (and summer rain events are mainly on the scale of several hours). Therefore, we will now apply quantile regression on the maximum value for periods of 2 days to remove significant serial correlation(\ref{fig:QR_max2d}). Note, all 2 day periods (not only wet 2 day periods) are included in this trend analysis. Whereas in Figure \ref{fig:QR_allhr} only for the 99.9\% quantile lines linear regression was visible with the eye, in this plot the 99\% quantile line also seems to regress linearly next to the 99.9\%-quantile line. This arise from the new time scale. As here only the maxima of 2 days are considered, the 99.9\% is not the same as in the previous figure. In Figure \ref{fig:QR_max2d} the 99\%-quantile and 99.9\% are computed from a minimization function to values higher than 9-10 mm/hr and 16-20 mm/hr respectively. We can already deduce from this figure that spatial differences exist in the magnitude and type (positive/negative) of trend and that they are higher for the 99.9\%-quantile, than for the 99\%-quantile. The 99.9\% quantile line for de Kooy and Eelde decreases linearly in time with rates of 0.1 and 0.05 mm/hr/yr respectively, while the same quantile line increases for De Bilt and Maastricht (at rates of 0.13 and 0.07 mm/hr/yr) and remains almost constant for Vlissingen ($\sim$ 0.02 mm/hr/yr). No visible trends are observed for the yearly mean intensity and the 75\%,90\%,95\%- quantile.
+For lags of 1 to 48 hours the autocorrelation and partial autocorrelation values are significant ($>$ 0.05). Moreover, a winter depression will not last longer than 2 days (and summer rain events are mainly on the scale of several hours). Therefore, we will now apply quantile regression on the maximum value for periods of 2 days to remove significant serial correlation (\ref{fig:QR_max2d}). Note, all 2-day periods (not only wet 2-day periods) are included in this trend analysis. In contrast to Figure \ref{fig:QR_allhr}, where only regresion of the 99.9\% quantile lines was visible with the eye, in this plot the 99\% quantile line also seems to regress linearly. This arises from the new time scale. As only the maxima of 2 days are considered, the 99.9\%-quantile line is not the same as in the previous figure. In Figure \ref{fig:QR_max2d} the 99\%-quantile and 99.9\% are computed from a minimization function to values higher than 9-10 mm/hr and 16-20 mm/hr respectively. We can already deduce from this figure that spatial differences exist in the magnitude and type (positive/negative) of trend and that these differences are higher for the 99.9\%-quantile, than for the 99\%-quantile. The 99.9\% quantile line for de Kooy and Eelde decreases linearly in time with rates of 0.1 and 0.05 mm/hr/yr respectively, while the same quantile line increases for De Bilt and Maastricht (at rates of 0.13 and 0.07 mm/hr/yr) and remains almost constant for Vlissingen ($\sim$ 0.02 mm/hr/yr). No visible trends are observed for the yearly mean intensity and the 75\%,90\%,95\%- quantile.
 
 <<label=setupdata2d,cache=TRUE>>=
 data2d <- data2d(hrKNMI)
@@ -215,9 +217,9 @@ hourly precipitation intensities (mm/hr) and a black line giving the OLS regress
   \label{fig:QR_max2d}
 \end{figure}
 
-Only for De Bilt Figure \ref{fig:QR_max2d} suggests that the 99 and 99 \% quantiles for regress considerable in time. Whether the 99 and 99.9 \% trends for de Bilt are significant is investigated by a 9999 Monte Carlo permutation test of the linear regression coefficient. The corresponding distribution plot of the permuted slopes is shown in Figure \ref{fig:MC_max2d}.
+Only for De Bilt Figure \ref{fig:QR_max2d} suggests that the 99 and 99 \% quantiles increase considerable in time. Whether the 99 and 99.9\%-quantile trends for de Bilt are significant is investigated by a 9999 Monte Carlo permutation test of the linear regression coefficient (in other words the slope of the regression line. The corresponding distribution plot of the permuted slopes is shown in Figure \ref{fig:MC_max2d}.
 
-For de Bilt the 99\%-quantile is significant on the 95\% confidence level (P=0.98). Opposed to the 99\%-quantile, the 99.9\%-quantile is not significant(P=0.8734). This might be due to the limitation in the number of values higher than the 99.9\%-quantile ($\sim$ 11 data points). If the 99.9\% is not significant for all stations this might explain the opposing signals.
+For de Bilt, the 99\%-quantile is significant on the 95\% confidence level (P=0.98). Opposed to the 99\%-quantile, the 99.9\%-quantile is not significant (P=0.8734). This might be due to the limitation in the number of values higher than the 99.9\%-quantile ($\sim$ 11 data points). If the 99.9\% is not significant for all stations, this might explain the opposing signals.
 
 <<label=setupMC,cache=TRUE>>=
 permdist99 <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.99)
@@ -253,11 +255,11 @@ plot_permdist(permdist999)
     \subcaption{99.9\% fit}
     \label{fig:MC_fit999}
   \end{minipage}
-  \caption{Density distribution for a 9999MC permutation of the $\tau = 99$(upper), $99.9$\%(bottom)-fitted values based on 2 day maxima in hourly precipitation intensities (mm/hr) for De Bilt. The purple (gray) line gives the upper-tail slope at the 95\%(99\%) confidence level. The black line indicates the observed regression coefficient of the 99\% (a) and 99.9\% (b) quantile regression fits.}
+  \caption{Density distribution for a 9999MC permutation of the $\tau = 99$(upper), $99.9$\%(bottom)-fitted values based on 2 day maxima in hourly precipitation intensities (mm/hr) for De Bilt. The purple (gray) line gives the upper-tail slope at the 95\% (99\%) confidence level. The black line indicates the observed regression coefficient of the 99\% (a) and 99.9\% (b) quantile regression fits.}
   \label{fig:MC_max2d}
 \end{figure}
 
-Next, to verify whether the 99.9\% quantile lines are indeed not significant for the other stations we will also study the corresponding p-values from the same permutation test. In fact, the significance of all quantile lines is determined for all stations and displayed in Table \ref{tab:p_table_2daymax}. A cell in the table is colored red, when a significant negative trend is present ($p \leq 0.05$). A green cell indicates a significant positive trend ($p \geq 0.95$).
+Next, to verify whether the 99.9\% quantile lines are indeed insignificant for the other stations, we will also study the p-values for this fit for the other stations. In fact, the significance of all quantile lines is determined for all stations and displayed in Table \ref{tab:p_table_2daymax}. A cell in this table is colored red, when a significant negative trend is present ($p \leq 0.05$). A green cell indicates a significant positive trend ($p \geq 0.95$).
 
 <<p_test,cache=TRUE>>=
 p <- p_test(data=max2d,tau=0.50)
@@ -282,7 +284,7 @@ save(p, file="./inst/tussenStap/p.rda")
 
 \begin{table}[ht]
   \centering
-  \caption{Significance table for all fits on 2 day max hourly intensity data}
+  \caption{Significance table for all fits on 2 day max. hourly intensity data}
   \begin{tabular}{l|r|r|r|r|r|r|r}
   \hline\hline
     \multicolumn{2}{c}{Location}
@@ -302,19 +304,10 @@ save(p, file="./inst/tussenStap/p.rda")
   \label{tab:p_table_2daymax}
 \end{table}
 
-All 99.9\% quantile regression fits are indeed insignificant. The suprising opposing regression lines for this quantile can thus not be detected as true trends, but may be influenced by the limited amount of data points. What is striking about these p-values, is that the quantiles for de Bilt are almost all significant (except for the 95\%-quantile), while for the other stations there are large differences in the p-values for the different quantiles. For Vlissingen the part of the distribution between the 50\%- quantile or higher than the 95\% and 99\%-quantiles, trends of increasing are visible. This suggests that the values between the 75\% and the 95\%-quantile do not increase (significantly). For Maastricht and De Kooy the same holds for the values higher than the 90\% and 95\%-quantile, but lower than the 99\% quantile. On the contrary, Eelde only has a significant increasing trend in the intensity for values higher than 75\%. Does this observation of trend differences in the intensity spectrum contradict to the current theory (IPCC SOURCE )of a shifting intensity distribution towards higher values as a result of temperature increase? Considering the method of quantile regression this does not need to be the case. In quantile regression there are no quantiles calculated for each time period, which would correspond to the distribution at that time. Quantile regression is namely a minimization function on the entire data set. Therefore, the fitted lines are not a result of a clear step-wise shift in time of the entire distribution and corresponding quantiles. (Each fitted quantile line can only be considered seperately.) Moreover, dissimilarity in trends for different quantiles is also observed in a study of Malik et al (citet REF Malik2016). This study also detects spatial inhomogeneity in trends for India. Despite the fact that the Netherlands is a relatively small compared to India, spatial differences are present in the magnitude and amount of significant trends. In Chapter 3 we hope to find an explanation for spatial differences in intensity. Table .. provides an overview of the rates of all significant trends. Although the trends are characterized by spatial inhomogeneity and dissimilarity with respect to the quantiles, it should be stressed that all significant trends detected are positive. In general, we can conclude that through a time period of 58 years the precipitation intensity of extreme events increases.
+All 99.9\% quantile regression fits are indeed insignificant. The suprising opposing regression lines for this quantile can thus not be detected as true trends, but may be influenced by the limited amount of data points. What is striking about the other p-values for De Bilt, is they are almost all significant (except for the 95\%-quantile), while for the other stations there are large differences in the p-values for the different quantiles. For Vlissingen the part of the distribution between the 50\%- quantile or higher than the 95\% and 99\%-quantiles, trends of increasing intensity are visible. This demonstrates that the values between the 75\% and the 95\%-quantile do not increase (significantly). For Maastricht and De Kooy the same holds for the values higher than the 90\% and 95\%-quantile, but lower than the 99\% quantile. On the contrary, Eelde only has a significant increasing trend in the intensity for values higher than 75\%. Does this observation of trend differences in the intensity spectrum contradict to the theory of a shifting intensity distribution towards higher values as a result of temperature increase (\citep{IPCC2013})? Considering the method of quantile regression this does not need to be the case. In quantile regression there are no quantiles calculated for each time period, which would correspond to the distribution at that time. Quantile regression is namely a minimization function on the entire data set. Therefore, the fitted lines are not a result of a clear step-wise shift in time of the entire distribution and corresponding quantiles. (! PLOT intensity distribution of old versus new period) Moreover, dissimilarity in trends regarding the different quantiles is also observed in a study of \citet{Malik2016}, which uses quantile regression as well. This study also detects spatial inhomogeneity in trends for India. Despite the fact that the Netherlands is a relatively small country compared to India, spatial differences are present in the magnitude and amount of significant trends. In Chapter 3 (REF CH3) we hope to find an explanation for spatial differences in intensity. Although the trends are characterized by spatial inhomogeneity and dissimilarity with respect to the quantiles, it should be stressed that all significant trends detected are positive. In general, we can conclude that through a time period of 58 years the precipitation intensity of extreme events increases.
 
-%' @article{Malik2016,
-%'   title={Spatiotemporal patterns and trends of Indian monsoonal rainfall extremes},
-%'   author={Malik, Nishant and Bookhagen, Bodo and Mucha, Peter J},
-%'   journal={Geophysical Research Letters},
-%'   volume={43},
-%'   number={4},
-%'   pages={1710--1717},
-%'   year={2016},
-%'   publisher={Wiley-Blackwell}
-%' }
 
+% ! PLOT intensity distribution of year 1958-1970 compared to 2003-2015
 
 <<Rates_peryear>>=
 
@@ -385,7 +378,7 @@ Not only the presence and sign of a trend is important, but also the magnitude o
   \label{tab:rates_2daymax}
 \end{table}
 
-% The three highest rates are those of De Kooy(95\%-quantile), De Bilt(99\%-quantile) and Vlissingen(99\%-quantile) on the order of 0.01 to 0.1 mm/hr/yr. For the entire period of 58 years this translates to increases in the extreme intensities of 1 to 7.5 mm/hr. All the other significant trends have rates on the order of 0.001 mm/hr/yr, expect for the 50\%-quantile line of the Bilt of which the rate is 13 orders lower. In general, the higher the quantile, the higher the magnitude of the detected trend.
+The three highest rates are those of De Kooy (95\%-quantile), De Bilt(99\%-quantile) and Vlissingen(99\%-quantile) on the order of 0.01 to 0.1 mm/hr/yr. For the entire period of 58 years this translates to increases in the extreme intensities of 1 to 7.5 mm/hr. All the other significant trends have rates on the order of 0.001 mm/hr/yr, expect for the 50\%-quantile line of the Bilt of which the rate is 13 orders lower. In general, the higher the quantile, the higher the magnitude of the detected trend. This holds when only one station is considered. Comparing the rates of the 50\%-quantile lines of De Bilt and Vlissingen gives an order diferrence of 13. The reason for the differences in rates is unclear. To investigate this and the spatial differences in the detection of signifcant trends we should dive deeper into the mechanisms behind these trends (REF CH3)
 
 %-------------------------
 \subsection{Summer vs winter} \label{subsec:S&W}
@@ -1288,6 +1281,6 @@ The 5\% most intense 2 day precipitation sums ... increases with...
 
 
 
-
+\printbibliography
 
 \end{document}
