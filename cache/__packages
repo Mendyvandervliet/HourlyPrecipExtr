@@ -13,7 +13,6 @@ lattice
 survival
 Formula
 Hmisc
-zoo
 dplyr
 reshape2
 GGally
