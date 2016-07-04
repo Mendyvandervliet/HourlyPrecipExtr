@@ -1,0 +1,37 @@
+\documentclass{report}
+
+%------------------------------------------------------------------------------------------------------------------------
+%Packages
+
+%\usepackage{float}
+%\usepackage{graphicx}
+\usepackage{color}
+%\usepackage{caption}
+%\usepackage{subcaption}
+\usepackage{a4wide}
+%\usepackage{colortbl}
+\overfullrule=2cm             %To spot overfull hboxes
+%\usepackage{multirow}
+\usepackage{hyperref}
+%\usepackage[backend=bibtex, sorting=none]{biblatex}
+\bibliography{references}
+%------------------------------------------------------------------------------------------------------------------------
+
+
+\title{Generic Report\\
+        Trends in extreme hourly precipitation}
+\author{Mendy van der Vliet}
+
+\begin{document}
+
+
+\maketitle
+
+\chapter{Conclusions}
+
+
+
+Rephrase concl CH2 : Although the trends are characterized by spatial inhomogeneity and dissimilarity with respect to the quantiles, it should be stressed that all significant trends detected are positive. In general, we can conclude that through a time period of 58 years the precipitation intensity of extreme events increases.
+
+
+\end{document}
