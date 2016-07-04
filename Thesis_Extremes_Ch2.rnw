@@ -13,7 +13,9 @@
 \overfullrule=2cm             %To spot overfull hboxes
 \usepackage{multirow}
 \usepackage{hyperref}
-\usepackage[backend=bibtex, sorting=none]{biblatex}
+%\usepackage[backend=bibtex, sorting=none]{biblatex}
+\usepackage[backend=bibtex,natbib=true, sorting=nyt,style=authoryear]{biblatex}
+
 \bibliography{references}
 %------------------------------------------------------------------------------------------------------------------------
 
@@ -173,7 +175,8 @@ save(data2d, file="./inst/tussenStap/data2d.rda")
 
 <<label=setupmax2d,cache=TRUE>>=
 load("./inst/tussenStap/data2d.rda")
-max2d <- data2d[, list(max2d=unique(max2d), Psum=unique(Psum), Year=unique(Year),YM=unique(YM),month=unique(month)),by= list(d2,STN)]
+max2d <- data2d[, list(max2d=unique(max2d), Psum=unique(Psum), Year=mean(Year)),by= list(d2,STN)] #YM=unique(YM),,month=unique(month)
+
 #max2d[,mon_mean := mean(max2d),by=month]
 max2d[,yr_mean := mean(max2d),by=Year]
 save(max2d, file="./inst/tussenStap/max2d.rda")
@@ -203,7 +206,7 @@ Legendgrob2 <- legendGrob(c("mean","75%","90%","95%","99%","99.9%"), pch=15,
   \centering
   \textbf{Quantile regression on 2 day max. hourly intensities}\par\medskip
 <<label=QR_max2d,cache=TRUE>>=
-ymax <- 30
+ymax <- 32
 plot1 <- QR2d_plotting(data=QR_max2d[STN == 235], title="De Kooy",ymax)
 plot2 <- QR2d_plotting(data=QR_max2d[STN == 260], title="De Bilt",ymax)
 plot3 <- QR2d_plotting(data=QR_max2d[STN == 280], title="Eelde",ymax)
@@ -262,6 +265,7 @@ plot_permdist(permdist999)
 Next, to verify whether the 99.9\% quantile lines are indeed insignificant for the other stations, we will also study the p-values for this fit for the other stations. In fact, the significance of all quantile lines is determined for all stations and displayed in Table \ref{tab:p_table_2daymax}. A cell in this table is colored red, when a significant negative trend is present ($p \leq 0.05$). A green cell indicates a significant positive trend ($p \geq 0.95$).
 
 <<p_test,cache=TRUE>>=
+1+1
 p <- p_test(data=max2d,tau=0.50)
 setnames(p,c("STN","Q50"))
 p[, ":="(Q75 = p_test(data=max2d,tau=0.75)$V1,
@@ -304,7 +308,7 @@ save(p, file="./inst/tussenStap/p.rda")
   \label{tab:p_table_2daymax}
 \end{table}
 
-All 99.9\% quantile regression fits are indeed insignificant. The suprising opposing regression lines for this quantile can thus not be detected as true trends, but may be influenced by the limited amount of data points. What is striking about the other p-values for De Bilt, is they are almost all significant (except for the 95\%-quantile), while for the other stations there are large differences in the p-values for the different quantiles. For Vlissingen the part of the distribution between the 50\%- quantile or higher than the 95\% and 99\%-quantiles, trends of increasing intensity are visible. This demonstrates that the values between the 75\% and the 95\%-quantile do not increase (significantly). For Maastricht and De Kooy the same holds for the values higher than the 90\% and 95\%-quantile, but lower than the 99\% quantile. On the contrary, Eelde only has a significant increasing trend in the intensity for values higher than 75\%. Does this observation of trend differences in the intensity spectrum contradict to the theory of a shifting intensity distribution towards higher values as a result of temperature increase (\citep{IPCC2013})? Considering the method of quantile regression this does not need to be the case. In quantile regression there are no quantiles calculated for each time period, which would correspond to the distribution at that time. Quantile regression is namely a minimization function on the entire data set. Therefore, the fitted lines are not a result of a clear step-wise shift in time of the entire distribution and corresponding quantiles. (! PLOT intensity distribution of old versus new period) Moreover, dissimilarity in trends regarding the different quantiles is also observed in a study of \citet{Malik2016}, which uses quantile regression as well. This study also detects spatial inhomogeneity in trends for India. Despite the fact that the Netherlands is a relatively small country compared to India, spatial differences are present in the magnitude and amount of significant trends. In Chapter 3 (REF CH3) we hope to find an explanation for spatial differences in intensity. Although the trends are characterized by spatial inhomogeneity and dissimilarity with respect to the quantiles, it should be stressed that all significant trends detected are positive. In general, we can conclude that through a time period of 58 years the precipitation intensity of extreme events increases.
+All 99.9\% quantile regression fits are indeed insignificant. The suprising opposing regression lines for this quantile can thus not be detected as true trends, but may be influenced by the limited amount of data points. What is striking about the other p-values for De Bilt, is they are almost all significant (except for the 95\%-quantile), while for the other stations there are large differences in the p-values for the different quantiles. For Vlissingen the part of the distribution between the 50\%- quantile or higher than the 95\% and 99\%-quantiles, trends of increasing intensity are visible. This demonstrates that the values between the 75\% and the 95\%-quantile do not increase (significantly). For Maastricht and De Kooy the same holds for the values higher than the 90\% and 95\%-quantile, but lower than the 99\% quantile. On the contrary, Eelde only has a significant increasing trend in the intensity for values higher than 75\%. Does this observation of trend differences in the intensity spectrum contradict to the theory of a shifting intensity distribution towards higher values as a result of temperature increase (\citet{IPCC2013}) Considering the method of quantile regression this does not need to be the case. In quantile regression there are no quantiles calculated for each time period, which would correspond to the distribution at that time. Quantile regression is namely a minimization function on the entire data set. Therefore, the fitted lines are not a result of a clear step-wise shift in time of the entire distribution and corresponding quantiles. (! PLOT intensity distribution of old versus new period) Moreover, dissimilarity in trends regarding the different quantiles is also observed in a study of \citet{Malik2016}, which uses quantile regression as well. This study also detects spatial inhomogeneity in trends for India. Despite the fact that the Netherlands is a relatively small country compared to India, spatial differences are present in the magnitude and amount of significant trends. In Chapter 3 (REF CH3) we hope to find an explanation for spatial differences in intensity. Although the trends are characterized by spatial inhomogeneity and dissimilarity with respect to the quantiles, it should be stressed that all significant trends detected are positive. In general, we can conclude that through a time period of 58 years the precipitation intensity of extreme events increases.
 
 
 % ! PLOT intensity distribution of year 1958-1970 compared to 2003-2015
@@ -383,7 +387,7 @@ The three highest rates are those of De Kooy (95\%-quantile), De Bilt(99\%-quant
 %-------------------------
 \subsection{Summer vs winter} \label{subsec:S&W}
 
-In this paragraph we will distinquish between summer and winter trends in 2-day maxima. For the summer extremes, which are characterized by a local, short-lasting character, we could probably take shorter periods for sampling maxima based on the autocorrelation and partial autocorrelation. This would increase the amount of samples and this might improve the significance of any trends present. However, as we want to compare the trends between summer and winter season, we do not want to have 2 different approaches of data selection as this could induce seasonal differences without physical basis. Figure \ref{fig:QR_int_WvsS} shows the quantile trends in 2 day maxima of both seasons. The 99\% and 99.9\%-quantiles are left out of this figure, as this would correspond to only 28.7 and 2.87 data points respectively (1\% and 0.1\% of the 2 day maxima within 3 winter or summer months of 58 years).
+In this paragraph we will distinquish between summer and winter trends in 2-day maxima, as the type of precipitation (characterized by specfic intensity) is season dependant (REF CH1). Therefore, we expect that the trends in precipitation intensity also differ between summer and winter. For the summer extremes, which are characterized by a local, short-lasting character, we could probably take shorter periods for sampling maxima based on the autocorrelation and partial autocorrelation. This would increase the amount of samples and this might improve the significance of any trends present. However, as we want to compare the trends between summer and winter season, we do not want to have 2 different approaches of data selection, as this could induce seasonal differences without physical basis. Figure \ref{fig:QR_int_WvsS} shows the quantile trends in 2 day maxima of both seasons. The 99\% and 99.9\%-quantiles are left out of this figure, as this would correspond to only 28.7 and 2.87 data points respectively (1\% and 0.1\% of the 2 day maxima within 3 winter or summer months of 58 years).
 
 <<setup_Strends,cache=TRUE>>=
 QRS_max2d <- QR_all(data=max2d[month==6| month==7 | month==8])
@@ -514,7 +518,7 @@ For both seasons multiple significant positive trends are demonstrated for inten
 
 \section{Frequency}
 
-Next to changes in intensity of extreme rain events, is it also relevant to study whether precipitation events occur more, equally or less often in time. In this section analysis of frequency data is reported. First, the number of wet hours2 days is investigated in Figure \ref{fig:QR_freq2d}. Second, the same is repeated for the number of wet hours a year, a summer and a winter.
+Next to changes in intensity of extreme rain events, is it also relevant to study whether precipitation events occur more, equally or less often in time. In this section analysis of frequency data is reported. First, the number of wet hours per 2 days is investigated in Figure \ref{fig:QR_freq2d}. Second, the same is repeated for the number of wet hours a year, a summer and a winter.
 
 
 <<label=freq,cache=TRUE>>=
@@ -609,7 +613,7 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob4, ncol=2)
   \label{fig:QR_freq2d}
 \end{figure}
 
-The distribution of the 2 day frequencies of wet hours (\ref{fig:dens_freq2d}) looks lognormal, therefore quantile regression is prefered above the linear regression. No evident trends are visible in this figure. Nontheless, all trends seems to be negative, with rates of an order of 1e$^{-4}$-1e$^{-5}$ number of wet hours per 2 days. Approximately 88\% of the hours is dry, so approximately 6 hours every 2 days are wet. As the number of wet hours per 2 day is most of the time small, we were interested whether stronger signals can be found, when studying the amount of wet hours a year. Figure \ref{fig:QR_freqyr} gives regression lines for yearly frequencies of wet hours.
+The distribution of the 2 day frequencies of wet hours (\ref{fig:dens_freq2d}) looks lognormal, therefore quantile regression is prefered above the linear regression. No evident trends are visible in this figure. Nontheless, all trends seems to be negative, with rates of an order of 1e$^{-3}$-1e$^{-2}$ number of wet hours per 2 days. Approximately 88\% of the hours is dry, so approximately 6 hours every 2 days are wet. The decrease computed as a fraction of the wet time is -0.002 \% per 2 days. Further, we were interested whether stronger signals can be found, when we study the amount of wet hours a year. Figure \ref{fig:QR_freqyr} gives regression lines for yearly frequencies of wet hours.
 
 \begin{figure}[H]
   \hspace{-1cm}
