@@ -324,7 +324,7 @@ sp_corr_max2d <- round(cor(Allmax2d_mat,method="spearman"), 2)
 # All hours
 ggcorrplot(p_corr, hc.order = FALSE,type = "lower",lab=TRUE)
 @
-    \caption{Pearson: All hours}
+    \subcaption{Pearson: All hours}
     \label{fig:Heatmap_allp}
   \end{minipage}
   \hfill
@@ -333,7 +333,7 @@ ggcorrplot(p_corr, hc.order = FALSE,type = "lower",lab=TRUE)
 # Maxima a day
 ggcorrplot(p_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
 @
-    \caption{Pearson: Maxima}
+    \subcaption{Pearson: Maxima}
     \label{fig:Heatmap_maxip}
   \end{minipage}
   \hfill
@@ -342,7 +342,7 @@ ggcorrplot(p_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
 # All hours
 ggcorrplot(sp_corr, hc.order = FALSE,type = "lower",lab=TRUE)
 @
-    \caption{All hours}
+    \subcaption{Spearman: All hours}
     \label{fig:Heatmap_allsp}
   \end{minipage}
   \hfill
@@ -351,7 +351,7 @@ ggcorrplot(sp_corr, hc.order = FALSE,type = "lower",lab=TRUE)
 # Maxima a day
 ggcorrplot(sp_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
 @
-    \caption{Maxima}
+    \subcaption{Spearman: Maxima}
     \label{fig:Heatmap_maxisp }
   \end{minipage}
   \caption{Heatmap consisting of correlation coefficients of the variables: intensity (I), wind strength (FH), measure of relative humidity (RH), hourly precipitation sum (P), temperature(T) and dewpoint temperature(TD). The heatmaps are computed according to the Pearson method (a,b) or the Spearman approac (c,d), for all wet hours (a,c) and daily maxima of wet days (b,d). Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
