@@ -83,7 +83,7 @@ load("./inst/tussenStap/hrKNMI.rda")
 @
 
 \section{Introduction}
-This chapter focusses on linear trends in hourly precipitation extremes. Whether the hourly intensity (calculated from the hourly precipitation sum as the mean rate of one hour) of extremes increases or decreases linearly in time or remains constant, is investigated for the period 1958 to 2015. Next to intensity, trends in the frequency of hourly extremes are considered. The latter is counted as the number of wet hours for every 2 day period and for every year. Both type of trends are compared to the regression of the mean in time, thereby studying the proportional change. In Chapter 1 (REF CH1) we concluded that spatial differences are in general not that high in the Netherlands, however, significant differences exist for extremes. Therefore, it is interesting to consider the trends individual for every station. Moreover, the presence of a signal at multiple stations, enhances the robustness of the trend observed.
+This chapter focusses on linear trends in hourly precipitation extremes. Whether the hourly intensity (calculated from the hourly precipitation sum as the mean rate of one hour) of extremes increases or decreases linearly in time or remains constant, is investigated for the period 1958 to 2015. Next to intensity, trends in the frequency of wet hours are considered. The latter is counted as the number of wet hours (P $>$0.05 mm) for every 2-day period and for every year, summer or winter. Both type of trends are compared to the regression of the mean in time, thereby studying the proportional change. In Chapter 1 (REF CH1) we concluded that spatial differences are in general not that high in the Netherlands, however, significant differences exist for extremes. Therefore, it is interesting to consider the trends individual for every station. Moreover, the presence of a signal at multiple stations, enhances the robustness of the trend observed.
 
 % Fit data via quantile regression
 <<setup_trends,cache=TRUE>>=
@@ -92,7 +92,6 @@ tmp <- subset(hrKNMI,select=c("STN", "YYYYMMDD","Date","date","Year","Day","P"))
 QR_hrKNMI <- QR_stn(data=tmp)
 # Calculate yearly mean of P
 QR_hrKNMI[, ":="(yr_mean = mean(P)), by = list(STN, Year)]
-
 save(QR_hrKNMI, file="./inst/tussenStap/QR_hrKNMI.rda")
 @
 
@@ -173,10 +172,10 @@ data2d[,":="(Year=Year,YM=YM, month=round(mean(Month),digits=0),day=mean(Day), m
 save(data2d, file="./inst/tussenStap/data2d.rda")
 @
 
-<<label=setupmax2d,cache=TRUE>>=
+<<label=setupmax2d>>=
 load("./inst/tussenStap/data2d.rda")
+# select only 2 day maxima  (=2542080/48=53540)
 max2d <- data2d[, list(max2d=unique(max2d), Psum=unique(Psum), Year=mean(Year)),by= list(d2,STN)] #YM=unique(YM),,month=unique(month)
-
 #max2d[,mon_mean := mean(max2d),by=month]
 max2d[,yr_mean := mean(max2d),by=Year]
 save(max2d, file="./inst/tussenStap/max2d.rda")
@@ -188,7 +187,7 @@ rm(data2d)
 load("./inst/tussenStap/max2d.rda")
 @
 
-<<setup_trendsmax2d,cache=TRUE>>=
+<<setup_trendsmax2d>>=
 QR_max2d <- QR_all(data=max2d)
 save(QR_max2d, file="./inst/tussenStap/QR_max2d.rda")
 @
@@ -202,10 +201,19 @@ Legendgrob2 <- legendGrob(c("mean","75%","90%","95%","99%","99.9%"), pch=15,
                           gp=gpar(col=c("black","purple","blue","green","orange","red"),cex=1), ncol=3)
 @
 
+Distribution of all 2day max intensities
+<<Distribution>>=
+plot(density(max2d$max2d), type='l', col='blue', lwd=3, main=NA,
+              xlab="I(mm/hr)", ylab="Density")
+@
+
+% ADD text
+
+
 \begin{figure}[H]
   \centering
-  \textbf{Quantile regression on 2 day max. hourly intensities}\par\medskip
-<<label=QR_max2d,cache=TRUE>>=
+  \textbf{Quantile regression on 2-day max. hourly intensities}\par\medskip
+<<label=QR_max2d>>=
 ymax <- 32
 plot1 <- QR2d_plotting(data=QR_max2d[STN == 235], title="De Kooy",ymax)
 plot2 <- QR2d_plotting(data=QR_max2d[STN == 260], title="De Bilt",ymax)
@@ -215,15 +223,16 @@ plot5 <- QR2d_plotting(data=QR_max2d[STN == 380], title="Maastricht",ymax)
 grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2),
              ncol= 1)
 @
-  \caption{Quantile regression fits with $\tau = 75, 90, 95, 99, 99.9$ \% on 2 day maxima in
+  \caption{Quantile regression fits with $\tau = 75, 90, 95, 99, 99.9$ \% on 2-day maxima in
 hourly precipitation intensities (mm/hr) and a black line giving the OLS regression of the yearly means, for all stations.}
   \label{fig:QR_max2d}
 \end{figure}
 
 Only for De Bilt Figure \ref{fig:QR_max2d} suggests that the 99 and 99 \% quantiles increase considerable in time. Whether the 99 and 99.9\%-quantile trends for de Bilt are significant is investigated by a 9999 Monte Carlo permutation test of the linear regression coefficient (in other words the slope of the regression line. The corresponding distribution plot of the permuted slopes is shown in Figure \ref{fig:MC_max2d}.
 
-For de Bilt, the 99\%-quantile is significant on the 95\% confidence level (P=0.98). Opposed to the 99\%-quantile, the 99.9\%-quantile is not significant (P=0.8734). This might be due to the limitation in the number of values higher than the 99.9\%-quantile ($\sim$ 11 data points). If the 99.9\% is not significant for all stations, this might explain the opposing signals.
+For de Bilt, both the 99\%-quantile, as well as the 99.9\%-quantile are not significant (P=0.8734). This might be due to the limitation in the number of values higher than the 99\%- and 99.9\%-quantile ($\sim$ 106 and 11 data points). If the 99.9\% is not significant for all stations, this might explain the opposing signals.
 
+% TEST
 <<label=setupMC,cache=TRUE>>=
 permdist99 <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.99)
 permdist999 <- MC_coefperm(x=max2d[STN==260]$d2, y=max2d[STN==260]$max2d,tau=0.999)
@@ -239,11 +248,11 @@ load("./inst/tussenStap/permdist999.rda")
 
 \begin{figure}[H]
   \centering
-  \textbf{Monte Carlo permutation test on 2 day max. hourly intensities}\par\medskip
+  \textbf{Monte Carlo permutation test on 2-day max. hourly intensities}\par\medskip
   \vspace{-0.5cm}
   \begin{minipage}{0.48\textwidth}
     \centering
-<<label=MC_99,cache=TRUE>>=
+<<label=MC_99>>=
 plot_permdist(permdist99)
 @
     \subcaption{99\% fit}
@@ -252,20 +261,20 @@ plot_permdist(permdist99)
   \hfill
   \begin{minipage}{0.48\textwidth}
     \centering
-<<label=MC_999,cache=TRUE>>=
+<<label=MC_999>>=
 plot_permdist(permdist999)
 @
     \subcaption{99.9\% fit}
     \label{fig:MC_fit999}
   \end{minipage}
-  \caption{Density distribution for a 9999MC permutation of the $\tau = 99$(upper), $99.9$\%(bottom)-fitted values based on 2 day maxima in hourly precipitation intensities (mm/hr) for De Bilt. The purple (gray) line gives the upper-tail slope at the 95\% (99\%) confidence level. The black line indicates the observed regression coefficient of the 99\% (a) and 99.9\% (b) quantile regression fits.}
+  \caption{Density distribution for a 9999MC permutation of the $\tau = 99$(upper), $99.9$\%(bottom)-fitted values based on 2-day maxima in hourly precipitation intensities (mm/hr) for De Bilt. The purple (gray) line gives the upper-tail slope at the 95\% (99\%) confidence level. The black line indicates the observed regression coefficient of the 99\% (a) and 99.9\% (b) quantile regression fits.}
   \label{fig:MC_max2d}
 \end{figure}
 
-Next, to verify whether the 99.9\% quantile lines are indeed insignificant for the other stations, we will also study the p-values for this fit for the other stations. In fact, the significance of all quantile lines is determined for all stations and displayed in Table \ref{tab:p_table_2daymax}. A cell in this table is colored red, when a significant negative trend is present ($p \leq 0.05$). A green cell indicates a significant positive trend ($p \geq 0.95$).
+Next, to verify whether the (99\% and) 99.9\% quantile lines are indeed insignificant for the other stations, we will also study the p-values for this fit for the other stations. In fact, the significance of all quantile lines is determined for all stations and displayed in Table \ref{tab:p_table_2daymax}. A cell in this table is colored red, when a significant negative trend is present ($p \leq 0.05$). A green cell indicates a significant positive trend ($p \geq 0.95$).
 
-<<p_test,cache=TRUE>>=
-1+1
+% TEST
+<<p_test,cache=TRUE,warning=FALSE>>=
 p <- p_test(data=max2d,tau=0.50)
 setnames(p,c("STN","Q50"))
 p[, ":="(Q75 = p_test(data=max2d,tau=0.75)$V1,
@@ -285,10 +294,23 @@ save(p, file="./inst/tussenStap/p.rda")
 %#setnames(p, c("Station","50%","75%","90%","95","99%","99.9%"))
 %#tbl <- xtable(p)  --> to print latex format
 %@
+%    STN     V1
+% 1: 235 0.0957
+% 2: 260 0.0457
+% 3: 280 0.0091
+% 4: 310 0.9021
+% 5: 380 0.1386
 
+
+   STN    Q50    Q75    Q90    Q95    Q99   Q999
+1: 235 0.1468 0.0636 0.9595 0.9959 0.8406 0.0672
+2: 260 0.0477 0.9897 0.9965 0.9456 0.9102 0.8995
+3: 280 0.0062 0.9584 0.9295 0.9244 0.7254 0.2603
+4: 310 0.9130 0.0695 0.2956 0.9557 0.8240 0.4708
+5: 380 0.2492 0.1123 0.9815 0.9516 0.4470 0.6704
 \begin{table}[ht]
   \centering
-  \caption{Significance table for all fits on 2 day max. hourly intensity data}
+  \caption{Significance table for all fits on 2-day max. hourly intensity data}
   \begin{tabular}{l|r|r|r|r|r|r|r}
   \hline\hline
     \multicolumn{2}{c}{Location}
@@ -296,65 +318,82 @@ save(p, file="./inst/tussenStap/p.rda")
     \vline
     & \multicolumn{6}{c}{Quantiles of fit} \\
     \hline
-    Station   & STN & 50\% & 75\% & 90\% & 95\% & Q99\% & 99.9\% \\
+    Station   & STN & 50\%                  & 75\%                   & 90\%                   & 95\%                   & Q99\% & 99.9\% \\
     \hline
-    De Kooy   & 235 &                  0.84 &                   0.06 & \cellcolor{green} 0.97 & \cellcolor{green} 1.00 &                   0.84 & 0.16 \\
-    De Bilt   & 260 & \cellcolor{green}0.98 & \cellcolor{green} 0.99 & \cellcolor{green} 1.00 &                   0.92 & \cellcolor{green} 0.98 & 0.88 \\
-    Eelde     & 280 &                  0.78 & \cellcolor{green} 0.96 &                   0.92 &                   0.91 &                   0.76 & 0.33 \\
-    Vlissingen& 310 & \cellcolor{green}0.98 &                   0.08 &                   0.27 & \cellcolor{green} 0.96 & \cellcolor{green} 0.99 & 0.59 \\
-    Maastricht& 380 &                  0.20 &                   0.14 & \cellcolor{green} 0.98 & \cellcolor{green} 0.95 &                   0.20 & 0.67 \\
+    De Kooy   & 235 &                  0.15 &                   0.06 & \cellcolor{green} 0.96 & \cellcolor{green} 1.00 & 0.84 & 0.07 \\
+    De Bilt   & 260 &  \cellcolor{red} 0.05 & \cellcolor{green} 0.99 & \cellcolor{green} 1.00 & \cellcolor{green} 0.95 & 0.91 & 0.90 \\
+    Eelde     & 280 &  \cellcolor{red} 0.01 & \cellcolor{green} 0.96 &                   0.93 &                   0.92 & 0.73 & 0.26 \\
+    Vlissingen& 310 &                  0.91 &                   0.07 &                   0.30 & \cellcolor{green} 0.96 & 0.82 & 0.47 \\
+    Maastricht& 380 &                  0.25 &                   0.11 & \cellcolor{green} 0.98 & \cellcolor{green} 0.95 & 0.45 & 0.67 \\
      \hline
   \end{tabular}
   \label{tab:p_table_2daymax}
 \end{table}
 
-All 99.9\% quantile regression fits are indeed insignificant. The suprising opposing regression lines for this quantile can thus not be detected as true trends, but may be influenced by the limited amount of data points. What is striking about the other p-values for De Bilt, is they are almost all significant (except for the 95\%-quantile), while for the other stations there are large differences in the p-values for the different quantiles. For Vlissingen the part of the distribution between the 50\%- quantile or higher than the 95\% and 99\%-quantiles, trends of increasing intensity are visible. This demonstrates that the values between the 75\% and the 95\%-quantile do not increase (significantly). For Maastricht and De Kooy the same holds for the values higher than the 90\% and 95\%-quantile, but lower than the 99\% quantile. On the contrary, Eelde only has a significant increasing trend in the intensity for values higher than 75\%. Does this observation of trend differences in the intensity spectrum contradict to the theory of a shifting intensity distribution towards higher values as a result of temperature increase (\citet{IPCC2013}) Considering the method of quantile regression this does not need to be the case. In quantile regression there are no quantiles calculated for each time period, which would correspond to the distribution at that time. Quantile regression is namely a minimization function on the entire data set. Therefore, the fitted lines are not a result of a clear step-wise shift in time of the entire distribution and corresponding quantiles. (! PLOT intensity distribution of old versus new period) Moreover, dissimilarity in trends regarding the different quantiles is also observed in a study of \citet{Malik2016}, which uses quantile regression as well. This study also detects spatial inhomogeneity in trends for India. Despite the fact that the Netherlands is a relatively small country compared to India, spatial differences are present in the magnitude and amount of significant trends. In Chapter 3 (REF CH3) we hope to find an explanation for spatial differences in intensity. Although the trends are characterized by spatial inhomogeneity and dissimilarity with respect to the quantiles, it should be stressed that all significant trends detected are positive. In general, we can conclude that through a time period of 58 years the precipitation intensity of extreme events increases.
+
+All 99.9\% quantile regression fits are indeed insignificant (Table \ref{tab:p_table_2daymax}). The suprising opposing regression lines for this quantile can thus not be detected as true trends, but may be influenced by the limited amount of data points. All the 99\%-quantile fits are also insignificant. What is striking about the other p-values for De Bilt, is that it has three quantiles for which the positive trends are significant at the 99\% or 95\% confidence level, while for the 50\%-quantile a significant negative trend is detected. For all stations large differences exist in the p-values for the different quantiles. Similar to de Bilt, Eelde has both a significant positive (for the 75\%-quantile at the 95\% confidence level), and a significant negative trend (for the 50\%-quantile at the 99\% confidence level). De Kooy and Maastricht have significant trends in increasing intensity for values higher than the 90\% and 95\%-quantiles.  On the contrary, Vlissingen has only one significant positive trend in the hourly intensity for values higher than the 95\%-quantile. It should be recognized that zero significant increasing trends are detected for values $>$ 50\%-quantile fit, whereas a maximum of four significant trends is detected for values $>$ 95\%-quantile fit. This suggests that values higher than the 50\%-quantile, but lower than the 75\%-, 90 or 95\% quantile (dependent on station) are not increasing in time and for some stations even decreasing. Despite the dissimilarity between stations in the type of quantile(for which significant trends are found), a general disproportional increase of relatively high intensities compared to relatively moderate intensities (which do not increase significantly), can be recognized. Nevertheless, does this observation of trend differences for the intensity spectrum of a station contradict to the theory of a shifting intensity distribution towards higher values as a result of temperature increase (\citet{IPCC2013})? Considering the method of quantile regression this does not need to be the case. In quantile regression there are no quantiles calculated for each time period, which would correspond to the distribution at that time. Quantile regression is namely a minimization function on the entire data set. Therefore, the fitted lines are not a result of a clear step-wise shifts in time of the entire distribution and corresponding quantiles. This means that comparing the behaviour of the different quantile lines for one station, is not meaningful. However, comparing a certain quantile between different stations is. Dissimilarity in trends regarding the different quantiles is also observed in a study of \citet{Malik2016}, which uses quantile regression as well. Figure \ref{fig:QR_freq} demonstrates the change in distribution by plotting the distribution of the 5-year period 1958-1962 next to the 5-year period 2011-2015. This figure confirms that there are not true changes for different parts of the intensity spectrum, but compared to the older period, the newer period shows a decrease in lower intensities and an increase in higher intensities. Clear horizontal movement of the distribution is not visible . Furthermore, the study of \citet{Malik2016} detects spatial inhomogeneity in trends for India. Despite the fact that the Netherlands is a relatively small country compared to India, spatial differences are present in the magnitude and amount of significant trends. In Chapter 3 (REF CH3) we hope to find an explanation for spatial differences in intensity. Although the trends are characterized by spatial inhomogeneity and dissimilarity with respect to the quantiles, it should be stressed that all significant trends detected are positive. In general, we can conclude that through a time period of 58 years the precipitation intensity of extreme events increases.
 
 
-% ! PLOT intensity distribution of year 1958-1970 compared to 2003-2015
+\begin{figure}[H]
+  \centering
+  \textbf{Comparison distribution between two periods}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+<<Distribution_change1>>=
+plot(density(max2d[Year<1963]$max2d), type='l', col='blue', lwd=3, main=NA,xlim=c(0,50),ylim=c(0,1),
+              xlab="I(mm/hr)", ylab="Density")
+#lines(density(max2d[Year>2010]$max2d),col="green",lwd=3,lty=3)
+@
+    \subcaption{1958-1970}
+    \label{fig:dens_int1970}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+<<Distribution_change2>>=
+plot(density(max2d[Year>2010]$max2d), type='l', col='blue', lwd=3, main=NA,xlim=c(0,50),ylim=c(0,1),
+              xlab="I(mm/hr)", ylab="Density")
+@
+    \subcaption{2003-2015}
+    \label{fig:dens_int2003}
+  \end{minipage}
+  \caption{Distribution plot of all 2-day maxima in intensities for the period 1958-1970 (a) and for the period 2003-2015 (b).}
+  \label{fig:distchange_2dfreq}
+\end{figure}
 
 <<Rates_peryear>>=
-
 #K_90
 (max(QR_max2d[STN == 235]$f90) - min(QR_max2d[STN == 235]$f90))/58
-#0.005606492
+#0.00544
 #K_95
 (max(QR_max2d[STN == 235]$f95) - min(QR_max2d[STN == 235]$f95))/58
-#0.01803669
+#0.01630388
 
 #B_50
 (max(QR_max2d[STN == 260]$f50) - min(QR_max2d[STN == 260]$f50))/58
-#4.287758e-16
+#-2.328789e-14
 #B_75
 (max(QR_max2d[STN == 260]$f75) - min(QR_max2d[STN == 260]$f75))/58
 #0.004176179
 #B_90
 (max(QR_max2d[STN == 260]$f90) - min(QR_max2d[STN == 260]$f90))/58
-#0.008718236
-#B_99
-(max(QR_max2d[STN == 260]$f99) - min(QR_max2d[STN == 260]$f99))/58
-#0.129818
+#0.008499773
 
 #E_75
 (max(QR_max2d[STN == 280]$f75) - min(QR_max2d[STN == 280]$f75))/58
-#0.00284429
+#0.002774707
 
 #V_50
 (max(QR_max2d[STN == 310]$f50) - min(QR_max2d[STN == 310]$f50))/58
-#0.002060522
+#0.002051955
 #V_95
 (max(QR_max2d[STN == 310]$f95) - min(QR_max2d[STN == 310]$f95))/58
-#0.009118774
-#V_99
-(max(QR_max2d[STN == 310]$f99) - min(QR_max2d[STN == 310]$f99))/58
-#0.09811526
+#0.008854216
 
 #M_90
 (max(QR_max2d[STN == 380]$f90) - min(QR_max2d[STN == 380]$f90))/58
-#0.007068521
+#0.007803566
 #M_95
 (max(QR_max2d[STN == 380]$f95) - min(QR_max2d[STN == 380]$f95))/58
-#0.008460686
+#0.009116498
 
 @
 
@@ -363,39 +402,76 @@ Not only the presence and sign of a trend is important, but also the magnitude o
 \begin{table}[ht]
   \centering
   \caption{Rates of significant trends}
-  \begin{tabular}{l|r|r|r|r|r|r}
+  \begin{tabular}{l|r|r|r|r|r}
   \hline\hline
     \multicolumn{2}{c}{Location}
     %\multicolumn{1}{c}{STN} &
     \vline
-    & \multicolumn{5}{c}{Rates (mm/hr/yr)} \\
+    & \multicolumn{4}{c}{Rates (mm/hr/yr)} \\
     \hline
-    Station   & STN & 50\% & 75\% & 90\% & 95\% & Q99\% \\
+    Station   & STN & 50\% & 75\% & 90\% & 95\% \\
     \hline
-    De Kooy   & 235 &  - & - & 5.6e$^{-3}$ & 1.8e$^{-2}$ & - \\
-    De Bilt   & 260 & 4.3e$^{-16}$ & 4.2e$^{-3}$ & 8.7e$^{-3}$ & - & 1.3e$^{-1}$ \\
-    Eelde     & 280 &  - & 2.8e$^{-3}$ & - & - & - \\
-    Vlissingen& 310 & 2.1e$^{-3}$ & - & - & 9.1e$^{-3}$ & 9.8e$^{-2}$ \\
-    Maastricht& 380 &  - & - & 7.1e$^{-3}$ & 8.5e$^{-3}$ & -  \\
+    De Kooy   & 235 &  - & - & 5.4e$^{-3}$ & 1.6e$^{-2}$ \\
+    De Bilt   & 260 & -2.3e$^{-14}$ & 4.2e$^{-3}$ & 8.5e$^{-3}$ & - \\
+    Eelde     & 280 &  - & 2.8e$^{-3}$ & - & - \\
+    Vlissingen& 310 & 2.1e$^{-3}$ & - & - & 8.9e$^{-3}$ \\
+    Maastricht& 380 &  - & - & 7.8e$^{-3}$ & 9.1e$^{-3}$   \\
      \hline
   \end{tabular}
   \label{tab:rates_2daymax}
 \end{table}
 
-The three highest rates are those of De Kooy (95\%-quantile), De Bilt(99\%-quantile) and Vlissingen(99\%-quantile) on the order of 0.01 to 0.1 mm/hr/yr. For the entire period of 58 years this translates to increases in the extreme intensities of 1 to 7.5 mm/hr. All the other significant trends have rates on the order of 0.001 mm/hr/yr, expect for the 50\%-quantile line of the Bilt of which the rate is 13 orders lower. In general, the higher the quantile, the higher the magnitude of the detected trend. This holds when only one station is considered. Comparing the rates of the 50\%-quantile lines of De Bilt and Vlissingen gives an order diferrence of 13. The reason for the differences in rates is unclear. To investigate this and the spatial differences in the detection of signifcant trends we should dive deeper into the mechanisms behind these trends (REF CH3)
+As all the trends for the 99\%- and 99.9\%-quantile fits are negative, their rates are excluded from Table \ref{tab:rates_2daymax}. Take into mind, that although no significant trends are found for the highest quantiles, trends still can exist. A larger data set might give significant trends for the highest quantiles, which are assumebly positive, as all the other detected trends, except for the 50\%-quantile of De Bilt, are positive. The highest rate corresponds to the 95\%-quantile fit for De Kooy, which is on the order of 0.01 mm/hr/yr. After this trend, the three highest rates are those of De Bilt(90\%-quantile), Vlissingen(95\%-quantile) and Maastricht(95\%-quantile) on the order of 0.001-0.01 mm/hr/yr. For the entire period of 58 years this translates to increases in the extreme intensities of 0.06-0.6 mm/hr. All the other significant trends have rates on the order of 0.001 mm/hr/yr, expect for the 50\%-quantile line of the Bilt, of which the rate is 11 orders lower. In general, the higher the quantile, the higher the magnitude of the detected trend. This holds when only one station is considered. Comparing the rates of the 50\%-quantile lines of De Bilt and Vlissingen gives an absolute order diferrence of 17. The reason for this differences in rates or why the trend for the 50\%-quantile of de Bilt is negative, remains unclear. To investigate this and the spatial differences in the detection of signifcant trends, we should dive deeper into the mechanisms behind these trends (REF CH3)
+
 
 %-------------------------
 \subsection{Summer vs winter} \label{subsec:S&W}
 
-In this paragraph we will distinquish between summer and winter trends in 2-day maxima, as the type of precipitation (characterized by specfic intensity) is season dependant (REF CH1). Therefore, we expect that the trends in precipitation intensity also differ between summer and winter. For the summer extremes, which are characterized by a local, short-lasting character, we could probably take shorter periods for sampling maxima based on the autocorrelation and partial autocorrelation. This would increase the amount of samples and this might improve the significance of any trends present. However, as we want to compare the trends between summer and winter season, we do not want to have 2 different approaches of data selection, as this could induce seasonal differences without physical basis. Figure \ref{fig:QR_int_WvsS} shows the quantile trends in 2 day maxima of both seasons. The 99\% and 99.9\%-quantiles are left out of this figure, as this would correspond to only 28.7 and 2.87 data points respectively (1\% and 0.1\% of the 2 day maxima within 3 winter or summer months of 58 years).
+In this paragraph we will distinquish between summer and winter trends in 2-day maxima, as the type of precipitation (characterized by specfic intensity) is season dependant (REF CH1). Therefore, we expect that the trends in precipitation intensity also differ between summer and winter. For the summer extremes, which are characterized by a local, short-lasting character, we could probably take shorter periods for sampling maxima based on the autocorrelation and partial autocorrelation. This would increase the amount of samples and this might improve the significance of any trends present. However, as we want to compare the trends between summer and winter season, we do not want to have 2 different approaches of data selection, as this could induce seasonal differences without physical basis. Figure \ref{fig:QR_int_WvsS} shows the quantile trends in 2-day maxima of both seasons. The 99\% and 99.9\%-quantiles are left out of this figure, as this would correspond to only 28.7 and 2.87 data points respectively (1\% and 0.1\% of the 2-day maxima within 3 winter or summer months of 58 years).
 
-<<setup_Strends,cache=TRUE>>=
-QRS_max2d <- QR_all(data=max2d[month==6| month==7 | month==8])
+<<setup_SWtrends,cache=TRUE>>=
+# Summer and winter 2day periods
+# Should be : (24*365.25*58*5/48/4=) 13240.31 data points per season
+
+# length(hrKNMI[Season=="Summer"]$HH)/48 = 13340
+# length(hrKNMI[Season=="Winter"]$HH)/48 = 13085
+# Take summer 2-day periods (no "schrikkeljaar" addition in summer, so always 2208 summer hours) --> 46 d2's
+# Apparently more summer than winter hours: 640320 (Sum) vs 628080 (Winter)
+data2dS <- data2d(hrKNMI[Season=="Summer"])
+#data2dS$YM <- format(data2d$Date,format="%Y-%m")
+data2dS[,":="(Year=Year,month=round(mean(Month),digits=0),day=mean(Day), max2d=max(P),Psum=sum(P)),by=list(d2,STN)]
+save(data2dS, file="./inst/tussenStap/data2dS.rda")
+
+data2dW <- data2d(hrKNMI[Season=="Winter"])
+#data2dW$YM <- format(data2dW$Date,format="%Y-%m")
+data2dW[,":="(Year=Year,month=round(mean(Month),digits=0),day=mean(Day), max2d=max(P),Psum=sum(P)),by=list(d2,STN)]
+save(data2dW, file="./inst/tussenStap/data2dW.rda")
+
+# Only max2d hourly prec. for summer and winter
+# Every 4 years it changes whether 1 day falls within two years or not, we added that 1 day to the year next, to prevent duplicates
+max2dS <- data2dS[, list(max2d=unique(max2d), Psum=unique(Psum), Year=round(mean(Year),digits=0)),by= list(d2,STN)]
+# check --> no duplicates
+save(max2dS, file="./inst/tussenStap/max2dS.rda")
+
+max2dW <- data2dW[, list(max2d=unique(max2d), Psum=unique(Psum), Year=round(mean(Year),digits=0)),by= list(d2,STN)]
+# check --> no duplicates
+save(max2dW, file="./inst/tussenStap/max2dW.rda")
+@
+
+<<load_max2dS&W>>=
+load("./inst/tussenStap/max2dS.rda")
+load("./inst/tussenStap/max2dW.rda")
+@
+
+<<QR_Strends,cache=TRUE>>=
+QRS_max2d <- QR_all(data=max2dS)  # quantile regression on summer 2-day data
+QRS_max2d[,yr_mean := mean(max2d),by=Year]
 save(QRS_max2d, file="./inst/tussenStap/QRS_max2d.rda")
 @
 
 <<setup_Wtrends,cache=TRUE>>=
-QRW_max2d <- QR_all(data=max2d[month==12| month==1 | month==2])
+QRW_max2d <- QR_all(data=max2dW) # quantile regression on winter 2-day data
+QRW_max2d[,yr_mean := mean(max2d),by=Year]
 save(QRW_max2d, file="./inst/tussenStap/QRW_max2d.rda")
 @
 
@@ -409,7 +485,7 @@ load("./inst/tussenStap/QRW_max2d.rda")
 
 \begin{figure}[H]
   \centering
-  \textbf{Seasonal quantile regression on 2 day max. hourly intensities}\par\medskip
+  \textbf{Seasonal quantile regression on 2-day max. hourly intensities}\par\medskip
   \begin{minipage}{0.48\textwidth}
     \flushleft
 <<label=QRW_max2d,cache=TRUE>>=
@@ -441,16 +517,16 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2)
     \subcaption{Summer}
     \label{fig:Qint_sum}
   \end{minipage}
-  \caption{Quantile regression fits with $\tau = 75, 90, 95 and 99$\% on 2 day Winter (left) and Summer (right) maxima in hourly precipitation intensities (mm/hr), for all stations. The black line represents the OLS regression of the yearly means.}
+  \caption{Quantile regression fits with $\tau = 75, 90, 95 and 99$\% on 2-day Winter (left) and Summer (right) maxima in hourly precipitation intensities (mm/hr), for all stations. The black line represents the OLS regression of the yearly means.}
   \label{fig:QR_int_WvsS}
 \end{figure}
 
-What is striking, is the difference between summer and winter in magnitude of the extremes. Where the highest quantile for the winter data represents values higher than 5-6 mm/hr, the highest summer quantile corresponds to extreme intensities higher than 12-20 mm/hr. Not only the magnitude, but also the interspatial difference for this quantile is much bigger for the summer season. Futhermore, the summer trends are, especially for the 99\% quantile much larger positive (f.e. $\sim$ 0.10 mm/hr/yr for De Bilt), than the winter trends ($\sim$ 0.02 mm/hr/yr for de Bilt). Two trends are clearly negative, the winter 99\%-quantile for de Kooy and the summer 99\%-quantile of Vlissingen. The first is similar to the trend for the upper quantile in Figure \ref{fig:QR_max2d}. As winter extremes are not higher than 19.4 mm/hr (the highest 2 day intensity measured in de Kooy), it is logical that the 99.9\%-quantile regression line must be based on summer data.  In general, for all the highest quantiles in Figure \ref{fig:QR_max2d}) we can see that these are in fact summer trends. The second negative trend is not expected, when compared to the 95\%-quantile (with has similar order of intensity) of Vlissingen for all 2 day maxima (\ref{fig:QR_max2d}). However, from figure \ref{fig:Qint_sum} can be deduced that the negative trend for winter values higher than 6 mm/hr is compensated by the summer data, which shows a positive trend for the same interval of intensities. For the lower quantiles it is more difficult to determine whether observed trends are more dominated by winter or summer data. Next to studying the regression lines, the significance of all quantile lines is tested and the corresponding p-values are showed in Table \ref{tab:p_int_S&W}.
+! Look at changed plots!
+What is striking, is the difference between summer and winter in magnitude of the extremes. Where the highest quantile for the winter data represents values higher than 5-6 mm/hr, the highest summer quantile corresponds to extreme intensities higher than 12-20 mm/hr. Not only the magnitude, but also the interspatial difference for this quantile is much bigger, than for the summer season. Futhermore, the summer trends are, especially for the 99\% quantile much larger positive (f.e. $\sim$ 0.10 mm/hr/yr for De Bilt), than the winter trends ($\sim$ 0.02 mm/hr/yr for de Bilt). Two trends are clearly negative, the winter 99\%-quantile for de Kooy and the summer 99\%-quantile of Vlissingen. The first is similar to the trend for the upper quantile in Figure \ref{fig:QR_max2d}. As winter extremes are not higher than 19.4 mm/hr (the highest 2-day intensity measured in de Kooy), it is logical that the 99.9\%-quantile regression line must be based on summer data.  In general, for all the highest quantiles in Figure \ref{fig:QR_max2d}) we can see that these are in fact summer trends. The second negative trend is not expected, when compared to the 95\%-quantile (with has similar order of intensity) of Vlissingen for all 2-day maxima (\ref{fig:QR_max2d}). However, from figure \ref{fig:Qint_sum} can be deduced that the negative trend for winter values higher than 6 mm/hr is compensated by the summer data, which shows a positive trend for the same interval of intensities. For the lower quantiles it is more difficult to determine whether observed trends are more dominated by winter or summer data. Next to studying the regression lines, the significance of all quantile lines is tested and the corresponding p-values are showed in Table \ref{tab:p_int_S&W}.
 
+%TEST
 % Significance test
-<<p_test_SW,cache=TRUE>>=
-max2dS <- max2d[month==6| month==7 | month==8]
-max2dW <- max2d[month==12| month==1| month==2]
+<<p_test_SW>>=
 p_S <- p_test(data=max2dS,tau=0.50)
 setnames(p_S,c("STN","Q50s"))
 p_S[, ":="(Q75s = p_test(data=max2dS,tau=0.75)$V1, Q90s = p_test(data=max2dS,tau=0.90)$V1)]
@@ -462,11 +538,15 @@ p_W[, ":="(Q75w = p_test(data=max2dW,tau=0.75)$V1,
          Q90w = p_test(data=max2dW,tau=0.90)$V1)]
 p_W[, ":="(Q95w = p_test(data=max2dW,tau=0.95)$V1, Q99w = p_test(data=max2dW,tau=0.99)$V1,
          Q999w = p_test(data=max2dW,tau=0.999)$V1)]
-save(p_S, file="./inst/tussenStap/p_SW.rda")
-save(p_W, file="./inst/tussenStap/p_SW.rda")
+save(p_S, file="./inst/tussenStap/p_S.rda")
+save(p_W, file="./inst/tussenStap/p_W.rda")
 @
 
 <<p_SWtbl>>=
+#p_Strue <- p_S
+#p_Wtrue <- p_W
+#save(p_Strue, file="./inst/tussenStap/p_Strue.rda")
+#save(p_Wtrue, file="./inst/tussenStap/p_Wtrue.rda")
 #tblS <- xtable(p_S)
 #tblW <- xtable(p_W)
 # print(tblW,
@@ -482,35 +562,60 @@ load("./inst/tussenStap/p_W.rda")
 
 @
 
+% correct  p_S
+%    STN   Q50s   Q75s   Q90s   Q95s   Q99s  Q999s
+% 1: 235 0.9013 0.9914 0.9899 0.9375 0.3765 0.0890
+% 2: 260 0.2816 0.9909 0.8443 0.8643 0.8952 0.4457
+% 3: 280 0.7763 0.9852 0.9538 0.4882 0.3946 0.8347
+% 4: 310 0.8585 0.7118 0.9598 0.9731 0.5941 0.1792
+% 5: 380 0.5265 0.7298 0.9788 0.8566 0.4959 0.8001
+
+% > newest p_S
+%    STN     V1
+% 1: 235 0.9050
+% 2: 260 0.2732
+% 3: 280 0.7694
+% 4: 310 0.8585
+% 5: 380 0.5213
+
+% false p_S
+%   STN   Q50s   Q75s   Q90s   Q95s   Q99s  Q999s
+% 1: 235 0.9387 0.9924 0.9902 0.9347 0.3811 0.1020
+% 2: 260 0.8652 0.9892 0.8468 0.8608 0.8971 0.4434
+% 3: 280 0.4864 0.9818 0.9551 0.5009 0.3935 0.8345
+% 4: 310 0.9742 0.7021 0.9612 0.9733 0.5980 0.1807
+% 5: 380 0.8578 0.7312 0.9809 0.8568 0.4987 0.8072
+
+
 \begin{table}[ht]
   \centering
   \caption{Significance table for all fits and specified to summer and winter intensity data}
-  \begin{tabular}{l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r}
+  \begin{tabular}{l|r|r|r|r|r|r|r}
   \hline\hline
-  \multicolumn{2}{c}{Location} \vline & \multicolumn{5}{c}{Quantiles of fit}\\
-  \multicolumn{2}{c}{} \vline & \multicolumn{5}{c}{Summer}\\
+  \multicolumn{2}{c}{Location} \vline & \multicolumn{6}{c}{Quantiles of fit}\\
+  \multicolumn{2}{c}{} \vline & \multicolumn{6}{c}{Summer}\\
   \hline
-  Station & STN & 50\% & 75\% & 90\% & 95\% & Q99\% \\
+  Station & STN & 50\%& 75\%                  & 90\%                  & 95\%                  & Q99\%& Q99.9\% \\
   \hline
-    De Kooy     & 235 & 0.93 & \cellcolor{green}0.97 & \cellcolor{green}0.99 & \cellcolor{green}0.95 & 0.42 \\
-    De Bilt     & 260 & 0.89 & \cellcolor{green}0.98 & 0.87                  & 0.79                  & 0.89  \\
-    Eelde       & 280 & 0.92 & \cellcolor{green}0.95 & \cellcolor{green}0.95 & 0.66                  & 0.94 \\
-    Vlissingen  & 310 & 0.91 & 0.78                  & \cellcolor{green}0.95 & \cellcolor{green}0.97 & 0.80  \\
-    Maastricht  & 380 & 0.21 & 0.71                  & 0.90                  & 0.78                  & 0.54  \\
+    De Kooy     & 235 & 0.94                  & \cellcolor{green}0.96 & \cellcolor{green}0.98 & 0.70 & - \\
+    De Bilt     & 260 & 0.87                  & \cellcolor{green}0.98 & 0.80                  & 0.85 & - \\
+    Eelde       & 280 & 0.49                  & \cellcolor{green}0.98 & 0.93                  & 0.39 & - \\
+    Vlissingen  & 310 & \cellcolor{green}0.97 & 0.75                  & \cellcolor{green}0.97 & 0.59 & - \\
+    Maastricht  & 380 & 0.86                  & 0.82                  & \cellcolor{green}0.95 & 0.48 & - \\
   \hline
   \multicolumn{2}{c}{} \vline & \multicolumn{5}{c}{Winter}\\
   \hline
-    De Kooy     & 235 & 0.67                  & 0.18                  & \cellcolor{green}0.96 & \cellcolor{green}0.97 & 0.59  \\
-    De Bilt     & 260 & \cellcolor{green}1.00 & 0.94                  & \cellcolor{green}0.97 & 0.65                  & 0.81  \\
-    Eelde       & 280 & 0.09                  & \cellcolor{green}0.96 & \cellcolor{green}0.99 & 0.84                  & 0.52  \\
-    Vlissingen  & 310 & \cellcolor{green}0.96 & 0.89                  & 0.79                  & 0.37                  & \cellcolor{red}0.05  \\
-    Maastricht  & 380 & 0.84                  & \cellcolor{green}0.99 & 0.93                  & \cellcolor{green}0.97 & 0.30  \\
+    De Kooy     & 235 & 0.63                  & 0.77                  & \cellcolor{green}0.96 & \cellcolor{green}0.98 & \cellcolor{green}0.98  \\
+    De Bilt     & 260 & \cellcolor{green}0.99 & 0.90                  & \cellcolor{green}0.98 & 0.73                  & 0.72  \\
+    Eelde       & 280 & 0.17                  & 0.94                  & \cellcolor{green}0.99 & 0.86                  & 0.57  \\
+    Vlissingen  & 310 & \cellcolor{green}0.95 & 0.85                  & 0.76                  & 0.39                  & 0.06  \\
+    Maastricht  & 380 & 0.83                  & \cellcolor{green}0.99 & 0.90                  & \cellcolor{green}0.97 & 0.35  \\
     \hline
   \end{tabular}
   \label{tab:p_int_S&W}
 \end{table}
 
-
+! Change p-tables + Look at changed table!
 For both seasons multiple significant positive trends are demonstrated for intensities corresponding to the 50\%-99\%-quantiles (\ref{tab:p_int_S&W}). Whereas the 99.9\% of all 2day-maxima and the 99\% of the summer 2day-maxima of station de Kooy showed strong negative trends, these are detected to be significant. In fact, all 99.9\%-quantile regression lines are found to be insignificant and therefore excluded from table \ref{tab:p_int_S&W}. De Bilt has 1 significant summer trend (75\%-quantile) and two significant winter trends (50\% and 90\%-quantiles). In the data from Eelde significant trends are found in both seasons, for values higher than the 75\% and 90\%-quantiles. For Vlissingen significant increases are present for \enquote{low} extremes ($>$ 50\%-quantile) in winter and for \enquote{high} extremes ($>$ 90 and 95\%-quantile) in summer. No significant summer trends are detected for Maastricht, whereas the summer 75\% and 95\%-quantile lines are significant. One signicant trend for the winter data in Vlissingen is the only one which is negative and applying on the 99\%-quantile. The reason for this outlier in trends is still unclear, but will investigated in CH3 (REF!).
 
 
@@ -518,7 +623,7 @@ For both seasons multiple significant positive trends are demonstrated for inten
 
 \section{Frequency}
 
-Next to changes in intensity of extreme rain events, is it also relevant to study whether precipitation events occur more, equally or less often in time. In this section analysis of frequency data is reported. First, the number of wet hours per 2 days is investigated in Figure \ref{fig:QR_freq2d}. Second, the same is repeated for the number of wet hours a year, a summer and a winter.
+Next to changes in intensity of extreme rain events, is it also relevant to study whether precipitation events occur more, equally or less often in time. In this section, analysis of frequency of wet hours is reported. First, the number of wet hours per 2 days is investigated in Figure \ref{fig:QR_freq2d}. Next to trends in intensity, we can then draw conclusions on trends in wetness for the same temporal resolution. Second, the same is repeated for the number of wet hours a year, which is a more intuitive approach to look at the changes of wetness in time. Futhermore, we have investigated whether trends in summer and winter wetness differ (on yearly resolution).
 
 
 <<label=freq,cache=TRUE>>=
@@ -529,13 +634,13 @@ freq_Wwet <- hrKNMI[P > 0][Month==12| Month==1 | Month==2][ , ':='(f = .N),by = 
 
 # Load data set in which 2day units are included
 load("./inst/tussenStap/data2d.rda")
-# Count number of wet hours per 2 day period and per station
+# Count number of wet hours per 2-day period and per station
 # sum over code (0 or 1 indicating dry or wet hour), as to include frequencies of 0 (when a consecutive dry period of 48 hours occurs)
 # This approach is not needed for years, as there are no years in which there is no rain at all.
 
 #freq_wet2d <- data2d[, ":="(f=length(HH[P>0])),by=list(d2,STN)]
 freq_wet2d <- data2d[, ":="(f=sum(code)),by=.(d2,STN)]
-# Shift to resolution of values per 2 days
+# Shift to resolution of values per 2 days  (= total hours /48 = 2542080/48= 52960 data points)
 freq_wet2d <- freq_wet2d[,list(f=unique(f),Psum=unique(Psum),yr=mean(Year)),by=list(d2,STN)]
 
 #f create data tables with per year only 1 f value and mean T/TD/WD value
@@ -557,13 +662,15 @@ load("./inst/tussenStap/freq_wet2d.rda")
 @
 
 <<label=QRfreq,cache=TRUE>>=
-# compute quantiles from quantile regression
+# Compute quantiles from quantile regression
 QR_freq <- QR_freqall(freq_wet)
 QR_Sfreq <- QR_freqall(freq_Swet)
 QR_Wfreq <- QR_freqall(freq_Wwet)
 QR_freq2d <- QR_freqall(freq_wet2d,Year=FALSE)
 Legendgrob4 <- legendGrob(c("LM","25%","50%","75%"), pch=15,
                           gp=gpar(col=c("black","purple","blue","green"),cex=1), ncol=2)
+Legendgrob5 <- legendGrob(c("50%","75%","90%","95%","99%"), pch=15,
+                          gp=gpar(col=c("purple","blue","green","orange","red"),cex=1), ncol=2)
 
 save(QR_freq, file="./inst/tussenStap/QR_freq.rda")
 save(QR_Sfreq, file="./inst/tussenStap/QR_Sfreq.rda")
@@ -580,7 +687,7 @@ load("./inst/tussenStap/QR_freq2d.rda")
 
 \begin{figure}[H]
   \centering
-  \textbf{Quantile regression on number of 2 day wet hours}\par\medskip
+  \textbf{Quantile regression on number of 2-day wet hours}\par\medskip
   \begin{minipage}{0.48\textwidth}
     \flushleft
 <<Density_2dayfreq>>=
@@ -594,26 +701,226 @@ plot(density(freq_wet2d$f), type='l', col='blue', lwd=3, main=NA,
   \hfill
   \begin{minipage}{0.48\textwidth}
     \flushright
-<<label=QR2d_freqplotting,cache=FALSE,warning=FALSE>>=
-# !!! BIAS geom_smooth: warning=false ; because we remove points which are not fitted in the plot by ymax
+<<label=QR2d_freqplotting,cache=TRUE,warning=FALSE>>=
 ymin <- 0
-ymax <- 15
+ymax <- 30
 plot1 <- QR_freqplotting(data=QR_freq2d[STN == 235], title="De Kooy",ymin,ymax,Year=FALSE)
 plot2 <- QR_freqplotting(data=QR_freq2d[STN == 260], title="De Bilt",ymin,ymax,Year=FALSE)
 plot3 <- QR_freqplotting(data=QR_freq2d[STN == 280], title="Eelde",ymin,ymax,Year=FALSE)
 plot4 <- QR_freqplotting(data=QR_freq2d[STN == 310], title="Vlissingen",ymin,ymax,Year=FALSE)
 plot5 <- QR_freqplotting(data=QR_freq2d[STN == 380], title="Maastricht",ymin,ymax,Year=FALSE)
-grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob4, ncol=2),
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob5, ncol=2),
              ncol= 1)
 @
-    \subcaption{All 2 day frequencies}
+    \subcaption{All 2-day frequencies}
     \label{fig:Qfreq2d}
   \end{minipage}
   \caption{Distribution plot of all wet hour per 2 days (a). In (b) quantile regression fits with $\tau = 25, 50, 75$ \% and linear regression (black line) on counts of wet hours per 2 days for all stations. The coefficients of the linear regression lines are given in the right corner.}
   \label{fig:QR_freq2d}
 \end{figure}
 
-The distribution of the 2 day frequencies of wet hours (\ref{fig:dens_freq2d}) looks lognormal, therefore quantile regression is prefered above the linear regression. No evident trends are visible in this figure. Nontheless, all trends seems to be negative, with rates of an order of 1e$^{-3}$-1e$^{-2}$ number of wet hours per 2 days. Approximately 88\% of the hours is dry, so approximately 6 hours every 2 days are wet. The decrease computed as a fraction of the wet time is -0.002 \% per 2 days. Further, we were interested whether stronger signals can be found, when we study the amount of wet hours a year. Figure \ref{fig:QR_freqyr} gives regression lines for yearly frequencies of wet hours.
+% RATES
+The distribution of the 2-day frequencies of wet hours (\ref{fig:dens_freq2d}) looks lognormal, therefore quantile regression is prefered above the linear regression. In Figure \ref{fig:Qfreq2d} the 25\%-quantile is excluded, because the fitted values are always zero. This means that the 25\% driest 2 days have no wet hours at all. No evident trends are visible in this figure. Nontheless, all quantile lines, except for the 99\%-quantile line, seem to be constant or decreasing in time. Corresponding rates are of an order of 1e$^{-3}$-1e$^{-2}$ number of wet hours per 2 days. As 88\% of the hours is dry, approximately 6 hours every 2 days are wet. The decrease computed as a fraction of the wet time is -0.002 \% per 2 days. To investigate whether the observed trends are significant, a 9999 Monte Carlo permutation is applied. Of every fitted quantile regression line the corresponding p-value is listed in Table \ref{tab:p_freq_S&W}. Further, we were interested whether stronger signals can be found, when we study the amount of wet hours a year. Figure \ref{fig:QR_freqyr} gives regression lines for yearly frequencies of wet hours.
+
+
+% Significance test
+<<p_testfreq2d,cache=TRUE>>=
+# p-values of QR fits on 2day freq data
+p_freq2d <- p_test(data=freq_wet2d,tau=0.50,freq=TRUE,Year=FALSE)
+#p_freq2d <- p_test(data=freq_wet2d,tau=0.50,N=9999,freq=TRUE,lm=FALSE,Year=FALSE)
+setnames(p_freq2d,c("STN","Q50"))
+p_freq2d[, ":="(Q75 = p_test(data=freq_wet2d,tau=0.75,freq=TRUE,Year=FALSE)$V1, Q90 = p_test(data=freq_wet2d,tau=0.90,freq=TRUE,Year=FALSE)$V1)]
+p_freq2d[, ":="(Q95 = p_test(data=freq_wet2d,tau=0.95,freq=TRUE,Year=FALSE)$V1, Q99 = p_test(data=freq_wet2d,tau=0.99,freq=TRUE,Year=FALSE)$V1, Q999 = p_test(data=freq_wet2d,tau=0.999,freq=TRUE,Year=FALSE)$V1)]
+save(p_freq2d, file="./inst/tussenStap/p_freq2d.rda")
+@
+
+
+<<loadingfreq2d,cache=FALSE>>=
+load("./inst/tussenStap/p_freq2d.rda")
+@
+
+\begin{table}[ht]
+  \centering
+  \caption{Significance table for all fits on 2-day max. hourly frequency data}
+  \begin{tabular}{l|r|r|r|r|r|r|r}
+  \hline\hline
+    \multicolumn{2}{c}{Location}
+    %\multicolumn{1}{c}{STN} &
+    \vline
+    & \multicolumn{6}{c}{Quantiles of fit} \\
+    \hline
+    Station   & STN & 50\% & 75\% & 90\% & 95\% & Q99\% & 99.9\% \\
+    \hline
+    De Kooy   & 235 &                  0.07   & \cellcolor{red} 0.0002  & \cellcolor{red} 0.01 & \cellcolor{red} 0.03 & 0.79 & 0.27 \\
+    De Bilt   & 260 &  \cellcolor{red} 0.002  & \cellcolor{red} 0.01    & \cellcolor{red} 0.02 &                 0.09 & 0.28 & 0.28 \\
+    Eelde     & 280 &  \cellcolor{red} 0.0001 & \cellcolor{red} 0.001   & \cellcolor{red} 0.01 & \cellcolor{red} 0.01 & 0.31 & 0.73 \\
+    Vlissingen& 310 &  \cellcolor{red} 0.002  & \cellcolor{red} 0.01    &                 0.07 &                 0.07 & 0.11 & \cellcolor{red} 0.02 \\
+    Maastricht& 380 &  \cellcolor{red} 0.0001 & \cellcolor{red} 0.0001  & \cellcolor{red} 0.001& \cellcolor{red} 0.004 & 0.19 & 0.30 \\
+     \hline
+  \end{tabular}
+  \label{tab:p_2dfreq_S&W}
+\end{table}
+
+%    STN    Q50    Q75    Q90    Q95    Q99   Q999
+% 1: 235 0.0697 0.0002 0.0132 0.0340 0.7866 0.2744
+% 2: 260 0.0022 0.0132 0.0183 0.0919 0.2796 0.2844
+% 3: 280 0.0001 0.0014 0.0106 0.0115 0.3046 0.7338
+% 4: 310 0.0016 0.0143 0.0720 0.0676 0.1087 0.0215
+% 5: 380 0.0001 0.0001 0.0014 0.0036 0.1868 0.2990
+
+
+% RUN
+<<rates_freq2d>>=
+
+#K_75
+(QR_freq2d[STN == 235]$f75[10592] - QR_freq2d[STN == 235]$f75[1])/58
+#-3.062684e-17
+#K_90
+(QR_freq2d[STN == 235]$f90[10592] - QR_freq2d[STN == 235]$f90[1])/58
+#3.062684e-17
+#K_95
+(QR_freq2d[STN == 235]$f95[10592] - QR_freq2d[STN == 235]$f95[1])/58
+#6.125368e-17
+
+#B_50
+(max(QR_freq2d[STN == 260]$f50) - min(QR_freq2d[STN == 260]$f50))/58
+#-0.02051033
+#B_75
+(max(QR_freq2d[STN == 260]$f75) - min(QR_freq2d[STN == 260]$f75))/58
+#-0.02103969
+#B_90
+(QR_freq2d[STN == 260]$f90[10592] - QR_freq2d[STN == 260]$f90[1])/58
+#-2.450147e-16
+
+#E_50
+(QR_freq2d[STN == 280]$f50[10592] - QR_freq2d[STN == 280]$f50[1])/58
+#0
+#E_75
+(QR_freq2d[STN == 280]$f75[10592] - QR_freq2d[STN == 280]$f75[1])/58
+# -9.188053e-17
+#E_90
+(max(QR_freq2d[STN == 280]$f90) - min(QR_freq2d[STN == 280]$f90))/58
+#-0.02285686
+#E_95
+(QR_freq2d[STN == 280]$f95[10592] - QR_freq2d[STN == 280]$f95[1])/58
+#0
+
+#V_50
+(QR_freq2d[STN == 310]$f50[10592] - QR_freq2d[STN == 310]$f50[1])/58
+# -3.828355e-17
+#V_75
+(QR_freq2d[STN == 310]$f75[10592] - QR_freq2d[STN == 310]$f75[1])/58
+# -3.828355e-17
+#V_999
+(QR_freq2d[STN == 310]$f999[10592] - QR_freq2d[STN == 310]$f999[1])/58
+# 0
+
+#M_50
+(max(QR_freq2d[STN == 380]$f50) - min(QR_freq2d[STN == 380]$f50))/58
+#-0.02524937
+#M_75
+(QR_freq2d[STN == 380]$f75[10592] - QR_freq2d[STN == 380]$f75[1])/58
+# -6.125368e-17
+#M_90
+(max(QR_freq2d[STN == 380]$f90) - min(QR_freq2d[STN == 380]$f90))/58
+#-0.03785704
+#M_95
+(max(QR_freq2d[STN == 380]$f95) - min(QR_freq2d[STN == 380]$f95))/58
+#-0.03809397
+@
+
+
+\begin{table}[ht]
+  \centering
+  \caption{Rates of significant 2-day frequency trends. * significantly constant}
+  \begin{tabular}{l|r|r|r|r|r|r|r}
+  \hline\hline
+    \multicolumn{2}{c}{Location}
+    %\multicolumn{1}{c}{STN} &
+    \vline
+    & \multicolumn{6}{c}{Rates (mm/hr/yr)} \\
+    \hline
+    Station   & STN & 50\%          & 75\%          & 90\%            & 95\%      & 99\% & 99.9\% \\
+    \hline
+    De Kooy   & 235 &  -            & -3.1e$^{-17}$ & -3.1e$^{-17}$  & 6.1e$^{-17}$ & - & -\\
+    De Bilt   & 260 & -0.02         & -0.02         & -2.5e$^{-16}$  & -            & - & -\\
+    Eelde     & 280 & 0*            & -9.2e$^{-17}  & -0.02          & 0*           & - & -\\
+    Vlissingen& 310 & -3.8e$^{-17}$ & -3.8e$^{-17}$ & -              & -            & - & 0* \\
+    Maastricht& 380 & -0.03         & -6.1e$^{-17}$ & -0.04          & -0.04        & - & - \\
+     \hline
+  \end{tabular}
+  \label{tab:rates_freq2d}
+\end{table}
+
+%CHECK positive , negative color and sign rate!
+%ADD interpretation
+
+
+%ONLY TEXT Summer and winter 2d
+
+
+<<freq2d_S&W,eval=FALSE>>=
+freq_wet2dS <- data2dS[, ":="(f=sum(code)),by=.(d2,STN)]
+# Shift to resolution of values per 2 days  (= total hours /48 = 2542080/48= 52960 data points)
+freq_wet2dS <- freq_wet2dS[,list(f=unique(f),Psum=unique(Psum),Year=mean(Year)),by=list(d2,STN)]
+save(freq_wet2dS, file="./inst/tussenStap/freq_wet2dS.rda")
+
+freq_wet2dW <- data2dW[, ":="(f=sum(code)),by=.(d2,STN)]
+# Shift to resolution of values per 2 days  (= total hours /48 = 2542080/48= 52960 data points)
+freq_wet2dW <- freq_wet2dW[,list(f=unique(f),Psum=unique(Psum),Year=mean(Year)),by=list(d2,STN)]
+save(freq_wet2dW, file="./inst/tussenStap/freq_wet2dW.rda")
+@
+
+<<QR_freq2d_S&W,eval=FALSE>>=
+QR_Sfreq2d <- QR_freqall(freq_wet2dS)
+QR_Wfreq2d <- QR_freqall(freq_Wwet2dS)
+save(QR_Sfreq2d, file="./inst/tussenStap/QR_Sfreq2d.rda")
+save(QR_Wfreq2d, file="./inst/tussenStap/QR_Wfreq2d.rda")
+@
+
+<<label=QR2d_Sfreqplotting,eval=FALSE>>=
+ymin <- 0
+ymax <- 30
+plot1 <- QR_freqplotting(data=QR_Sfreq2d[STN == 235], title="De Kooy",ymin,ymax,Year=FALSE)
+plot2 <- QR_freqplotting(data=QR_Sfreq2d[STN == 260], title="De Bilt",ymin,ymax,Year=FALSE)
+plot3 <- QR_freqplotting(data=QR_Sfreq2d[STN == 280], title="Eelde",ymin,ymax,Year=FALSE)
+plot4 <- QR_freqplotting(data=QR_Sfreq2d[STN == 310], title="Vlissingen",ymin,ymax,Year=FALSE)
+plot5 <- QR_freqplotting(data=QR_Sfreq2d[STN == 380], title="Maastricht",ymin,ymax,Year=FALSE)
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob5, ncol=2),
+             ncol= 1)
+@
+
+<<label=QR2d_Wfreqplotting,eval=FALSE>>=
+ymin <- 0
+ymax <- 30
+plot1 <- QR_freqplotting(data=QR_Wfreq2d[STN == 235], title="De Kooy",ymin,ymax,Year=FALSE)
+plot2 <- QR_freqplotting(data=QR_Wfreq2d[STN == 260], title="De Bilt",ymin,ymax,Year=FALSE)
+plot3 <- QR_freqplotting(data=QR_Wfreq2d[STN == 280], title="Eelde",ymin,ymax,Year=FALSE)
+plot4 <- QR_freqplotting(data=QR_Wfreq2d[STN == 310], title="Vlissingen",ymin,ymax,Year=FALSE)
+plot5 <- QR_freqplotting(data=QR_Wfreq2d[STN == 380], title="Maastricht",ymin,ymax,Year=FALSE)
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob5, ncol=2),
+             ncol= 1)
+@
+
+% Significance test
+<<p_testfreq2d_S&W,eval=FALSE>>=
+# p-values of QR fits on 2day freq data
+p_Sfreq2d <- p_test(data=freq_wet2dS,tau=0.50,freq=TRUE,Year=FALSE)
+setnames(p_Sfreq2d,c("STN","Q50"))
+p_Sfreq2d[, ":="(Q75 = p_test(data=freq_wet2dS,tau=0.75,freq=TRUE,Year=FALSE)$V1, Q90 = p_test(data=freq_wet2dS,tau=0.90,freq=TRUE,Year=FALSE)$V1)]
+p_Sfreq2d[, ":="(Q95 = p_test(data=freq_wet2dS,tau=0.95,freq=TRUE,Year=FALSE)$V1, Q99 = p_test(data=freq_wet2dS,tau=0.99,freq=TRUE,Year=FALSE)$V1, Q999 = p_test(data=freq_wet2dS,tau=0.999,freq=TRUE,Year=FALSE)$V1)]
+save(p_Sfreq2d, file="./inst/tussenStap/p_Sfreq2d.rda")
+
+p_Wfreq2d <- p_test(data=freq_wet2dW,tau=0.50,freq=TRUE,Year=FALSE)
+setnames(p_Wfreq2d,c("STN","Q50"))
+p_Wfreq2d[, ":="(Q75 = p_test(data=freq_wet2dW,tau=0.75,freq=TRUE,Year=FALSE)$V1, Q90 = p_test(data=freq_wet2dW,tau=0.90,freq=TRUE,Year=FALSE)$V1)]
+p_Wfreq2d[, ":="(Q95 = p_test(data=freq_wet2dW,tau=0.95,freq=TRUE,Year=FALSE)$V1, Q99 = p_test(data=freq_wet2dW,tau=0.99,freq=TRUE,Year=FALSE)$V1, Q999 = p_test(data=freq_wet2dW,tau=0.999,freq=TRUE,Year=FALSE)$V1)]
+save(p_Wfreq2d, file="./inst/tussenStap/p_Wfreq2d.rda")
+
+@
+
+
+Moreover, we investigated trends of wetness by counting the number of wet hours a year, a winter and a summer. First, we started by studying the distribution of wet hours a year to determine which kind of regression approach is suitable.
 
 \begin{figure}[H]
   \hspace{-1cm}
@@ -635,7 +942,7 @@ plot(density(freq_wet$f), type='l', col='blue', lwd=3, main=NA,   #Distribution 
     \hfill
   \begin{minipage}{0.48\textwidth}
     \flushleft
-<<label=QR_freqplotting,cache=FALSE>>=
+<<label=QR_freqplotting,cache=TRUE>>=
 ymin <- 700
 ymax <- 1550
 plot1 <- QR_freqplotting(data=QR_freq[STN == 235], title="De Kooy",ymin,ymax)
@@ -656,7 +963,7 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob4, ncol=2)
 \begin{figure}[H]
   \begin{minipage}{0.48\textwidth}
     \flushleft
-<<label=QRW_freqplotting,cache=FALSE>>=
+<<label=QRW_freqplotting,cache=TRUE>>=
 ymin <- 100
 ymax <- 550
 plot1 <- QR_freqplotting(data=QR_Wfreq[STN == 235], title="De Kooy",ymin,ymax)
@@ -674,7 +981,7 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob4, ncol=2)
   \hspace{-0.5cm}
   \begin{minipage}{0.48\textwidth}
     \flushleft
-<<label=QRS_freqplotting,cache=FALSE>>=
+<<label=QRS_freqplotting,cache=TRUE>>=
 ymin <- 50
 ymax <- 400
 plot1 <- QR_freqplotting(data=QR_Sfreq[STN == 235], title="De Kooy",ymin,ymax)
@@ -692,9 +999,9 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob4, ncol=2)
   \label{fig:QR_freqWS}
 \end{figure}
 
-The distribution of wet hours a year approaches a Gaussian distribution, therefore linear regression is valid for this data. All linear regression fits demonstrate a negative trend in the amount of wet hours a year. To investigate whether these trends are season dependent we plotted the same figure another two times, one considering only summer frequencies and the other winter frequencies (Figure \ref{fig:QR_freqWS}).The only linear regression trend that is positive is the summer trend of De Kooy. For wet hours a year the coefficient for de Kooy is the lowest, which is due to the negative trend in summer wet hours (\ref{fig:Qfreq_sum}). Spatial differences are especially visible in the magnitude of the trends, which accounts more for summer trends (maximum variability of 1 count/yr), compared to winter trends (maximum variability of $0.2$ count/yr) Overall, a robust signal of decreasing (yearly) wetness is visible. Quantile regression lines are also considered in this figure, allowing us to investigate whether extreme wet years decrease as well. Most of the quantile fits show negative trends in the amount of wet hours a year, except for the 25\%-quantile fit (especially when summer or winter maxima are considered). This suggest that the signal of decreasing frequency is stronger for wetter years, than for drier years. Although less obvious as for intensity data, the quantile regression lines for frequency data differ among the five stations as well. To investigate whether the observed trends are significant, a 9999 Monte Carlo permutation is applied.
+The distribution of wet hours a year approaches a Gaussian distribution, therefore linear regression is valid for this data. All linear regression fits demonstrate a negative trend in the amount of wet hours a year. To investigate whether these trends are season dependent we plotted the same figure another two times, one considering only summer frequencies and the other winter frequencies (Figure \ref{fig:QR_freqWS}).The only linear regression trend that is positive is the summer trend of De Kooy. For wet hours a year the coefficient for de Kooy is the lowest, which is due to the negative trend in summer wet hours (\ref{fig:Qfreq_sum}). Spatial differences are especially visible in the magnitude of the trends, which accounts more for summer trends (maximum variability of 1 count/yr), compared to winter trends (maximum variability of $0.2$ count/yr) Overall, a robust signal of decreasing (yearly) wetness is visible. Quantile regression lines are also considered in this figure, allowing us to investigate whether extreme wet years decrease as well. Most of the quantile fits show negative trends in the amount of wet hours a year, except for the 25\%-quantile fit (especially when summer or winter maxima are considered). This suggest that the signal of decreasing frequency is stronger for wetter years, than for drier years. Although less obvious as for intensity data, the quantile regression lines for frequency data differ among the five stations as well. The p-values, expressing the significance of the trends, are listed in Table \ref{tab:p_yrfreq_S&W}.
 
-% 2 day freq
+% 2-day freq
 % confidence band ??
 
 EXLUDE 25\%
@@ -705,9 +1012,9 @@ EXLUDE 25\%
 % duplicated(tmp)  ,by=STN]
 
 
-
+% CHECK p_freq --> all stations??
 % Significance test
-<<p_testfreq,cache=F>>=
+<<p_testfreq,cache=TRUE>>=
 p_freq <- p_test(data=freq_wet,tau=0.50,freq=TRUE)
 setnames(p_freq,c("STN","Q50"))
 p_freq[, ":="(Q75 = p_test(data=freq_wet,tau=0.75,freq=TRUE)$V1, Q90 = p_test(data=freq_wet,tau=0.90,freq=TRUE)$V1)]
@@ -715,7 +1022,7 @@ p_freq[, ":="(Q95 = p_test(data=freq_wet,tau=0.95,freq=TRUE)$V1, Q99 = p_test(da
 save(p_freq, file="./inst/tussenStap/p_freq.rda")
 @
 
-<<p_test_freqS,cache=F>>=
+<<p_test_freqS,cache=TRUE>>=
 p_Sfreq <- p_test(data=freq_Swet,tau=0.50,freq=TRUE)
 setnames(p_Sfreq,c("STN","Q50s"))
 p_Sfreq[, ":="(Q75s = p_test(data=freq_Swet,tau=0.75,freq=TRUE)$V1,
@@ -726,7 +1033,7 @@ p_Sfreq[, ":="(Q95s = p_test(data=freq_Swet,tau=0.95,freq=TRUE)$V1,
 save(p_Sfreq, file="./inst/tussenStap/p_Sfreq.rda")
 @
 
-<<p_test_freqW,cache=F>>=
+<<p_test_freqW,cache=TRUE>>=
 p_Wfreq <- p_test(data=freq_Wwet,tau=0.50,freq=TRUE)
 setnames(p_Wfreq,c("STN","Q50w"))
 p_Wfreq[, ":="(Q75w = p_test(data=freq_Wwet,tau=0.75,freq=TRUE)$V1,
@@ -754,7 +1061,7 @@ load("./inst/tussenStap/p_Wfreq.rda")
 \begin{table}[ht]
   \centering
   \caption{Significance table for all fits on frequency data}
-  \begin{tabular}{l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r}
+  \begin{tabular}{l|r|r|r|r|r|r|r}
   \hline\hline
   \multicolumn{2}{c}{Location} \vline & \multicolumn{6}{c}{Quantiles of fit}\\
   \multicolumn{2}{c}{} \vline & \multicolumn{6}{c}{All year} \\
@@ -784,10 +1091,11 @@ load("./inst/tussenStap/p_Wfreq.rda")
     Maastricht  & 380 & 0.14 & 0.61 & 0.75 &                0.39 & 0.44 & 0.37 \\
     \hline
   \end{tabular}
+  \label{tab:p_yrfreq_S&W}
 \end{table}
 
 
-<<p_test_freqall>>=
+<<p_test_freqall,cache=TRUE>>=
 p_Sfreqall <- p_test(data=freq_Swet,tau=0.50,freq=TRUE, STN=FALSE)
 setnames(p_Sfreqall,c("Q50s"))
 p_Sfreqall[, ":="(Q75s = p_test(data=freq_Swet,tau=0.75,freq=TRUE,STN=FALSE)$V1,
@@ -823,7 +1131,7 @@ Winter & 0.24               & 0.07                & 0.10                &       
 \end{table}
 
 
-<<p_LM>>=
+<<p_LM,cache=TRUE>>=
 p_flm <- p_test(data=freq_wet,freq=TRUE,lm=TRUE,STN=TRUE)
 setnames(p_flm,c("STN","All year"))
 p_flm[, ":="(Summer = p_test(data=freq_Swet,freq=TRUE,lm=TRUE,STN=TRUE)$V1,
@@ -1246,42 +1554,100 @@ ggplotRegression(fit10)
 In this chapter we found increasing trends in the intensity for the heavier rain events at every station, while no trend was detected for the mean intensity. Moreover, we found a robust decreasing signal in the frequency of wet hours. In view of these trends it is interesting to investigate whether there are also changes in the total amount of precipitation through the same period, or whether the two opposite trends cancel each other.
 
 25\% quantile excluded, as = 0 mm/hr
-<<Psum>>=
-#Psum per 2days already calculated in max2d DT
+
+<<Distribution_Psum>>=
 load("./inst/tussenStap/max2d.rda")
-setkey(max2d,STN)
-max2d[, P25 := as.numeric(fitted.values(rq(Psum ~ d2, tau =0.25))),by=STN]
-max2d[, P50 := as.numeric(fitted.values(rq(Psum ~ d2, tau =0.5))),by=STN]
-max2d[, P75 := as.numeric(fitted.values(rq(Psum ~ d2, tau =0.75))),by=STN]
-max2d[, P90 := as.numeric(fitted.values(rq(Psum ~ d2, tau =0.90))),by=STN]
-max2d[, P95 := as.numeric(fitted.values(rq(Psum ~ d2, tau =0.95))),by=STN]
-max2d[, P99 := as.numeric(fitted.values(rq(Psum ~ d2, tau =0.99))),by=STN]
-
+plot(density(max2d$Psum), type='l', col='blue', lwd=3, main=NA,
+              xlab="Psum(mm/2day)", ylab="Density")
 @
 
-<<Plot_Psum>>=
-ggplot(max2d[STN==260], aes(x = d2)) +        # data
-  #geom_point(aes(y=Psum),color="gray",size=0.3)+
-  geom_line(aes(y=P50), color="purple") +
-  geom_line(aes(y=P75), color="blue") +
-  geom_line(aes(y=P90), color="green") +
-  geom_line(aes(y=P95), color="orange") +
-  #geom_line(aes(y=P99), color="red") +
-  geom_smooth(aes(y=Psum), method=lm, color="black") +
-  ggtitle("De Bilt") + # title
-  #ylim(c(ymin,ymax)) +
-  annotate("text",label=paste("Coef=",round(coef(lm(Psum ~ d2,data=max2d[STN==260]))[[2]],digits=5)),x=Inf,y=Inf, hjust=1.25,vjust=2) +
-  xlab("Time") + ylab("F (counts/2days)")+ # x and y-axis label
-  theme_bw()
+% For S: use max2dS,  for W: use max2dQ
+<<Psum,cache=TRUE>>=
+#Psum per 2days already calculated in max2d DT
+Psum <- subset(max2d,select=c("d2","STN","Psum","Year"))
+setkey(Psum,STN)
+# Calculate quantile fits per station on 2day resolution
+Psum[, P25 := as.numeric(fitted.values(rq(Psum ~ d2, tau =0.25))),by=STN]
+Psum[, P50 := as.numeric(fitted.values(rq(Psum ~ d2, tau =0.5))),by=STN]
+Psum[, P75 := as.numeric(fitted.values(rq(Psum ~ d2, tau =0.75))),by=STN]
+Psum[, P90 := as.numeric(fitted.values(rq(Psum ~ d2, tau =0.90))),by=STN]
+Psum[, P95 := as.numeric(fitted.values(rq(Psum ~ d2, tau =0.95))),by=STN]
+Psum[, P99 := as.numeric(fitted.values(rq(Psum ~ d2, tau =0.99))),by=STN]
+
+# Yearly precipitation sums
+Psumyearly <- data2d[,list(Psumyr=sum(P)),by=list(STN,Year)]
+# Calculate quantile fits per station on yearly resolution
+Psumyearly[, P25 := as.numeric(fitted.values(rq(Psumyr ~ Year, tau =0.25))),by=STN]
+Psumyearly[, P50 := as.numeric(fitted.values(rq(Psumyr ~ Year, tau =0.5))),by=STN]
+Psumyearly[, P75 := as.numeric(fitted.values(rq(Psumyr ~ Year, tau =0.75))),by=STN]
 @
+
+<<Plot_Psum,cache=TRUE>>=
+ymin=0
+ymax=33
+plot1 <- Psum_plotting(data=Psum[STN == 235], title="De Kooy",ymin,ymax)
+plot2 <- Psum_plotting(data=Psum[STN == 260], title="De Bilt",ymin,ymax)
+plot3 <- Psum_plotting(data=Psum[STN == 280], title="Eelde",ymin,ymax)
+plot4 <- Psum_plotting(data=Psum[STN == 310], title="Vlissingen",ymin,ymax)
+plot5 <- Psum_plotting(data=Psum[STN == 380], title="Maastricht",ymin,ymax)
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob5, ncol=2),
+             ncol= 1)
+@
+
+<<Plot_Psumyr,cache=TRUE>>=
+ymin=420
+ymax=1250
+plot1 <- Psum_plotting(data=Psumyearly[STN == 235], title="De Kooy",ymin,ymax,Year=TRUE)
+plot2 <- Psum_plotting(data=Psumyearly[STN == 260], title="De Bilt",ymin,ymax,Year=TRUE)
+plot3 <- Psum_plotting(data=Psumyearly[STN == 280], title="Eelde",ymin,ymax,Year=TRUE)
+plot4 <- Psum_plotting(data=Psumyearly[STN == 310], title="Vlissingen",ymin,ymax,Year=TRUE)
+plot5 <- Psum_plotting(data=Psumyearly[STN == 380], title="Maastricht",ymin,ymax,Year=TRUE)
+grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob3, ncol=2),
+             ncol= 1)
+@
+
+% Add other stations
 
 Very small neglible trends in the total amount of precipitation, with rates of $4e^{-5}$, $3e^{-5}$, $2e^{-5}$ and $-2e^{-5}$ per 2 days (on the order of 0.001 mm per year) for respectively De Bilt, Eelde, Vlissingen, De Kooy and Maastricht.
 
-The 5\% most intense 2 day precipitation sums ... increases with...
+The 5\% most intense 2-day precipitation sums ... increases with...
+
+Significance test
+%TEST
+<<p_testPsum,cache=TRUE>>=
+p_Psum2d <- p_test(data=Psum,tau=0.50,Psum=TRUE)
+setnames(p,c("STN","Q50"))
+p_Psum2d[, ":="(Q75 = p_test(data=Psum,tau=0.75,Psum=TRUE)$V1,
+         Q90 = p_test(data=Psum,tau=0.90,Psum=TRUE)$V1)]
+p_Psum2d[, ":="(Q95 = p_test(data=Psum,tau=0.95,Psum=TRUE)$V1,
+         Q99 = p_test(data=Psum,tau=0.99,Psum=TRUE)$V1,
+         Q999 = p_test(data=Psum,tau=0.999,Psum=TRUE)$V1)]
+save(p_Psum2d, file="./inst/tussenStap/p_Psum2d.rda")
+@
 
 
-\section{Rain events}
-
+CHANGE p-values!!
+\begin{table}[ht]
+  \centering
+  \caption{Significance table for all fits on 2-day sums of precipitation}
+  \begin{tabular}{l|r|r|r|r|r|r|r}
+  \hline\hline
+    \multicolumn{2}{c}{Location}
+    %\multicolumn{1}{c}{STN} &
+    \vline
+    & \multicolumn{6}{c}{Quantiles of fit} \\
+    \hline
+    Station   & STN & 50\% & 75\% & 90\% & 95\% & Q99\% & 99.9\% \\
+    \hline
+    De Kooy   & 235 &                   &                   0.07 & \cellcolor{green} 0.97 & \cellcolor{green} 1.00 & 0.85 & 0.07 \\
+    De Bilt   & 260 &  \cellcolor{red}  & \cellcolor{green} 0.99 & \cellcolor{green} 1.00 &                   0.94 & 0.92 & 0.90 \\
+    Eelde     & 280 &                   & \cellcolor{green} 0.95 &                   0.93 &                   0.92 & 0.72 & 0.26 \\
+    Vlissingen& 310 &                   &                   0.07 &                   0.28 & \cellcolor{green} 0.95 & 0.83 & 0.46 \\
+    Maastricht& 380 &                   &                   0.16 & \cellcolor{green} 0.99 & \cellcolor{green} 0.95 & 0.45 & 0.67 \\
+     \hline
+  \end{tabular}
+  \label{tab:p_table_Psum2d}
+\end{table}
 
 
 
