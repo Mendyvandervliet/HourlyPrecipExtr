@@ -5,7 +5,7 @@
 #' @import data.table
 #'
 #' @export
-data2d <- function(data,STN1=235,STN2=260,STN3=280,STN4=310,STN5=380){
+data2d <- function(data,STN1=235,STN2=260,STN3=280,STN4=310,STN5=380,SW=FALSE){
   tmp <- data
   tmp$d2 <- 0
   tmp$d2[1] <- 1
@@ -21,6 +21,19 @@ data2d <- function(data,STN1=235,STN2=260,STN3=280,STN4=310,STN5=380){
   tmp[STN == STN3]$d2 <- tmp[STN == STN1]$d2
   tmp[STN == STN4]$d2 <- tmp[STN == STN1]$d2
   tmp[STN == STN5]$d2 <- tmp[STN == STN1]$d2
+  }
+  else if((STN1!=0)&(SW==TRUE)){
+    for(j in min(tmp$Year):max(tmp$Year)){
+      for(i in 1:(length(tmp[STN == STN1][Year==j]$d2)/48)){
+        n <- n+1
+        tmp[STN == STN1][Year==j]$d2[(((i-1)*48)+1):(i*48)] <- n
+      }
+      print(j)
+    }
+    tmp[STN == STN2]$d2 <- tmp[STN == STN1]$d2
+    tmp[STN == STN3]$d2 <- tmp[STN == STN1]$d2
+    tmp[STN == STN4]$d2 <- tmp[STN == STN1]$d2
+    tmp[STN == STN5]$d2 <- tmp[STN == STN1]$d2
   }
   else{
   for(i in 1:(length(tmp$d2)/48)){

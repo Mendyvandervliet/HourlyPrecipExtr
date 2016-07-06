@@ -5,51 +5,115 @@
 #' @import data.table
 #'
 #' @export
-p_test <- function(data,tau,N=9999, freq=FALSE, lm=FALSE, method="fn", STN=TRUE){
-  if(freq==FALSE){
-  reps <- data[, list(replicate(N, round(as.numeric(coef(rq(sample(max2d) ~ d2, tau=tau,method=method))[2]),digits=7))),by=STN]
-  obs <- data[, list(round(as.numeric(coef(rq(max2d ~ d2, tau=tau, method=method))[2]),digits=7)),by=STN]
-  setkey(reps,STN)
-  setkey(obs,STN)
-  tmp <- merge(reps,obs)
-  setnames(tmp, c("STN","reps","obs"))
-  p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]
+p_test <- function(data,tau,N=9999, freq=FALSE,Psum=FALSE, lm=FALSE,Year=TRUE, method="fn", STN=TRUE){
+  if((freq==FALSE)&(Psum==FALSE)){ # Intensity data
+    if(STN==TRUE){ # All stations
+      if(lm==FALSE){# QR fits, only 2day resolution
+        reps <- data[, list(replicate(N, round(as.numeric(coef(rq(sample(max2d) ~ d2, tau=tau,method=method))[2]),digits=7))),by=STN]
+        obs <- data[, list(round(as.numeric(coef(rq(max2d ~ d2, tau=tau, method=method))[2]),digits=7)),by=STN]
+        setkey(reps,STN)
+        setkey(obs,STN)
+        tmp <- merge(reps,obs)
+        setnames(tmp, c("STN","reps","obs"))
+        p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]
+      }
+      else{        # LM fits
+        reps <- data[, list(replicate(N, round(as.numeric(coef(lm(sample(max2d) ~ d2))[2]),digits=7))),by=STN]
+        obs <- data[, list(round(as.numeric(coef(lm(max2d ~ d2))[2]),digits=7)),by=STN]
+        setkey(reps,STN)
+        setkey(obs,STN)
+        tmp <- merge(reps,obs)
+        setnames(tmp, c("STN","reps","obs"))
+        p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]
+      }
+    }
+    else{          # 1 station
+      if(lm==FALSE){# QR fits
+        reps <- data[, list(replicate(N, round(as.numeric(coef(rq(sample(max2d) ~ d2, tau=tau,method=method))[2]),digits=7)))]
+        obs <- data[, list(round(as.numeric(coef(rq(max2d ~ d2, tau=tau, method=method))[2]),digits=7))]
+        setkey(reps,STN)
+        setkey(obs,STN)
+        tmp <- merge(reps,obs)
+        setnames(tmp, c("STN","reps","obs"))
+        p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]
+      }
+      else{        # LM fits
+        reps <- data[, list(replicate(N, round(as.numeric(coef(lm(sample(max2d) ~ d2))[2]),digits=7)))]
+        obs <- data[, list(round(as.numeric(coef(lm(max2d ~ d2))[2]),digits=7))]
+        setkey(reps,STN)
+        setkey(obs,STN)
+        tmp <- merge(reps,obs)
+        setnames(tmp, c("STN","reps","obs"))
+        p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]
+      }
+    }
   }
-  else if((freq==TRUE) & (lm==TRUE)& (STN==TRUE)){
-   N <- 58
-   reps <- data[, list(replicate(N, round(as.numeric(coef(lm(sample(f) ~ Year))[2]),digits=7))),by=STN]
-   obs <- data[, list(round(as.numeric(coef(lm(f ~ Year))[2]),digits=7)),by=STN]
-   setkey(reps,STN)
-   setkey(obs,STN)
-   tmp <- merge(reps,obs)
-   setnames(tmp, c("STN","reps","obs"))
-   p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]
-  }
-  else if((freq==TRUE) & (lm==TRUE)& (STN==FALSE)){
-    N <- 58
-    tmp <- data[, list(replicate(N, round(as.numeric(coef(lm(sample(f) ~ Year))[2]),digits=7)))]
-    tmp$obs<- data[, list(round(as.numeric(coef(lm(f ~ Year))[2]),digits=7))]
-    setnames(tmp, c("reps","obs"))
-    p <- tmp[, list(unique((1+sum(obs > reps))/(N+1)))]
-  }
-  else if((freq==TRUE) & (lm==FALSE)& (STN==TRUE)){
-    N <- 58
-    reps <- data[, list(replicate(N, round(as.numeric(coef(rq(sample(f) ~ Year, tau=tau,method="br"))[2]),digits=7))),by=STN]
-    obs <- data[, list(round(as.numeric(coef(rq(f ~ Year, tau=tau,method="br"))[2]),digits=7)),by=STN]
+  else if(Psum==TRUE){ # Psum data
+    # only for all stations, 2day resolution
+    reps <- data[, list(replicate(N, round(as.numeric(coef(rq(sample(Psum) ~ d2, tau=tau,method=method))[2]),digits=7))),by=STN]
+    obs <- data[, list(round(as.numeric(coef(rq(Psum ~ d2, tau=tau, method=method))[2]),digits=7)),by=STN]
     setkey(reps,STN)
     setkey(obs,STN)
     tmp <- merge(reps,obs)
     setnames(tmp, c("STN","reps","obs"))
     p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]
   }
-  else{
-    N <- 58
-    tmp <- data[, list(replicate(N, round(as.numeric(coef(rq(sample(f) ~ Year, tau=tau,method="br"))[2]),digits=7)))]
-    tmp$obs <- data[, list(round(as.numeric(coef(rq(f ~ Year, tau=tau,method="br"))[2]),digits=7))]
-    setnames(tmp, c("reps","obs"))
-    p <- tmp[, list((1+sum(obs > reps))/(N+1))]
+  else{              # Frequency data
+    if(STN==TRUE){   # All stations
+      if(Year==TRUE){ # Yearly resolution
+        if(lm==FALSE){# QR fits
+          N <- 58
+          reps <- data[, list(replicate(N, round(as.numeric(coef(rq(sample(f) ~ Year, tau=tau,method="br"))[2]),digits=7))),by=STN]
+          obs <- data[, list(round(as.numeric(coef(rq(f ~ Year, tau=tau,method="br"))[2]),digits=7)),by=STN]
+          setkey(reps,STN)
+          setkey(obs,STN)
+          tmp <- merge(reps,obs)
+          setnames(tmp, c("STN","reps","obs"))
+          p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]
+        }
+        else{        # LM fits
+          N <- 58
+          reps <- data[, list(replicate(N, round(as.numeric(coef(lm(sample(f) ~ Year, tau=tau,method="br"))[2]),digits=7))),by=STN]
+          obs <- data[, list(round(as.numeric(coef(lm(f ~ Year, tau=tau,method="br"))[2]),digits=7)),by=STN]
+          setkey(reps,STN)
+          setkey(obs,STN)
+          tmp <- merge(reps,obs)
+          setnames(tmp, c("STN","reps","obs"))
+          p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]         # LM fits
+        }
+      }
+      else{          # 2day resolution
+        # no LM options
+        reps <- data[, list(replicate(N, round(as.numeric(coef(rq(sample(f) ~ d2, tau=tau,method=method))[2]),digits=7))),by=STN]
+        obs <- data[, list(round(as.numeric(coef(rq(f ~ d2, tau=tau,method=method))[2]),digits=7)),by=STN]
+        setkey(reps,STN)
+        setkey(obs,STN)
+        tmp <- merge(reps,obs)
+        setnames(tmp, c("STN","reps","obs"))
+        p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]
+      }
+    }
+    else{            # 1 STN
+      if(Year==TRUE){ # only yearly resolution
+        if(lm==FALSE){# QR fits
+          N <- 58
+          tmp <- data[, list(replicate(N, round(as.numeric(coef(rq(sample(f) ~ Year, tau=tau,method="br"))[2]),digits=7)))]
+          tmp$obs <- data[, list(round(as.numeric(coef(rq(f ~ Year, tau=tau,method="br"))[2]),digits=7))]
+          setnames(tmp, c("reps","obs"))
+          p <- tmp[, list((1+sum(obs > reps))/(N+1))]
+        }
+        else{        # LM fits
+          N <- 58
+          tmp <- data[, list(replicate(N, round(as.numeric(coef(lm(sample(f) ~ Year))[2]),digits=7)))]
+          tmp$obs<- data[, list(round(as.numeric(coef(lm(f ~ Year))[2]),digits=7))]
+          setnames(tmp, c("reps","obs"))
+          p <- tmp[, list(unique((1+sum(obs > reps))/(N+1)))]
+        }
+      }
+    }
   }
   return(p)
 }
+
 
 
