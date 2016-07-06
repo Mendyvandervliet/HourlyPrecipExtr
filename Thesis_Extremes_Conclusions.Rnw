@@ -27,11 +27,40 @@
 
 \maketitle
 
+
+\chapter{Discussions}
+SWOT
+
+Strengths:
+- significant trends in intensity, as well as wet fraction
+-
+
+Weaknesses:
+some autocorrelation present in 2 day maxima
+what is autocorrelation for wetness (frequency)  and for psum??
+
+Monte Carlo 9999 --> is 9999 a big enough sample??
+Duplicates?? maybe better ...  Chance on duplicate is ...
+
+How strong is the significance at 95\% confidence level?
+
+Opportunities:
+frequency of wet hours -->  decreases? does then the amount of wet events decrease or do the events become shorter??
+impacting events --> on basis of thresholds, for significance more data is needed, and duration has to be taken into account.
+
+
+Threats:
+
+
+
 \chapter{Conclusions}
 
 
 
 Rephrase concl CH2 : Although the trends are characterized by spatial inhomogeneity and dissimilarity with respect to the quantiles, it should be stressed that all significant trends detected are positive. In general, we can conclude that through a time period of 58 years the precipitation intensity of extreme events increases.
+
+
+
 
 
 \end{document}
