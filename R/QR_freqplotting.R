@@ -16,7 +16,7 @@ QR_freqplotting <- function(data,title,ymin,ymax,Year=TRUE){
       ggtitle(title) + # title
       ylim(c(ymin,ymax)) +
       annotate("text",label=paste(paste("Coef=",round(coef(lm(f ~ Year,data))[[2]],digits=2)),"nr/yr"),x=Inf,y=Inf, hjust=1.25,vjust=2) +
-      xlab("Time (yr)") + ylab("F (counts/yr)")+ # x and y-axis label
+      xlab("Time (yr)") + ylab("F (counts)")+ # x and y-axis label
       theme_bw()
   }
   else{
@@ -36,7 +36,7 @@ QR_freqplotting <- function(data,title,ymin,ymax,Year=TRUE){
       # scale_x_continuous(breaks=c(365.2,1278.3,2191.4,3104.5,4017.7,4930.8,5843.9,6757.0,7670.1,8583.2,9496.3,10409.4),
       #                    labels=c("1960","1965","1970","1975","1980","1985","1990","1995","2000","2005","2010","2015")) +
       #annotate("text",label=paste(paste("Coef=",round(coef(lm(f ~ yr,data))[[2]],digits=4)),"nr/yr"),x=Inf,y=Inf, hjust=1.25,vjust=2) +
-      xlab("Time (2 days)") + ylab("F (counts/2days)")+ # x and y-axis label
+      xlab("Time (2 days)") + ylab("F (counts)")+ # x and y-axis label
       theme_bw()
   }
 }

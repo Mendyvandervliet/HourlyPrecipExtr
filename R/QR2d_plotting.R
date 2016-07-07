@@ -37,7 +37,7 @@ QR2d_plotting<- function(data=data, title=title, ymax=ymax, pointplot=FALSE){
       geom_line(aes(y=m999), color="red") +
       ggtitle(title) + # title
       ylim(0,ymax) +
-      xlab("Time") + ylab("I (mm/hr)")+ # x and y-axis label
+      xlab("Time (2 days)") + ylab("I (mm/hr)")+ # x and y-axis label
       theme_bw()
   } else if((pointplot==TRUE)&(L=TRUE)){
     ggplot(data, aes(x = Year))+        # data

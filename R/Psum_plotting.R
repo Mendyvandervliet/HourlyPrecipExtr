@@ -15,7 +15,7 @@ Psum_plotting <- function(data,title,ymin,ymax,Year=FALSE){
       geom_line(aes(y=P95), color="orange") +
       geom_line(aes(y=P99), color="red") +
       #geom_smooth(aes(y=Psum), method=lm, color="black") +
-      ggtitle("De Bilt") + # title
+      ggtitle(title) + # title
       ylim(c(ymin,ymax)) +
       scale_x_continuous(breaks=c(365.2,4017.7,7670.1,10409.4),
                          labels=c("1960","1980","2000","2015")) +
@@ -31,7 +31,7 @@ Psum_plotting <- function(data,title,ymin,ymax,Year=FALSE){
       geom_line(aes(y=P75), color="green") +
       #geom_line(aes(y=P99), color="red") +
       geom_smooth(aes(y=Psumyr), method=lm, color="black") +
-      ggtitle("De Bilt") + # title
+      ggtitle(title) + # title
       ylim(c(ymin,ymax)) +
       annotate("text",label=paste("Coef=",round(coef(lm(Psumyr ~ Year,data))[[2]],digits=5)),x=Inf,y=Inf, hjust=1.25,vjust=2) +
       xlab("Time (yr)") + ylab("Psum (mm/yr)")+ # x and y-axis label
