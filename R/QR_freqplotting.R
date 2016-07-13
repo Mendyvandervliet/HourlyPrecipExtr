@@ -22,7 +22,7 @@ QR_freqplotting <- function(data,title,ymin,ymax,Year=TRUE){
   else{
     ggplot(data, aes(x = d2)) +        # data
       #geom_point(data=data,aes(y=f),color="gray",size=0.3)+
-      #geom_line(aes(y=f25), color="purple") +
+      geom_smooth(aes(y=yr_mean), method=lm, color="black") +
       geom_line(aes(y=f50), color="purple") +
       geom_line(aes(y=f75), color="blue") +
       geom_line(aes(y=f90), color="green") +

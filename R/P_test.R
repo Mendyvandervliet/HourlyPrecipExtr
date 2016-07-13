@@ -70,7 +70,7 @@ p_test <- function(data,tau,N=9999, freq=FALSE,Psum=FALSE, lm=FALSE,Year=TRUE, m
     p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]
     }
   }
-  else{              # Frequency data
+  else{              # Frequency data (test whether slope is significantly negative)
     if(STN==TRUE){   # All stations
       if(Year==TRUE){ # Yearly resolution
         if(lm==FALSE){# QR fits
@@ -81,17 +81,17 @@ p_test <- function(data,tau,N=9999, freq=FALSE,Psum=FALSE, lm=FALSE,Year=TRUE, m
           setkey(obs,STN)
           tmp <- merge(reps,obs)
           setnames(tmp, c("STN","reps","obs"))
-          p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]
+          p <- tmp[, list(unique((1+sum(obs < reps))/(N+1))),by=STN]
         }
         else{        # LM fits
           N <- 58
-          reps <- data[, list(replicate(N, round(as.numeric(coef(lm(sample(f) ~ Year, tau=tau,method="br"))[2]),digits=7))),by=STN]
-          obs <- data[, list(round(as.numeric(coef(lm(f ~ Year, tau=tau,method="br"))[2]),digits=7)),by=STN]
+          reps <- data[, list(replicate(N, round(as.numeric(coef(lm(sample(f) ~ Year))[2]),digits=7))),by=STN]
+          obs <- data[, list(round(as.numeric(coef(lm(f ~ Year))[2]),digits=7)),by=STN]
           setkey(reps,STN)
           setkey(obs,STN)
           tmp <- merge(reps,obs)
           setnames(tmp, c("STN","reps","obs"))
-          p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]         # LM fits
+          p <- tmp[, list(unique((1+sum(obs < reps))/(N+1))),by=STN]         # LM fits
         }
       }
       else{          # 2day resolution
@@ -102,7 +102,7 @@ p_test <- function(data,tau,N=9999, freq=FALSE,Psum=FALSE, lm=FALSE,Year=TRUE, m
         setkey(obs,STN)
         tmp <- merge(reps,obs)
         setnames(tmp, c("STN","reps","obs"))
-        p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]
+        p <- tmp[, list(unique((1+sum(obs < reps))/(N+1))),by=STN]
       }
     }
     else{            # 1 STN
@@ -119,7 +119,7 @@ p_test <- function(data,tau,N=9999, freq=FALSE,Psum=FALSE, lm=FALSE,Year=TRUE, m
           tmp <- data[, list(replicate(N, round(as.numeric(coef(lm(sample(f) ~ Year))[2]),digits=7)))]
           tmp$obs<- data[, list(round(as.numeric(coef(lm(f ~ Year))[2]),digits=7))]
           setnames(tmp, c("reps","obs"))
-          p <- tmp[, list(unique((1+sum(obs > reps))/(N+1)))]
+          p <- tmp[, list(unique((1+sum(obs < reps))/(N+1)))]
         }
       }
     }

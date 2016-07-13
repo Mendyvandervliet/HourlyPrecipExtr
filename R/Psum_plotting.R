@@ -14,7 +14,7 @@ Psum_plotting <- function(data,title,ymin,ymax,Year=FALSE){
       geom_line(aes(y=P90), color="green") +
       geom_line(aes(y=P95), color="orange") +
       geom_line(aes(y=P99), color="red") +
-      #geom_smooth(aes(y=Psum), method=lm, color="black") +
+      geom_smooth(aes(y=yr_mean), method=lm, color="black") +
       ggtitle(title) + # title
       ylim(c(ymin,ymax)) +
       scale_x_continuous(breaks=c(365.2,4017.7,7670.1,10409.4),

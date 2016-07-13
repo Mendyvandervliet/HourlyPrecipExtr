@@ -23,13 +23,14 @@ QR_freqall <- function(data,STN=TRUE,Year=TRUE){
   tmp[, f90 := as.numeric(fitted.values(rq(f ~ Year, tau =0.90)))]
   }
   else{
-  setkey(tmp,STN)
+  #setkey(tmp,STN)
   tmp[, f25 := as.numeric(fitted.values(rq(f ~ d2, tau =0.25))),by=STN]
   tmp[, f50 := as.numeric(fitted.values(rq(f ~ d2, tau =0.5))),by=STN]
   tmp[, f75 := as.numeric(fitted.values(rq(f ~ d2, tau =0.75))),by=STN]
   tmp[, f90 := as.numeric(fitted.values(rq(f ~ d2, tau =0.90))),by=STN]
   tmp[, f95 := as.numeric(fitted.values(rq(f ~ d2, tau =0.95))),by=STN]
   tmp[, f99 := as.numeric(fitted.values(rq(f ~ d2, tau =0.99))),by=STN]
+  tmp[, f999 := as.numeric(fitted.values(rq(f ~ d2, tau =0.999))),by=STN]
   }
   return(tmp)
 }
