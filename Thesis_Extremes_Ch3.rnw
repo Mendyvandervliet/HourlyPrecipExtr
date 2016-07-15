@@ -77,21 +77,17 @@ load("./inst/tussenStap/hrKNMI.rda")
 \chapter{Mechanism behind intensification of hourly precipitation extremes}
 
 
-Research questions:
+(Research questions:
 - From theory, which variables are important for extreme precipitation to occur?
 - Which variables correlate well with precipitation extremes?
 - Do these variables change signifcantly in time?
 - Does only the distribution change in time or does the relation with precipitation intensity change?
 Concluding;
 - Thus, what explains the intensification of hourly extremes? (here defined as the 25-5\% highest 2-day maxima)?
-- Is this likely to also explain decreases in frequency of wet hours and increases in precipitation sums?
-
-
-
-
+- Is this likely to also explain decreases in frequency of wet hours and increases in precipitation sums?)
 
 \section{Introduction}
-In this chapter we will try to find an explanation for the observed intensification of hourly precipitation extremes, which agrees with a simultaneous decreases in the occurence of wet hours. In order to find a mechanism, we first identify key variables by describing their relationship to (extreme) precipitation, as found from theory. Secondly, for those variables measured or represented by our metadata, we make simple linear correlation matrices % and time lag plots
+In this chapter we will try to find an explanation for the observed intensification of hourly precipitation extremes, which agrees with a simultaneous decreases in the occurence of wet hours. In order to find a mechanism we apply a fourfold analysis. Firstly, we identify key variables by describing their relationship to (extreme) precipitation, as found from theory. Secondly, for those variables measured or represented by our metadata, we make simple linear correlation matrices % and time lag plots
 to find the most promising variables for explaining trends in precipitation extremes. We bundle the data for all five stations to improve the detection of relationships, except for CAPE data of which we have data from only one station, number 260 De Bilt. Thirdly, we regress those variables in time, in order to investigate whether those variables change in time (and with the same magnitude of rate). Lastly, we plot the distribution of the variable in question and the quantile regression lines for intensity over the remaining variable(s) for two different time periods. By comparing the two periods for both plots, we can validate whether the distribution of the variable changes in time or its relation with precipitation extremes.
 % Lastly, we consider spatial differences in the explanatory variable(s) to explain spatial differences in the intensity , frequency and precipitation sum trends
 
@@ -99,11 +95,12 @@ to find the most promising variables for explaining trends in precipitation extr
 \section{Detection of key variables}
 
 \subsection{Theory}
+In this section we describe the relation of multiple variables to (extreme) precipitation. These are temperature, relative humidity, dewpoint temperature, convective available potential energy, wind strenght and wind shear, cloud condensation nuclei, topography and weather code.
 
 \subsubsection{Temperature}
-Temperature at the surface, as well as the background gradient of the temperature with height, influences precipitation intensity and occurence in many ways. It plays a role into the entire chain; the source of moisture, cloud formation and precipitation production up to and including the falling process \citep{Sumner1988}. First, in order to produce precipitation, atmopsheric moisture needs to be available. In general, the higher the temperature, the more evaporation can take place, and the more moisture is supplied to the atmosphere. Secondly, the ability of air to hold water vapour increases with temperature according to the Clausius Clapeyron equation. However, air does not absorb water vapor, so this is correcly phrased as: a  a higher temperature results in a higher equilibrium vapor pressure \citep[p.80,81]{Wallace2006}. Further elaboration on air's ability to hold moisture linked to (extreme) precipitation will follow in \ref{subsubsec:moist}. From Chapter TB (REF CH TB) we know that cloud droplet formation depends on the equilibrium vapor pressure, so indirectly on the internal temperature of the cloud. In short, not only the amount of available atmopheric moisture, but also cloud formation itself depends on the temperature. Thirdly, a strong temperature gradient with warm air at the surface and cold air aloft, leads to buoyant and vertical instable air. The strength of updrafts is determined by the strength of instability of the air. A measure of the vertical instability is the Convective Available Potential Energy (CAPE). As CAPE is also available in our metadata, we will further discuss it's relation to temperature in the following paragraph. Lastly, processes within a cloud regarding droplet growth depend on the internal temperature and temperature differences (REF TB). % WHAT EXACTLY EFFECT, more or stronger precipitation???
+Temperature at the surface, as well as the background gradient of the temperature with height, influences precipitation intensity and occurence in many ways. It plays a role into the entire chain; the source of moisture, cloud formation and precipitation production up to and including the falling process \citep{Sumner1988}. First, in order to produce precipitation, atmopsheric moisture needs to be available. In general, the higher the temperature, the more evaporation can take place, and the more moisture is supplied to the atmosphere. Note, the surface temperature is then also cooled, as evaporation consumes latent heat. Secondly, the ability of air to hold water vapour increases with temperature according to the Clausius Clapeyron equation. However, air does not absorb water vapor, so this is correcly phrased as: a  a higher temperature results in a higher equilibrium vapor pressure \citep[p.80,81]{Wallace2006}. The effect of this relation, is that when temperature increases (in climate change) saturation will occur less often (saturation level is harder to reach), but under extreme conditions more moisture can precipitate out of an air column. Further elaboration on air's ability to hold moisture linked to (extreme) precipitation will follow in \ref{subsubsec:moist}. From Chapter TB (REF CH TB) we know that cloud droplet formation depends on the equilibrium vapor pressure, so indirectly on the internal temperature of the cloud. In short, not only the amount of available atmopheric moisture, but also cloud formation itself depends on the temperature. Thirdly, a strong temperature gradient with warm air at the surface and cold air aloft, leads to buoyant and vertical instable air. The strength of updrafts is determined by the strength of instability of the air. A measure of the vertical instability is the Convective Available Potential Energy (CAPE). As CAPE is also available in our metadata, we will further discuss it's relation to temperature in the following paragraph. Lastly, processes within a cloud regarding droplet growth depend on the internal temperature and temperature differences (REF TB). % WHAT EXACTLY EFFECT, more or stronger precipitation???
 
-To summarize, increases in temperature lead potentially to more atmosphere moisture via evaporation and a higher ability of the air to hold moisture. The influx of moisture can also by enhanced by stronger updrafts via stronger atmospheric temperature gradients. Although, precipitation production (in other words processes regarding cloud droplet growth) also depends on the internal temperature in a cloud, no research can be dedicated to this relationship, as we only know surface temperature.
+To summarize, increases in temperature lead potentially to more atmosphere moisture via evaporation, but with a negative feedback on the temperature, and a higher ability of the air to hold moisture. The latter goes hand in hand with an expected decrease in the amount of wet hours and a concentration of precipitation in the more intensive wet hours. The influx of moisture may also by enhanced by stronger updrafts via stronger atmospheric temperature gradients. Although, precipitation production (in other words processes regarding cloud droplet growth) also depends on the internal temperature in a cloud, no research can be dedicated to this relationship, as we only know surface temperature.
 % we can also distinguish clouds based on their temperature: warm and cold clouds. Warm clouds are limited in formation, only beneath the 0 degrees Celsius isotherm. So that they only comprise water droplets in the stable phase, with coalescence involved in the production of precipitation. Therefore, these clouds have a lower vertical extent at middle and high latitudes, than at low latitudes. The higher intensity and amount of precipitation produced by warm clouds, is confined tot the warmer seasons and lower latitudes. So not really intense at high-latitude, only in summer \citep[110-111]{Sumner1988}. Clouds with a large vertical extent at mid-latitude, mainly have mixed-phase processes regarding droplet growth. Besides, convective precipitation is more intense and occurs more at higher temperature, than stratiform precipitation \citep{Berg2013}.
 
 % Third, the urban heat island effect is a temperature-driven phenomenon with associated characterstics in precipitation. Warm urban areas with enhanced convection can be compared to small island with sea-breeze systems, as cool surface air is drawn from rural areas inwards to feed the enhanced convection near the urban centre \citep[188]{Sumner1988}. Precipitation incidence and intensity may be enhanced in cities, as is demonstrated by \citet{Atkinson1975,Atkinson1977} for London. ALSO FOR NL CITIES?  The temperature is higher due to the lower albedo (urban fabrics and building materials) and the urban surface has a relatively high roughness which increases heat absorption and reduces wind speed. Not only the temperature, but also the concentration of CCN is higher in urban areas. \citet{Changnon1976} have indicated 25 \% higher summer (convectional) precipitation in urban areas, relative to the surrounding suburbs and countryside \citep[110-111]{Sumner1988}.
@@ -121,7 +118,6 @@ in which $L_v$ is the specific latent heat of vaporization and $R_v$ the gas con
 <<Clausius>>=
 ### Clausius Clapyron
 ## Change of water vapour pressure per K T change for all T range
-
 
 # Known constants
 Lv <- 2501*1000  # J/kg at 0 C(Latent heat for vaporisation)
@@ -155,7 +151,7 @@ This relation is shown in the following figure.
 
 \begin{figure}[H]
   \centering
-  \textbf{Water vapour and RH in relation to temperature}\par\medskip
+  \textbf{Water vapour and change in water vapour in relation to temperature}\par\medskip
   \begin{minipage}{0.48\textwidth}
 <<plot_es>>=
 # For T range -35:35 degrees Celsius plot the water vapor pressure and the change in water vapor pressure for 1 degree of T increase as percentage
@@ -163,7 +159,7 @@ ggplot(Clausius,aes(x=T)) + geom_line(aes(y=es)) +
   xlab("T (degrees Celsius)") + ylab("Water vapour pressure (hPa)")+ # x and y-axis label
   theme_bw()
 @
-    \caption{Water vapour pressure}
+    \caption{Water vapour pressure, $e_s$}
     \label{fig:e_s}
   \end{minipage}
   \hfill
@@ -177,24 +173,30 @@ ggplot(Clausius,aes(x=T))+
   xlab("T (degrees Celsius)") + ylab("Change in saturation vapor pressure (%)")+
   theme_bw()
 @
-    \caption{Change in RH per $\delta T$}
+    \caption{Change in $e_s$ per $\delta T$}
     \label{fig:Des_dt}
   \end{minipage}
 \end{figure}
 
-To investigate the change of the water vapor pressure with increasing temperature we took the derivative of the Clausius-Clapeyron equation to temperature. As we can deduce from Figure \ref{fig:e_s} the saturation vapor pressure increases rapidly with temperature. This means that more water vapor can be present in warmer air without reaching saturation. Therefore, the Clausius Clapeyron equation predicts that under the constraint of constant relative humidity \citep{Ingram2002}, an increasing temperature leads to an exponential increase in specific humidity, which is the ratio of the mass of water vapor that could be held in saturation to the total mass of saturated air \citep{Trenberth1999,Allen2002,Pall2007,Pierrehumbert2007}. Hence, atmospheric moisture would increase at the same rate. The heaviest rainfall events are likely to occur when all available moisture in a volume of air is precipitated out effectively. The intensity of these extreme events is dependent on the intensity and therefore we might expect the highest quantiles of the rainfall distribution to increase in ratio with the Clausius Clapeyron equation \citep{Pall2007}.
+We can deduce from Figure \ref{fig:e_s} that the saturation vapor pressure increases rapidly with temperature. This means that more water vapor can be present in warmer air without reaching saturation. Therefore, the Clausius Clapeyron equation predicts that under the constraint of constant relative humidity \citep{Ingram2002}, an increasing temperature leads to an exponential increase in specific humidity, which is the ratio of the mass of water vapor that could be held in saturation to the total mass of saturated air \citep{Trenberth1999,Allen2002,Pall2007,Pierrehumbert2007}. Hence, atmospheric moisture would increase at the same rate. The heaviest rainfall events are likely to occur when all available moisture in a volume of air is precipitated out effectively. The intensity of these extreme events is dependent on the intensity and therefore we might expect the highest quantiles of the rainfall distribution to increase in ratio with the Clausius Clapeyron equation \citep{Pall2007}.
 
-Figure \ref{fig:Des_dt} demonstrates that a certain increase in temperature has a larger impact on the saturation vapor pressure for colder temperatures, than for warmer temperatures. For T $< 0^{\circ}$ C $e_s$ increases with more  than 7\%, while for temperatures higher than 20$^{\circ}$ Celsius it is less than 6\%. % We saw in CH2 relative rates of summer vs winter
+To investigate the change of the water vapor pressure with increasing temperature we took the derivative of the Clausius-Clapeyron equation to temperature. Figure \ref{fig:Des_dt} demonstrates that a certain increase in temperature has a larger impact on the saturation vapor pressure for colder temperatures, than for warmer temperatures. For T $< 0^{\circ}$ C $e_s$ increases with more  than 7\%, while for temperatures higher than 20$^{\circ}$ Celsius it is less than 6\%. For this reason, we would expect that any trends in extremes caused by global warming-induced changes in moisture-holding capacity, are stronger visible for winter than for summer. (ADD this is confirmed or not confirmed by CH2 in which we compared the relative rates of summer vs winter; Look at magnitude differences between summer and winter trends!!).
 
-For this reason, we would expect that any trends in extremes caused by global warming induced changes in moisture-holding capacity, are stronger visible for winter than for summer. (Look at magnitude differences between summer and winter trends!!). From Chapter 2 we learned that this is not the case. It could be because of different winter and summer mechanisms, where f.e. the summer precipitation is more dependent on relative humidity.
+%From Chapter 2 we learned that this is not the case. It could be because of different winter and summer mechanisms, where f.e. the summer precipitation is more dependent on relative humidity.
 
-(Reminding that $RH = e/e_s$, we can investigate what the percential change in relative humidity is for the whole temperature range for 1 degree Celsius increase.)
+% (Reminding that $RH = e/e_s$, we can investigate what the percential change in relative humidity is for the whole temperature range for 1 degree Celsius increase.)
 
-Next to relative humidity, dewpoint temperature is a widely used measure for the amount of moisture in the air \citep{Lawence2005}. The dewpoint temperature is the temperature to which air at initial temperature and pressure must be cooled isobarically to become saturated, and can be expressed in terms of the vapor pressure $e_s(td) = e(t)$ \citep{Lawrence2005}. An expression of the dewpoint temperature in terms of relative humidity is,
+Dewpoint temperature is a widely used measure for the amount of moisture in the air \citep{Lawence2005}. The dewpoint temperature (Td) is the temperature to which air at initial temperature and pressure must be cooled isobarically to become saturated, and can be expressed in terms of the vapor pressure $e_s(Td) = e(t)$ \citep{Lawrence2005}. An expression of the dewpoint temperature in terms of relative humidity is,
 \begin{equation}
 T_d = T \left[ 1- \frac{T ln(\frac{RH}{100})}{\frac{L_v}{R_v}}  \right]^{-1}
-\end{equation},
-When relative humidity is assumed to be constant in time \citep{Pall2007} (! maybe more sources), then Td will ... ???
+\end{equation}
+which can rewritten to
+\begin{equation}
+T_d = \frac{T} {1- \frac{T ln(\frac{RH}{100})}{L_v R_v}}
+\end{equation}
+
+When relative humidity is assumed to be constant in time \citep{Pall2007} and the temperature rises, the numerator will increase, the term $\frac{T ln(\frac{RH}{100})}{L_v R_v}$ will increase, so that the denumerator (1- term \uparrow) will decrease. As the change in Td is the product of an increase in the numerator and a decrease in the denumerator, Td will increase %(! maybe more sources)
+So indeed, the atmospheric moisture, indicated by Td, will rise under constraint of constant relative humidity and rising temperature.
 
 
 \subsubsection{CAPE}
@@ -202,81 +204,71 @@ When relative humidity is assumed to be constant in time \citep{Pall2007} (! may
 
 % Lastly, vertical uplift is also determined by the temperature of the air. The higher the temperature of air at the surface relative the air above it, the more buoyant and vertical instable the air is. A measure of the vertical instability is the Convective Available Potential Energy (CAPE). As CAPE is also available in our metadata, we will further discuss it's relation to temperature in the following paragraph.
 
-As explained in the theoretical background section (Chapter ?!) initial cooling of moist air is a prerequisite in the formation of clouds. This occurs often in the process of vertical uplift, such that rising air cools adiabatically with height. Rising of air occurs as a result of density differences. If we exclude mixing of air with its environment, we can consider the thought experiment of a rising air parcel. The air parcel will rise as long as the temperature of the surrounding air is lower than its own. Buoyancy is then given by:  a = (Tp – T0 ) g / T0.  With a is the buoyancy, Tp the internal temperature of the air parcel, the external temperature and g the acceleration due to gravity \citep[55-56]{Sumner1988}. Thus, for convection to occur an air parcel must have enough potential energy, which is indicated by the Convective Available Potential Energy (CAPE). CAPE represents namely the vertically integrated positive buoyancy of a parcel experiencing adiabatic ascent,
+As explained in the theoretical background section (REF Chapter TB) initial cooling of moist air is a prerequisite in the formation of clouds. This occurs often in the process of vertical uplift, such that rising air cools adiabatically with height. Rising of air occurs as a result of density differences. If we exclude mixing of air with its environment, we can consider the thought experiment of a rising air parcel. The air parcel will rise as long as the temperature of the surrounding air is lower than its own. Buoyancy is then given by:  a = (Tp – T0 ) g / T0.  With a is the buoyancy, Tp the internal temperature of the air parcel, the external temperature and g the acceleration due to gravity \citep[55-56]{Sumner1988}. Thus, for convection to occur an air parcel must have enough potential energy, which is indicated by the Convective Available Potential Energy (CAPE). CAPE represents namely the vertically integrated positive buoyancy of a parcel experiencing adiabatic ascent,
 \begin{equation}
-CAPE = g \int_{z_1}^{z_2} B dz
+CAPE = g \int_{z_LCL}^{z_LNB} B dz
 \end{equation}
-with g the acceleration due to gravity (m s$^{-2}$), $z_1$ the level of free convection (LFC), $z_2$ the equilibrium level (EL) and B the buoyancy force. Following the Skew-T Log P Diagram and Sounding Anlysis Remote Training Module, RTM-230 \citep{NWSTC2000}, CAPE is also expressed as:
+with g the acceleration due to gravity (m s$^{-2}$), $z_LCL$ the lifted condensation level, $z_LNB$ the level of no buoyancy and B the buoyancy force. This can also be expressed, similar to Chapter (REF CH Method), as:
 \begin{equation}
-CAPE = g \int_{z_1}^{z_2} \frac{T_vp - T_ve}{T_ve} dz
+CAPE = g \int_{z_1}^{z_2} \frac{T - \bar{T}}{\bar{T}} dz
 \end{equation}
-in which $T_vp$ is the virtual temperature of the air parcel and $T_ve$ the virtual temperature of the environment. The units for CAPE are $J/kg$. Studying CAPE is therefore a key to the possibility of convective storms \citep{ManualSynop}.
+in which $T$ is the temperature of the air parcel and $\bar{T}$ the temperature of the environment. The units for CAPE are $J/kg$.
 
-In pre-thunder conditions CAPE values can range from a few hundreds up to thousands of $\frac{J}{kg}$, with maxima on the order of 5000-7000 kg$^{-1}$ \citep{ManualSynop}. The Storm Prediction Center of the National Oceanic and Atmospheric Administration (NOAA) divides CAPE values in four classes: "weak instability" (CAPE less than 1000 J kg$^{-1}$), "moderate instability" (CAPE between 1000-2500 J kg$^{-1}$), "strong instability" (CAPE from 2500-4000 J kg$^{-1}$) and "extreme instability" (CAPE greater than 4000 J kg$^{-1}$)(\citep{SPCNOAA}).
+The LCL is the height till which an air parcel follows a dry adiabat, when lifted upwards. Further lifting leads to condensation of the air parcel, which will then follow the wet adiabat \citep{Lin2007}. In other words, condensation releases latent heat, which warms the air parcel, so that an air parcel will continue to rise further due to its enhanced buoyancy with respect to its environment. The LCL hus depends on the moisture content of air. The LNB is the height at which the buoyancy of the air parcel equals the buoyancy of the surrounding air, so that the air parcel has lost its potential energy to rise further. As CAPE represents the potential energy of an air parcel, it can be read from a thermodynamic diagram, as proportional to the area between the LFC and LNB enclosed by the environmental temperature curve and the wet adiabat of the air parcel. A neccesarity for convection is that the air parcel is forced to the LFC, of which the amount of supplied energy is called the convective inhibition (CIN) \citep{Lin2007}.
 
-% The definition of CAPE does not include the existence of liquid water loading, entrainment, the vertical motions in the air or aerodynamical effects, which all decrease the value of CAPE. Therefore, in real world CAPE is ussualy an overestimation of the vertical instability and of updraft strenght {\citep{ManualSynop,SPCNOAA}}. As CAPE is  proportional to available energy for a rising parcel, it provides an estimate of maximal updraft strengt, W_max, in convective storms (\citep{SVRNOAA}):
+% (((Something about conditional instability % %From: http://www.zamg.ac.at/docu/Manual/SatManu/main.htm?/docu/Manual/
+% Not all situations with conditional instability are characterised by air parcels with CAPE. Thus, the moisture content of the air is important for knowing whether conditional instability actually contains the potential for parcels to become buoyant. In that case, an external source of energy must be supplied to the air mass to convert its potential instability into actual instability and lift the parcel through its condensation level to its Level of Free Convection (LFC) - that means, for instance, the change from potential instability to conditional instability. The amount of this supplied energy is known as the Convective Inhibition (CIN).
+% From the LFC to the Equilibrium Level (EL), the parcel accelerates vertically, drawing the energy for this acceleration from the CAPE. )))
 
+
+In pre-thunder conditions CAPE values can range from a few hundreds up to thousands of $\frac{J}{kg}$, with maxima on the order of 5000-7000 kg$^{-1}$ \citep{ManualSynop}. The Storm Prediction Center of the National Oceanic and Atmospheric Administration (NOAA) divides CAPE values in four classes: "weak instability" (CAPE less than 1000 J kg$^{-1}$), "moderate instability" (CAPE between 1000-2500 J kg$^{-1}$), "strong instability" (CAPE from 2500-4000 J kg$^{-1}$) and "extreme instability" (CAPE greater than 4000 J kg$^{-1}$)(\citep{SPCNOAA}). Studying CAPE is considered as an indicator of the possibility and the intensity of deep, moist convection \citep{ManualSynop}.
+
+Assuming zero horizontal advection, the maximum vertical velocity of an air parcel is reached when all the potential energy is released to kinetic energy \citet{Lin2007}, i.e.
 \begin{equation}
 W_max = \sqrt 2 CAPE
 \end{equation}
-CAPE is a central indicator of potential intensity of deep, moist convection. Surface based CAPE (sbCAPE) is .... , it overestimates instability for shallow moist layers, as it does not account for effects of vertical distribution of CAPE. The updrafts of supercells can nontheless be much stronger than indicated by CAPE, due to vertical shear effects \citep{Mccaul2001,SVRNOAA}.
+The definition of CAPE does not include the existence of liquid water loading, entrainment, the vertical motions in the air or aerodynamic effects, which all decrease the value of CAPE. Therefore, in real world CAPE is ussualy an overestimation of the vertical instability and of updraft strenght {\citep{ManualSynop,SPCNOAA}}. The updrafts of supercells can nontheless be much stronger than indicated by CAPE, due to vertical shear effects \citep{Mccaul2001,SVRNOAA}.
 
 
-((CAPE can also be calculated with starting integration level not being the LFC, but instead, either a fixed level (e.g. 850 hPa), a lifted condensation level (LCL) or a convective condensation level (CCL). \citep{ManualSynop}
-The estimates of maximum updraft strength (Wmax) based on CAPE are usually twice as high as in observed updrafts because of water loading and mixing effects. In well-organized convective storms, vertical velocity in updrafts are much closer to Wmax. \citep{SVRNOAA}))
+% ((CAPE can also be calculated with starting integration level not being the LFC, but instead, either a fixed level (e.g. 850 hPa), a lifted condensation level (LCL) or a convective condensation level (CCL). \citep{ManualSynop}
+% The estimates of maximum updraft strength (Wmax) based on CAPE are usually twice as high as in observed updrafts because of water loading and mixing effects. In well-organized convective storms, vertical velocity in updrafts are much closer to Wmax. \citep{SVRNOAA}))
 
-(((Something about conditional instability!
-%From: http://www.zamg.ac.at/docu/Manual/SatManu/main.htm?/docu/Manual/
-Not all situations with conditional instability are characterised by air parcels with CAPE. Thus, the moisture content of the air is important for knowing whether conditional instability actually contains the potential for parcels to become buoyant. In that case, an external source of energy must be supplied to the air mass to convert its potential instability into actual instability and lift the parcel through its condensation level to its Level of Free Convection (LFC) - that means, for instance, the change from potential instability to conditional instability. The amount of this supplied energy is known as the Convective Inhibition (CIN).
-From the LFC to the Equilibrium Level (EL), the parcel accelerates vertically, drawing the energy for this acceleration from the CAPE. )))
 
-\subsubsection{Wind shear}
+\subsubsection{Wind strenght and wind shear}
 
-Severe local storm are associated with pronounced shifts in wind speeds and/or direction with height: wind shear. This wind shear can give a storm a self-perpetuating character, as it permits the continual introduction of fresh and moist air into the system at the lowel-level developing edge and the venting of used air aloft while the downdraught remains separated from the updraughts \citep[p. 156]{Sumner1988}. Wind shear is therefore related to the lifetime of a storm (up to several hours). Some of these storm scan develop into larger storms delivering an hour or two of very intense precipitation at a point. The four types of these storms distinguished on the way of development are: supercell, multicell, a collection of numerous individual precipitation cells as f.e. squall-line storms and mesoscale convective complexes \citep[p. 156]{Sumner1988}.
+Severe local storms are associated with pronounced shifts in wind speeds and/or direction with height: wind shear. The four types of storms distinguished on the way of development are: supercell, multicell, a collection of numerous individual precipitation cells as f.e. squall-line storms and mesoscale convective complexes \citep[p. 156]{Sumner1988}. Some of these storms can develop into larger storms delivering an hour or two of very intense precipitation at a point. A storm can obtain a self-perpetuating character due to pronounced wind shear, as this permits the continual introduction of fresh and moist air into the system at the lowel-level developing edge and the venting of used air aloft, while the downdraught remains separated from the updraughts \citep[p. 156]{Sumner1988}. Wind shear is therefore related to the lifetime of a storm (up to several hours).
+(Side remark; here the use of the word storm, better in context?)
+Unfortunately we do have hourly observations of wind speed at higher levels for our time period of 58 years. Instead, we can study the horizontal wind speed at 10 m, and use this a partial indicator of wind shear. Higher wind speeds also lead to faster propagation of fronts and local showers over a station. Therefore, we would expect a higher intensity (precipitation sum over duration of precipitation within an hour) , and to a lower extent a higher hourly mean intensity (precipitation sum over an hour. In other words, changes in wind speed could influence the intensity of precipitation in two ways; (i) via storm development in the case of strong wind shear, and (ii) via faster propagation of precipitation systems over a station.
 
-\subsubsection{CCN}
-The presence of CCN’s is vital to cloud formation, and their concentration may have an impact on the likelihood or intensity of precipitation.   Many of the so called aerosols, very small particles or liquid droplets that are suspended in the air for a long time, form nucleus on which condensation can occur. Their size is on the order 0.1 to 1 micron and they originates from industrial pollution or natural sources as sea salt spraying or dimethylsuplhide emission from oceans \citep{Sumner1988}. The bigger the size of an aerosol or water droplet the lower the saturation vapour pressure above its surface, and thus the higher the preference to condensation compared to evaporation as it is then less curved, so bonding forces are stronger. Whether aerosols are hygroscopic also determines how easily condensation can take place. The concentration of aerosols over oceans and windward coast is small in this comparatively clean air environment, but their size is often large, so that precipitation-sized droplets may easily form. In contrary, the air over continental areas contains more nuclei from terrestrial sources, which have a wider range of sizes, resulting in larger minimum cloud thickness for shower development as moisture is spread among more and smaller aerosols.
+\subsubsection{Other important variables}
 
-\subsubsection{Topography}
+Three variables which are further important to explain changes in precipitation extremes, but not used in this research for different reasons, are (i) the distribution, type and size of cloud condensation nuclei (CCN's), (ii) the topography and (iii) the weather type. We will briefly describe their relationships, so we may suggest possible explanations of spatial differences, found in CH1 (REF CH1). Moreover, we can keep them in mind in the case we cannot explain changes in (extreme) precipitation by the changes in the aforementioned variables only.
 
-2 sentences
-Can explain maybe occurrence of   high extremes at Maastricht
-not in scope of this research; not enough stations to investigate the effect of topography.
-% Production of precipitation tied to a specific topographic barrier is called orographic precipitation. This type is is not spatially mobile and considerable amounts of precipitation may accumulate in restricted regions, namely on the windward side of the topographic barrier. The strongest orographic rainfalls are caused by a sustained and deep, moist flow against a relief barrier, so the magnitude is dependent on the local lower trospheric circulation and its stability. In temperate regions warm sectors in frontal depressions or mesocale systems can be moderately intensive, when uplifted by relief \citep{Sumner1988}. Although the magnitude and extent of orographic precipitation is governed  by the height and longitudinal extent of the relief barrier, even low hills of only tens of metres in height can lead to notable increases in precipitation \citep{Bergeron1968,Sumner1988}.
+First, the presence of CCN’s is vital to cloud formation, and their concentration may have an impact on the likelihood or intensity of precipitation. Many of the so called aerosols, very small particles or liquid droplets that are suspended in the air for a long time, form nucleus on which condensation can occur. Their size is on the order 0.1 to 1 micron and they originates from industrial pollution or natural sources as sea salt spraying or dimethylsuplhide emission from oceans \citep{Sumner1988}. The bigger the size of an aerosol or water droplet, the lower the saturation vapour pressure above its surface. Therefore, the higher the preference to condensation compared to evaporation as it is then less curved (REF CH TB), so bonding forces are stronger. Whether aerosols are hygroscopic also determines how easily condensation can take place. The concentration of aerosols over oceans and windward coast is small in this comparativly clean air environment, but their size is often large, so that precipitation-sized droplets may easily form. In contrary, the air over continental areas contains more nuclei from terrestrial sources, which have a wider range of sizes, resulting in larger minimum cloud thickness for shower development as moisture is spread among more and smaller aerosols.
+% Describe trend in CCN with climate change??
+We do not posses data about CCN's distribution and properties Therefore, we can not take into account this type of data into study.
+Overall, the distribution, size and type of CCN is important for cloud formation, and indirectly for precipitation production. Although data about CCN's is not used in this thesis, we keep mind trends ..
+
+Second, topography plays an important role in the distribution and intensity of precipitation. At temperate latitudes warm sectors in frontal depressions or mesocale systems can be moderately intensive, when uplifted by relief \citep{Sumner1988}. Although the enhanced magnitude and extent of precipitation due to relief is governed by the height and longitudinal extent of the relief barrier, even low hills of only tens of metres in height can lead to notable increases in precipitation \citep{Bergeron1968,Sumner1988}. Even for  the Netherlands, where gradients are relatively small, notable precipitation increases are detected by \citet{Maat2013} for the area of the Veluwe. Even though, the topography in the Veluwe has an maximum elevation of only just over 100 m and moderate steepness. The differences in monthly domain-averaged precipitation sums between the Veluwe and its surroundings, are 17\% in winter and 10\% in summer. Next to the Veluwe, the southern part of the country also has a higher elevation with a maximum of approximately 325 m. In our study, the station at Maastricht has the highest elevation (114 m see REF CH Method). This might explain that the highest precipitation intensities were measured at station Maastricht
+However, we do not have enough stations with spatial differences in topography, to analyse the effect of topography on the intensity and occurrence of precipitation. Moreover, as topographic gradients are not expected to change significantly in time, this is not an appropriate variable to study trends in hourly precipitation extremes. In short, even small elevation differences in the Netherlands can lead to significant spatial differences in hourly precipitation extremes. On the one hand we are interested in trends, and thus, these can not be explained by topographic gradients, which are constant for the time scale we look at. On the other hand we can reason why we observed the highest extreme intensities at Maastricht (REF CH1)
+
+ % Production of precipitation tied to a specific topographic barrier is called orographic precipitation. This type is is not spatially mobile and considerable amounts of precipitation may accumulate in restricted regions, namely on the windward side of the topographic barrier. The strongest orographic rainfalls are caused by a sustained and deep, moist flow against a relief barrier, so the magnitude is dependent on the local lower trospheric circulation and its stability.  \citep{Sumner1988}.
 % Factors of importance to orographic precipitation are: 1) Relative humidity and ϑe (equivalent potential temperature) and ϑw (wet-bulb potential temperature) of low-level air, 2) slope of the hill perpendicular tot he mountain, 3) strength of the wind component normal to the mountain, 4) depth of the feeder cloud, 5) precipitation rate from the feeder cloud, 6) rate of production condensate in the feeder cloud, 7) cloud water content and 8) rate of accretion or washout by the precipitation emanating from the seeder cloud \citep{Cotton1989}.
 
 
-\subsubsection{Weather codes}
-Human-made visual observations indicated by "present weather" (ww) codes are available in our metadata for every station. This code, which is approved by the World Meteorological Organization, 100 different weather type are distinquised by two-digit numbers (0-99)(see %\citet{Dai2001} for a complete list). Heavy precipitation is related to certain conditions in the cloud and at the surface. For example convectional precipitation, which is often intense in nature, is mostly produced by the Bergeron-Findeisen process. This stems from the considerable vertical development of the clouds (therefore exceeding the 0 degrees C isotherm), so that very intense precipitation (sometimes in form of hail or ice pellets) is resultant. The majority of severe local storms associated with self-perpetuating convectional systems, are characterized by significant hail production \citep{Sumner1988}. Conditions of hail and thunderstorms are listed here because of their simultaneous occurence with heavy precipitation.
-
-\paragraph{Hail}
-% For the production of hail deep and strong convection is required. The following criteria can be used as a guideline for hail prediction: (1) cumulonimbus tops are colder than $-20^{\circ}$C and (2) the temperature path curve of the parcel is $4^{\circ}$C warmer than the environment curve just in between the LFC and EL and this gives cloud tops of 4500 meter. Another method, based on parcel curve, is: (1) measure the temperature difference at the point where the curve reaches $-20^{\circ}$C with the environment temperature. (2) if this difference is $\ge 5^{\circ}$C forecast hail, between $5-2.5^{\circ}$C forecast soft hail or rain and $\le 2.5^{\circ}$C$ forecast rain \citep{Brown1963,Ludlam1980,MET1997}.
-
-\paragraph{Lightning}
-Lightning occurs in vigorous convective clouds, in which ice particles and hail are thought be key players in charge generation. The majority of the lightning discharge originates from thunderstorms extending above the freezing level. However, for all-water clouds there are also well documented UK observations of lightning events \citep{Atkinson1989,Lee1986,Mason1972,MET1997}.
+Third, human-made visual observations indicated by "present weather" (WW) codes are available in our metadata for every station. With help of this code, which is approved by the World Meteorological Organization, 100 different weather type are distinquised by two-digit numbers (0-99)(see \citet{Dai2001} for a complete list). Heavy precipitation is related to certain conditions in the cloud and at the surface. Two weather types, differentiated on WW, often occuring simultaneously with intense precipitation are (i) hail, and (ii)  thunderstorms. Firstly, the majority of severe local storms associated with self-perpetuating convectional systems, are characterized by significant hail production \citep{Sumner1988}.  For the production of hail, deep and strong convection is required. Convectional precipitation, which is often intense in nature, is mostly produced by the Bergeron-Findeisen process. This stems from the considerable vertical development of the clouds (therefore exceeding the $0^\cdot$C isotherm), so that very intense precipitation (sometimes in form of hail or ice pellets) is resultant. %The following criteria can be used as a guideline for hail prediction: (1) cumulonimbus tops are colder than $-20^{\circ}$C and (2) the temperature path curve of the parcel is $4^{\circ}$C warmer than the environment curve just in between the LFC and EL and this gives cloud tops of 4500 meter. Another method, based on parcel curve, is: (1) measure the temperature difference at the point where the curve reaches $-20^{\circ}$C with the environment temperature. (2) if this difference is $\ge 5^{\circ}$C forecast hail, between $5-2.5^{\circ}$C forecast soft hail or rain and $\le 2.5^{\circ}$C$ forecast rain \citep{Brown1963,Ludlam1980,MET1997}.
+Secondly, lightning occurs in vigorous convective clouds, in which ice particles and hail are thought be key players in charge generation. The majority of the lightning discharge originates from thunderstorms extending above the freezing level. However, for all-water clouds there are also well documented UK observations of lightning events \citep{Atkinson1989,Lee1986,Mason1972,MET1997}. Although, we have hourly measurements of weather codes, we do not use them in this study, because of two reasons. First, we want to find a reason for the changing intensity of heavy precipitation and frequency of wet hours. The weather codes indicates the weather types related to heavy precipitation, but not the causes of it. Therefore, we will not be able to explain the observed trends by trends in weather types. Nontheless, a large vertical extent is needed for hail production, but in fact we already have CAPE as a measurement for vertical velocity and potential strenght of convection. Second, in the course of time visual measurements of weather codes are automized, and therefore since then the WW's are computed from different variables, among which intensity. Differentiation between variables on basis of the automatic WW measurements, would not have a physical meaning when attempting to explain differences in intensity.
 
 
-
-\subsection{Link to spatial and seasonal variability (CH1)}
-
-
-Interesting CH1 local/seasonal variability ? still unexplained?
-
-From CH1:
-Far more likely is that the slight higher (summer) temperature and the relief {REF method chapter} present in Limburg stimulates vertical motion (updrafts), which leads to more local and intense rain events. We will test this relation by analysing the correlation of extreme precipitation with CAPE.
-
-No CAPE differences , but altitude intensity relation?
 
 \subsection{Identification of relationships}
 
-In this chapter we start with a study of correlations. Next,the type of relationship (e.g. linear or non-linear) is studied, thereby we account for the influence of how the data is distributed. Our analysis is followed by plotting and interpreting lags. To find the best model for precipitation data the most promising variables are combined in multiregression plots. Lastly, we compare trends in the key variable(s) to the observed trend in hourly intensity.
-Note, in this chapter we include duration data to find the true intensity (I). Here, P is the hourly precipitation sum.
-
+In this part we try to identify relationships explaining the trends found in Chapter 2 (REF CH2). First, we start with a study of correlations. Next, we compare trends in the key variable(s) to the observed trends in hourly intensity. Lastly, the type of relationship (e.g. linear or non-linear) is studied, thereby we account for the influence of how the data is distributed. %Our analysis is followed by plotting and interpreting lags. To find the best model for precipitation data the most promising variables are combined in multiregression plots.
+(Side remark: misschien dubbelop? Ik heb in het begin van het hoofdstuk al de indeling verteld )
+Note, in this chapter we include duration data to find the true precipitation intensity (PI). This allows us even to distinguish between hours with the same precipitation sum, of which one is very intense and short-lasting, and the other less intense and long-lasting. Here, P is the hourly mean precipitation intensity.
 
 \subsubsection{Correlation matrices}
 \label{subsubsec:correlationmatrices}
-
-To have an easy and clear overview of the strength of possible relationships between multiple variables, we plotted heatmaps of the correlation coefficients calculated with either the Pearson or the Spearman method.
 
 <<Mechanism_dt>>=
 load("./inst/tussenStap/hrKNMI.rda")
@@ -302,6 +294,7 @@ CAPE2d <- data2d(Compare,STN1=0)
 CAPE2d <- within(CAPE2d, d2[d2==0] <- 4200)
 save(CAPE2d,file="./inst/tussenStap/CAPE2d.rda")
 
+load("./inst/tussenStap/CAPE2d.rda")
 CAPEexclNA <- CAPE2d[, list(sbCAPE = sbCAPE[!is.na(sbCAPE)]),by=d2]
 CAPEexclNA <- CAPEexclNA[,list(CAPEmax2d = max(sbCAPE)),by=d2]
 allmax2d <- CAPE2d[, list(Pmax2d=max(P), Imax2d=max(I),Tmax2d=max(T),TDmax2d=max(TD),RHmax2d=max(RH),FHmax2d=max(FH),DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)]),by=d2]
@@ -309,6 +302,7 @@ allmax2d <- CAPE2d[, list(Pmax2d=max(P), Imax2d=max(I),Tmax2d=max(T),TDmax2d=max
 #allmax2d[,yr_Pmean := mean(Pmax2d),by=Year]
 save(allmax2d, file="./inst/tussenStap/allmax2d.rda")
 
+load("./inst/tussenStap/allmax2d.rda")
 #Merge set for which there is max sbCAPE, from 4173 --> 4164 data points
 Allmax2d <-merge(CAPEexclNA,allmax2d,by="d2")
 save(Allmax2d, file="./inst/tussenStap/Allmax2d.rda")
@@ -335,68 +329,6 @@ sp_corr_max2d <- round(cor(Allmax2d_mat,method="spearman"), 2)
 # ggplot(cordata, aes(x=Var1, y=Var2, fill=value))+   geom_tile() + xlab("") + ylab("")
 # or
 @
-
-
-\begin{figure}[H]
-  \centering
-  \textbf{Heat maps}\par\medskip
-  \begin{minipage}{0.48\textwidth}
-<<PHeatmap_all>>=
-# All hours
-ggcorrplot(p_corr, hc.order = FALSE,type = "lower",lab=TRUE)
-@
-    \subcaption{Pearson: All hours}
-    \label{fig:Heatmap_allp}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.48\textwidth}
-<<PHeatmap_maxi>>=
-# Maxima a day
-ggcorrplot(p_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
-@
-    \subcaption{Pearson: Maxima}
-    \label{fig:Heatmap_maxip}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.48\textwidth}
-<<SPHeatmap_all>>=
-# All hours
-ggcorrplot(sp_corr, hc.order = FALSE,type = "lower",lab=TRUE)
-@
-    \subcaption{Spearman: All hours}
-    \label{fig:Heatmap_allsp}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.48\textwidth}
-<<SPHeatmap_maxi>>=
-# Maxima a day
-ggcorrplot(sp_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
-@
-    \subcaption{Spearman: Maxima}
-    \label{fig:Heatmap_maxisp }
-  \end{minipage}
-  \caption{Heatmap consisting of correlation coefficients of the variables: intensity (I), wind strength (FH), measure of relative humidity (RH), hourly precipitation sum (P), temperature(T) and dewpoint temperature(TD). The heatmaps are computed according to the Pearson method (a,b) or the Spearman approac (c,d), for all wet hours (a,c) and daily maxima of wet days (b,d). Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
-\end{figure}
-
-<<PHeatmap_max2d>>=
-# Maxima a day
-ggcorrplot(p_corr_max2d, hc.order = FALSE,type = "lower",lab=TRUE)
-@
-
-<<SPHeatmap_max2d>>=
-# Maxima a day
-ggcorrplot(sp_corr_max2d, hc.order = FALSE,type = "lower",lab=TRUE)
-@
-
-
-Explain all wet hour correlations,
-explain difference Pearson/ Spearman
-
-The highest correlations between the maximum hourly precipitation sum of wet-days only and the other variables, are those of maxima in T (0.412), TD (0.402). Also contributing, but less importance are correlation of FHmax(0.23) and RHmax (0.171) with Pmax. For intensity the relation with Tmax is even a bit higher (0.423), but for TD, FHmax and RHmax lower (respectievely 0.384,0.175 and 0.088).
-
-Eplain all 2day maxima
-
-From section \ref{subsubsec:CAPE} can be deduced that CAPE, as a representative for the strength of vertical motion, is an important factor for convective precipitation. Due to the different length and resolution of this dataset we plot an extra heat map consisting of CAPE values and I, P, T and the number of CAPE measurements a day (N). We included T to investigate in more details the indirect relationship of T with P or I via CAPE.
 
 % Relation to CAPE
 % 1) Daily maximum to daily max P and I
@@ -465,11 +397,104 @@ Cmat <- as.matrix(CAPE_corr[2:6,1])
 dimnames(Cmat) <- list(c("Tmax","Psum","Pmax","Imax","N"),c("CAPEmax"))
 @
 
+To have an easy and clear overview of the strength of possible relationships between multiple variables, we plotted heatmaps of the Pearson correlation coefficients. The Pearson correlation coefficient is widely used statistics giving a measure of the strength of a linear relationship \citep{Zou2003}. The heatmaps show all possible relationship between the following 7 variables: PI, I, T, Td, FH (10m-wind strength, meaned as last 10 minutes of an hour), RH (relative humidity) and CAPE. For all variables, except for CAPE, we combined the measurements of the five stations, in order to clarify the relationships. Next to comparison of all hours, we also looked at the correlation coefficients for the 2-day maxima. For CAPE only measurements of station De Bilt are available (REF CH method). Next to a different spatial resolution, CAPE also has a different temporal resolution. Therefore, we plotted the relationships with CAPE in a seperate heatmap. As CAPE is sometimes measured once a day, is influenced by precipitation (REF CH TB?) and can differ a lot on a day, we compared it in two different ways with precipitation; (i) to the cumulative precipitation sum in the hours following a CAPE measurements, (ii) the 2-day maximum in CAPE. We take a 2-day maxima,
+(maybe include duration of precipitation within a hour?)
 
+% From section \ref{subsubsec:CAPE} can be deduced that CAPE, as a representative for the strength of vertical motion, is an important factor for convective precipitation. Due to the different length and resolution of this dataset we plot an extra heat map consisting of CAPE values and I, P, T and the number of CAPE measurements a day (N). We included T to investigate in more details the indirect relationship of T with P or I via CAPE.
+
+% CHECK WET 2-DAY ONLY???
+\begin{figure}[H]
+  \centering
+  \textbf{Heat maps}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+<<PHeatmap_all>>=
+# All hours
+ggcorrplot(p_corr, hc.order = FALSE,type = "lower",lab=TRUE)
+@
+    \subcaption{All variables, except CAPE, for all hours}
+    \label{fig:Heatmap_allp}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
 <<PHeatmap_CAPE>>=
 ggcorrplot(CAPE_corr, hc.order = TRUE,type = "lower",lab=TRUE) #, p.mat=p.mat, insig="blank"
 #heatmap(CAPE)
 @
+    \subcaption{CAPE}
+    \label{fig:Heatmap_allp}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+<<PHeatmap_max2d>>=
+# Maxima a day
+ggcorrplot(p_corr_max2d, hc.order = FALSE,type = "lower",lab=TRUE)
+@
+    \subcaption{2-day maxima for all variables}
+    \label{fig:Heatmap_max2d}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+<<PHeatmap_max2d>>=
+# Maxima a day
+ggcorrplot(p_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
+@
+    \subcaption{Daily maxima for all variables}
+    \label{fig:Heatmap_max}
+  \end{minipage}
+\caption{Heatmap consisting of Pearson correlation coefficients of the variables: hourly mean precipitation intensity (P), precipitation intensity (PI), wind strength (FH), relative humidity (RH), temperature(T) and dewpoint temperature(TD). The heatmaps are computed for all wet hours for all variables, except CAPE (a), for CAPE with other variables (b), for 2-day (c) and daily (d) maxima of all variables. Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
+\end{figure}
+
+Explain Pearson correlations, all wet hours
+Explain 2-day maxima (look at extremes)
+
+To see whether we get a stronger signal if we look at daily maxima, two times higher resolution, but lower extremes..
+and wet-day only daily maxima ..
+
+% The highest correlations between the maximum hourly precipitation sum of wet-days only and the other variables, are those of maxima in T (0.412), TD (0.402). Also contributing, but less importance are correlation of FHmax(0.23) and RHmax (0.171) with Pmax. For intensity the relation with Tmax is even a bit higher (0.423), but for TD, FHmax and RHmax lower (respectievely 0.384,0.175 and 0.088).
+
+
+However, what if non-linear relationships???
+Plot ...
+
+
+<<Plotting_points_allvariables,cache=TRUE>>=
+load("./inst/tussenStap/CAPE_day.rda")
+load("./inst/tussenStap/M_max.rda")
+M_CAPE <- subset(CAPE_day,select=c(CAPEmax,Date))
+M_allmax <- merge(M_max,M_CAPE,by="Date")
+M_trial <- subset(M_allmax, select=c("Tmax", "TDmax","CAPEmax","FHmax","Pmax"))
+plot(M_trial)
+@
+
+
+Then talk about assumptions ... ; we saw in CH2 non-normal distribution of P and I ,
+while we need two normal distributed variables to not violate assumption for Pearson.
+
+Therefore, use of Spearman
+
+\begin{figure}[H]
+  \centering
+  \textbf{Spearman Heat maps}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+<<SPHeatmap_all>>=
+# All hours
+ggcorrplot(sp_corr, hc.order = FALSE,type = "lower",lab=TRUE)
+@
+    \subcaption{Spearman: All hours}
+    \label{fig:Heatmap_allsp}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+<<SPHeatmap_maxi>>=
+# Maxima a day
+ggcorrplot(sp_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
+@
+    \subcaption{Spearman: Maxima}
+    \label{fig:Heatmap_maxisp }
+  \end{minipage}
+  \caption{Heatmap consisting of correlation coefficients of the variables: intensity (I), wind strength (FH), measure of relative humidity (RH), hourly precipitation sum (P), temperature(T) and dewpoint temperature(TD). The heatmaps are computed according to the Pearson method (a,b) or the Spearman approac (c,d), for all wet hours (a,c) and daily maxima of wet days (b,d). Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
+\end{figure}
+
 
 <<SpHeatmap_CAPE>>=
 ggcorrplot(CAPE_spcorr, hc.order = TRUE,type = "lower",lab=TRUE) #, p.mat=p.mat, insig="blank"
@@ -481,6 +506,9 @@ Explain what kind of correlation for CAPE, and cumsum gives 0.0803031
 ggcorrplot(Cmat,lab=TRUE)
 @
 
+Explain difference Pearson/ Spearman
+
+
 \subsection{Trends in key variables}
 
 quantile regression time of normal and 2day max in time
@@ -488,6 +516,16 @@ quantile regression time of normal and 2day max in time
 Plot distribution
 --> normal? LS fitting (T and TD)
 --> lognormal/not-normal --> quantile regression (CAPE, FH?)
+
+four plots
+T in time
+Td in time
+FH in time
+CAPE in time
+
+with p-table and rates
+
+
 
 <<>>=
 # All max2d (except CAPE --> as it has other resolution)
@@ -522,15 +560,14 @@ QR_all(allmax2d)
 #ggplot(hrKNMI,aes(x=Date,y=TD)) + geom_quantile(formula=y~Date,quantiles=c(0.25,0.50,0.75,0.95))
 @
 
-\subsubsection{Plotting key variables}
+\subsubsection{Changing distribution or relations}
+
+% IMPROVE, two periods
+
 In this part we start with a coarse way of observing the different relationships. In Figure ... all variables are plotted against each other, which already hint on whether a relationship is likely and what kind of relationship it is. The clear relationship between T and TD (dewpoint temperature) is straight forward; following the definition of dew point temperature itself for moist air (RH$>50$\%), $Td=T-(\frac{100-85}{5}$) \citep{Wallace2006}. As the data considered in this chapter only contains the wet hours, most of them will fulfill the assumption of a moist air and therefore a linear line is shown. The slope of a linear line between the hourly precipitation sum (P) and the intensity (I) depend on the duration, D ($I*D=P$). Next to these more linear features, some of the subplots (T, TD, RH and FH versus P or I) demonstrate non-linear behaviour. The relationships between relative humidity (RH) and FH (wind strength) mutually and with TD or T are less clear and as we focuss on explaining precipitation changes we will not cover these relationships in much more depth.
 
 <<Wind>>=
 #Code to include wind (is later used to make subplots per wind regime)
-load("./inst/tussenStap/CAPE_day.rda")
-load("./inst/tussenStap/M_max.rda")
-M_CAPE <- subset(CAPE_day,select=c(CAPEmax,Date))
-M_allmax <- merge(M_max,M_CAPE,by="Date")
 # Variable dividing data into 8 windregimes
 M_allmax[, Wind_maxP := 0]
 M_allmax <- within(M_allmax, Wind_maxP[(DD_maxP>337)|(DD_maxP<23)] <- "N")
@@ -551,10 +588,7 @@ M_allmax <- within(M_allmax, W_maxP[(Wind_maxP=="S")|(Wind_maxP=="SW")] <- "S & 
 save(M_allmax,file="./inst/tussenStap/M_allmax.rda")
 @
 
-<<Plotting_points_allvariables,cache=TRUE>>=
-M_trial <- subset(M_allmax, select=c("Tmax", "TDmax","CAPEmax","FHmax","Pmax"))
-plot(M_trial)
-@
+
 
 For the most important factors (maxima in T, TD and CAPE) regarding the correlation heat maps (\ref{subsubsec:correlationmatrices}) we plotted the relationship between the daily maximum hourly precipitation sums and the maxima of other variables as point clouds. As the type of relationship can be influenced by how the data is distributed, we also plotted the distribution. We differentiated between summer and winter to have a better understanding of seasonal differences in precipitation explained by the key variables.
 
@@ -932,36 +966,43 @@ The fewer the data points the lower the chance for very high extremes.
 
 --> key variables
 
-\subsubsection{Lead-lag relationships}
-
-To investigate whether these positive relationships between maxima in hourly precipitation sums and T, TD and CAPE are lead-lag relationships, we study the cross-correlation figures of the different combinations.
-Cross-correlation of univariate series with lags
-
-Dewpoint temperature
-
-<<lagTD>>=
-lagTD <- hrKNMI[, list(Pmax=max(P),TDmax=max(TD),TD_HH=HH[which.max(TD)],P_HH=HH[which.max(P)]),by=list(Date,Season)]
-lagTD <- lagTD[Pmax>0]
-lagTD[, lag := P_HH-TD_HH]
-lagTD[lag==0][, cor(TDmax,Pmax)]
-ggplot(lagTD) + geom_histogram(aes(x=lag,group=Season),binwidth=1,center=0) + geom_vline(xintercept = 0,colour="red",linetype=2) + facet_wrap(~Season)
-
-laglist <- lagTD[, list(cor = cor(TDmax,Pmax), N = .N), by=list(lag,Season)][order(-N)][N>200]
-@
-
-<<Plot_lagTD>>=
-ggplot(laglist,aes(x=lag,y=cor)) + geom_point() + facet_wrap(~Season) + ggtitle("Lead-lag max TD vs P (>0, Pt+n and TDn)")
-@
-
-Lag of Pmax and Tmax on wet days
-
-Include leag lag plots
-
-\subsubsection{Quantile regression}
-??
-Quantile regression of precipitation on key variables
+%' \subsubsection{Lead-lag relationships}
+%'
+%' To investigate whether these positive relationships between maxima in hourly precipitation sums and T, TD and CAPE are lead-lag relationships, we study the cross-correlation figures of the different combinations.
+%' Cross-correlation of univariate series with lags
+%'
+%' Dewpoint temperature
+%'
+%' <<lagTD>>=
+%' lagTD <- hrKNMI[, list(Pmax=max(P),TDmax=max(TD),TD_HH=HH[which.max(TD)],P_HH=HH[which.max(P)]),by=list(Date,Season)]
+%' lagTD <- lagTD[Pmax>0]
+%' lagTD[, lag := P_HH-TD_HH]
+%' lagTD[lag==0][, cor(TDmax,Pmax)]
+%' ggplot(lagTD) + geom_histogram(aes(x=lag,group=Season),binwidth=1,center=0) + geom_vline(xintercept = 0,colour="red",linetype=2) + facet_wrap(~Season)
+%'
+%' laglist <- lagTD[, list(cor = cor(TDmax,Pmax), N = .N), by=list(lag,Season)][order(-N)][N>200]
+%' @
+%'
+%' <<Plot_lagTD>>=
+%' ggplot(laglist,aes(x=lag,y=cor)) + geom_point() + facet_wrap(~Season) + ggtitle("Lead-lag max TD vs P (>0, Pt+n and TDn)")
+%' @
+%'
+%' Lag of Pmax and Tmax on wet days
+%'
+%' Include leag lag plots
 
 
+
+
+\subsection{Link to spatial and seasonal variability (CH1)}
+
+
+Interesting CH1 local/seasonal variability ? still unexplained?
+
+From CH1:
+Far more likely is that the slight higher (summer) temperature and the relief {REF method chapter} present in Limburg stimulates vertical motion (updrafts), which leads to more local and intense rain events. We will test this relation by analysing the correlation of extreme precipitation with CAPE.
+
+No CAPE differences , but altitude intensity relation?
 
 \printbibliography
 
