@@ -112,8 +112,10 @@ ggplot(Nmean) + geom_bar(aes(x=Year,y=Nmean),stat="identity") + theme_bw()
 
 The variables investigated this thesis, and information about their unit, resolution and measurement instrument, are listed in Table \ref{tab:typeofdata}. Precipitation intensity is defined as the mean hourly intensity in mm hr$^{-1}$, so the accumulated rain amount divided by 1 hour. CAPE is defined as the amount of energy available for free convection, and computed as the amount of work done by the buoyancy force in a parcel of air that is lifted from the lifting condensation level to the level of no buoyancy \citep{Lin2007},
 \begin{equation}
-CAPE = \int^{z_{LNB}}_{z_{LFC}} g(\frac{T-\bar{T}}{\bar{T}})dz
-\end{equation}.
+CAPE = \int^{z_{LNB}}_{z_{LCL}} g(\frac{T-\bar{T}}{\bar{T}})dz
+\end{equation}
+In this equation is $T$ the temperature of the air parcel (the temperature inside the radiosonde), and $\bar{T}$ is the temperature of the environment. Further, g is the gravitational acceleration and $z_LNB$ the height at the level of no buoyancy and $z_LCL$ the height of the lifted condensation level.
+
 The weather code is determined by considering the air and wet bulb temperature, meteorological sight, relative humidity, cloud coverage, precipitation type and intensity, wind velocity and number of lightning strikes within 0-15 and 15-20 km distance. For more information about the instruments involved and the exact conditions for every code, see \citet[Chapter 14]{KNMIhandboek2000}
 \begin{table}[ht]
   \centering
@@ -454,6 +456,7 @@ Not worked out yet; includes explanation correlations (Pearson, Spearman), regre
 % % http://link.springer.com.proxy.library.uu.nl/article/10.1007/s10459-010-9222-y/fulltext.html
 % % --> also for non-normal data Pearson can be used.
 %
+% Use Spearman : Spearman rank correlation is a non-parametric test that is used to measure the degree of association between two variables.  It was developed by Spearman, thus it is called the Spearman rank correlation.  Spearman rank correlation test does not assume any assumptions about the distribution of the data and is the appropriate correlation analysis when the variables are measured on a scale that is at least ordinal. Assumptions; Spearman rank correlation test does not make any assumptions about the distribution. The assumptions of Spearman rho correlation are that data must be at least ordinal and scores on one variable must be montonically related to the other variable. from: http://www.statisticssolutions.com/correlation-pearson-kendall-spearman/
 % But difference between Pearson and Spearman says something about linearity vs monotone increase of trends
 % % From:http://www.gene-quantification.org/artusi-corr-2002.pdf,
 % % http://www.degruyter.com.proxy.library.uu.nl/dg/viewarticle.fullcontentlink:pdfeventlink/$002fj$002fquageo.2011.30.issue-2$002fv10117-011-0021-1$002fv10117-011-0021-1.pdf?t:ac=j$002fquageo.2011.30.issue-2$002fv10117-011-0021-1$002fv10117-011-0021-1.xml

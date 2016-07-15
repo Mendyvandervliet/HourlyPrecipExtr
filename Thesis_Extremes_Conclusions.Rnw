@@ -45,12 +45,13 @@ Duplicates?? maybe better ...  Chance on duplicate is ...
 How strong is the significance at 95\% confidence level?
 
 Opportunities:
-frequency of wet hours -->  decreases? does then the amount of wet events decrease or do the events become shorter??
+CH2 frequency of wet hours -->  decreases? does then the amount of wet events decrease or do the events become shorter??
 impacting events --> on basis of thresholds, for significance more data is needed, and duration has to be taken into account.
-
+CH3  CAPE > CIN condition, use CIN. p. 245 of Lin2007
 
 Threats:
-
+winter and summer,  --> convective and stratiform, but hard to disentangle without radar/synnoptic observations
+Weather code  --> ,but since ... automatic ; also based on intesity . Not distinquisable on temperature as we want to study the relation of P with T for the different types
 
 
 \chapter{Conclusions}
