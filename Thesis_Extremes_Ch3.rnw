@@ -54,7 +54,7 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 @
 
 
-\chapter{Data}
+%\chapter{Data}
 
 <<getdata,cache=TRUE>>=
 # How to get right file?
@@ -94,7 +94,7 @@ to find the most promising variables for explaining trends in precipitation extr
 
 \section{Detection of key variables}
 
-\subsection{Theory}
+\subsection{Theory} \label{subsec:theory}
 In this section we describe the relation of multiple variables to (extreme) precipitation. These are temperature, relative humidity, dewpoint temperature, convective available potential energy, wind strenght and wind shear, cloud condensation nuclei, topography and weather code.
 
 \subsubsection{Temperature}
@@ -186,7 +186,7 @@ To investigate the change of the water vapor pressure with increasing temperatur
 
 % (Reminding that $RH = e/e_s$, we can investigate what the percential change in relative humidity is for the whole temperature range for 1 degree Celsius increase.)
 
-Dewpoint temperature is a widely used measure for the amount of moisture in the air \citep{Lawence2005}. The dewpoint temperature (Td) is the temperature to which air at initial temperature and pressure must be cooled isobarically to become saturated, and can be expressed in terms of the vapor pressure $e_s(Td) = e(t)$ \citep{Lawrence2005}. An expression of the dewpoint temperature in terms of relative humidity is,
+Dewpoint temperature is a widely used measure for the amount of moisture in the air \citep{Lawrence2005}. The dewpoint temperature (Td) is the temperature to which air at initial temperature and pressure must be cooled isobarically to become saturated, and can be expressed in terms of the vapor pressure $e_s(Td) = e(t)$ \citep{Lawrence2005}. An expression of the dewpoint temperature in terms of relative humidity is,
 \begin{equation}
 T_d = T \left[ 1- \frac{T ln(\frac{RH}{100})}{\frac{L_v}{R_v}}  \right]^{-1}
 \end{equation}
@@ -195,7 +195,7 @@ which can rewritten to
 T_d = \frac{T} {1- \frac{T ln(\frac{RH}{100})}{L_v R_v}}
 \end{equation}
 
-When relative humidity is assumed to be constant in time \citep{Pall2007} and the temperature rises, the numerator will increase, the term $\frac{T ln(\frac{RH}{100})}{L_v R_v}$ will increase, so that the denumerator (1- term \uparrow) will decrease. As the change in Td is the product of an increase in the numerator and a decrease in the denumerator, Td will increase %(! maybe more sources)
+When relative humidity is assumed to be constant in time \citep{Pall2007} and the temperature rises, the numerator will increase, the term $\frac{T ln(\frac{RH}{100})}{L_v R_v}$ will increase, so that the denumerator ($1-$ term $\uparrow$) will decrease. As the change in Td is the product of an increase in the numerator and a decrease in the denumerator, Td will increase %(! maybe more sources)
 So indeed, the atmospheric moisture, indicated by Td, will rise under constraint of constant relative humidity and rising temperature.
 
 
@@ -265,7 +265,7 @@ Secondly, lightning occurs in vigorous convective clouds, in which ice particles
 
 In this part we try to identify relationships explaining the trends found in Chapter 2 (REF CH2). First, we start with a study of correlations. Next, we compare trends in the key variable(s) to the observed trends in hourly intensity. Lastly, the type of relationship (e.g. linear or non-linear) is studied, thereby we account for the influence of how the data is distributed. %Our analysis is followed by plotting and interpreting lags. To find the best model for precipitation data the most promising variables are combined in multiregression plots.
 (Side remark: misschien dubbelop? Ik heb in het begin van het hoofdstuk al de indeling verteld )
-Note, in this chapter we include duration data to find the true precipitation intensity (PI). This allows us even to distinguish between hours with the same precipitation sum, of which one is very intense and short-lasting, and the other less intense and long-lasting. Here, P is the hourly mean precipitation intensity.
+Note, in this chapter we include duration data to find the true precipitation intensity (PI). This allows us even to distinguish between hours with the same precipitation sum, of which one is very intense and short-lasting, and the other less intense and long-lasting. Here, P is the hourly precipitation sum.
 
 \subsubsection{Correlation matrices}
 \label{subsubsec:correlationmatrices}
@@ -274,15 +274,16 @@ Note, in this chapter we include duration data to find the true precipitation in
 load("./inst/tussenStap/hrKNMI.rda")
 # Create datatable of all wet hours and corresponding metadata (P, I, Temperature, dewpoint temp., P, U)
 # create data table to study relation P/I of wet hours with other variables
-M <- hrKNMI[P>0][, list(P=P, I=I,T, TD, RH=RH,FH=FH)]
+M <- hrKNMI[P>0][, list(P=P, PI=I,DR=DR,T, TD, RH=RH,FH=FH)]
 # create data table to study relation max P/I with max in other variables
-M_max <- hrKNMI[, list(Pmax=max(P), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(RH),FHmax=max(FH),DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)]),by=list(Date,Season)]
+M_max <- hrKNMI[, list(Pmax=max(P), PImax=max(I),DR_maxP=DR[which.max(P)], Tmax=max(T), T_maxP=T[which.max(P)],TDmax=max(TD),TD_maxP=TD[which.max(P)],RHmax=max(RH),FHmax=max(FH),FH_maxP=FH[which.max(P)],DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)]),by=list(Date,Season)]
 M_max <- M_max[Pmax>0]  #only wet days
 save(M_max,file="./inst/tussenStap/M_max.rda")
-M_maxi <- subset(M_max, select=c(Pmax, Imax, Tmax, TDmax,RHmax,FHmax))
+# M_maxi <- subset(M_max[!is.na(FHmax)], select=c(Pmax, Imax,DR_maxP, Tmax,T_maxP, TDmax,TD_maxP,RHmax,FHmax,FH_maxP))
+M_maxi <- subset(M_max[!is.na(FHmax)], select=c(Pmax, PImax,Tmax,TDmax,RHmax,FHmax))#,DR_maxP
 @
 
-<<d2>>=
+<<d2,cache=TRUE>>=
 load("./inst/tussenStap/data2d.rda")
 load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
 #Compare[, L := length(HH), by=Date] -->
@@ -297,7 +298,7 @@ save(CAPE2d,file="./inst/tussenStap/CAPE2d.rda")
 load("./inst/tussenStap/CAPE2d.rda")
 CAPEexclNA <- CAPE2d[, list(sbCAPE = sbCAPE[!is.na(sbCAPE)]),by=d2]
 CAPEexclNA <- CAPEexclNA[,list(CAPEmax2d = max(sbCAPE)),by=d2]
-allmax2d <- CAPE2d[, list(Pmax2d=max(P), Imax2d=max(I),Tmax2d=max(T),TDmax2d=max(TD),RHmax2d=max(RH),FHmax2d=max(FH),DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)]),by=d2]
+allmax2d <- CAPE2d[, list(Pmax2d=max(P), PImax2d=max(I),DR_maxP=DR[which.max(P)],Tmax2d=max(T),T_max2dP= T[which.max(P)],TDmax2d=max(TD),TD_max2dP= TD[which.max(P)],RHmax2d=max(RH),FHmax2d=max(FH),FH_max2dP= FH[which.max(P)],DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)]),by=d2]
 #,Year=unique(Year),Month=unique(Month)),by=d2] #YM=unique(YM)
 #allmax2d[,yr_Pmean := mean(Pmax2d),by=Year]
 save(allmax2d, file="./inst/tussenStap/allmax2d.rda")
@@ -306,7 +307,9 @@ load("./inst/tussenStap/allmax2d.rda")
 #Merge set for which there is max sbCAPE, from 4173 --> 4164 data points
 Allmax2d <-merge(CAPEexclNA,allmax2d,by="d2")
 save(Allmax2d, file="./inst/tussenStap/Allmax2d.rda")
-Allmax2d_mat <- subset(allmax2d, select=c(Pmax2d, Imax2d, Tmax2d,TDmax2d,CAPEmax2d,RHmax2d,FHmax2d))
+Allmax2d_mat <- subset(Allmax2d, select=c(Pmax2d, PImax2d, Tmax2d,TDmax2d,CAPEmax2d,RHmax2d,FHmax2d)) #,DR_maxP
+Allmax2d_mat[Pmax2d>0]  # all wet 2-days
+save(Allmax2d_mat, file="./inst/tussenStap/Allmax2d_mat.rda")
 @
 
 <<corr_Pearson+Spearman>>=
@@ -320,7 +323,6 @@ sp_corr_max <- round(cor(M_maxi,method="spearman"), 2)
 sp_pmatrix_max <- cor_pmat(sp_corr_max)
 
 #Corr 2d max
-
 p_corr_max2d <- round(cor(Allmax2d_mat,method="pearson"), 2)
 sp_corr_max2d <- round(cor(Allmax2d_mat,method="spearman"), 2)
 
@@ -381,47 +383,51 @@ CAPE_cumP <- merge(cumP,sbCAPE_check, by="Ctime")
 <<CAPE_max>>=
 # 2) Maxima
 #Only days on which CAPE is measured, so N>0
-CAPE_day <- Compare[N>0][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE), Psum=sum(P), Imax=max(I), Pmax=max(P),Tmax=max(T), N=mean(N)), by=Date]
+CAPE_day <- Compare[N>0][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE), Psum=sum(P), PImax=max(I),DR_maxP=DR[which.max(P)], Pmax=max(P),Tmax=max(T), FHmax=max(FH), N=mean(N)), by=Date]
+CAPE_day <- CAPE_day[Psum>0]
 save(CAPE_day,file="./inst/tussenStap/CAPE_day.rda")
 @
 
 <<Cor_CAPE>>=
 load("./inst/tussenStap/CAPE_day.rda")
-CAPE <- subset(CAPE_day,select=c(CAPEmax,Tmax, Psum, Pmax, Imax, N))
+CAPE <- subset(CAPE_day,select=c(CAPEmax,Psum, Pmax, PImax,DR_maxP,Tmax,FHmax,N))
 CAPE_corr <- round(cor(CAPE),2)
 pCAPE_heatmp <- cor_pmat(CAPE_corr)
 CAPE_spcorr <- round(cor(CAPE,method="spearman"),2)
 
 #Only correlations between CAPE and other variables
-Cmat <- as.matrix(CAPE_corr[2:6,1])
-dimnames(Cmat) <- list(c("Tmax","Psum","Pmax","Imax","N"),c("CAPEmax"))
+Cmatp <- as.matrix(CAPE_corr[2:8,1])
+dimnames(Cmatp) <- list(c("Psum","Pmax","PImax","DR_maxP","Tmax","FHmax","N"),c("CAPEmax"))
+save(Cmatp,file="./inst/tussenStap/Cmat.rda")
+
+
+Cmatsp <- as.matrix(CAPE_spcorr[2:7,1])
+dimnames(Cmatsp) <- list(c("Psum","Pmax","PImax","DR_maxP","Tmax","N"),c("CAPEmax"))
+save(Cmatsp,file="./inst/tussenStap/Cmatsp.rda")
 @
 
-To have an easy and clear overview of the strength of possible relationships between multiple variables, we plotted heatmaps of the Pearson correlation coefficients. The Pearson correlation coefficient is widely used statistics giving a measure of the strength of a linear relationship \citep{Zou2003}. The heatmaps show all possible relationship between the following 7 variables: PI, I, T, Td, FH (10m-wind strength, meaned as last 10 minutes of an hour), RH (relative humidity) and CAPE. For all variables, except for CAPE, we combined the measurements of the five stations, in order to clarify the relationships. Next to comparison of all hours, we also looked at the correlation coefficients for the 2-day maxima. For CAPE only measurements of station De Bilt are available (REF CH method). Next to a different spatial resolution, CAPE also has a different temporal resolution. Therefore, we plotted the relationships with CAPE in a seperate heatmap. As CAPE is sometimes measured once a day, is influenced by precipitation (REF CH TB?) and can differ a lot on a day, we compared it in two different ways with precipitation; (i) to the cumulative precipitation sum in the hours following a CAPE measurements, (ii) the 2-day maximum in CAPE. We take a 2-day maxima,
-(maybe include duration of precipitation within a hour?)
-
+To have an easy and clear overview of the strength of possible relationships between multiple variables, we plotted heatmaps of the Pearson correlation coefficients. The Pearson correlation coefficient is widely used statistics giving a measure of the strength of a linear relationship \citep{Zou2003}. The heatmaps show all possible relationship between the following 7 variables: PI, I, DR (duration of precipitation within an hour), T, Td, FH (10m-wind strength, meaned as last 10 minutes of an hour), RH (relative humidity) and CAPE (Figure \ref{{fig:Pearsonheatmap}}). For all variables, except for CAPE, we combined the measurements of the five stations, in order to clarify the relationships. We considered only wet hours, as we are interested in the relationship between the occurrence or intensity of precipitation and not in the occurrence of dry hours. For CAPE only measurements of station De Bilt are available (REF CH method). Next to a different spatial resolution, CAPE measurements also have a different time length (1993-2015) and temporal resolution. Therefore, we plotted the relationships with CAPE in a seperate heatmap (Figure \ref{fig:CAPE_p}) for all days on which CAPE is measured at least once. We added variable N, the number of CAPE measurements a day. Futhermore, CAPE is measured 1-6 times a day, observed CAPE values have high daily variability, and CAPE decreases due to cold precipitation (negative feedback, see REF CH TB?). For these reasons we compared it in two different ways with precipitation; (i) to the cumulative daily precipitation sum, (ii) the 2-day maximum in CAPE. This approach solves for the variable temporal resolution, high daily variability, and the negative feedback. From section \ref{subsec:theory} we expect positive relationships between the variables T, Td, FH and CAPE with PI and I.Next to comparison of all wet hours, we also looked at the correlation coefficients for the wet 2-day maxima.
 % From section \ref{subsubsec:CAPE} can be deduced that CAPE, as a representative for the strength of vertical motion, is an important factor for convective precipitation. Due to the different length and resolution of this dataset we plot an extra heat map consisting of CAPE values and I, P, T and the number of CAPE measurements a day (N). We included T to investigate in more details the indirect relationship of T with P or I via CAPE.
 
 % CHECK WET 2-DAY ONLY???
 \begin{figure}[H]
   \centering
-  \textbf{Heat maps}\par\medskip
+  \textbf{Heat maps of Pearson coefficients}\par\medskip
   \begin{minipage}{0.48\textwidth}
 <<PHeatmap_all>>=
 # All hours
 ggcorrplot(p_corr, hc.order = FALSE,type = "lower",lab=TRUE)
 @
-    \subcaption{All variables, except CAPE, for all hours}
+    \subcaption{All variables, except CAPE, for all wet hours}
     \label{fig:Heatmap_allp}
   \end{minipage}
   \hfill
   \begin{minipage}{0.48\textwidth}
 <<PHeatmap_CAPE>>=
-ggcorrplot(CAPE_corr, hc.order = TRUE,type = "lower",lab=TRUE) #, p.mat=p.mat, insig="blank"
-#heatmap(CAPE)
+ggcorrplot(Cmatp,lab=TRUE) #, p.mat=p.mat, insig="blank"
 @
-    \subcaption{CAPE}
-    \label{fig:Heatmap_allp}
+    \subcaption{CAPE a wet day}
+    \label{fig:CAPE_p}
   \end{minipage}
   \hfill
   \begin{minipage}{0.48\textwidth}
@@ -429,59 +435,80 @@ ggcorrplot(CAPE_corr, hc.order = TRUE,type = "lower",lab=TRUE) #, p.mat=p.mat, i
 # Maxima a day
 ggcorrplot(p_corr_max2d, hc.order = FALSE,type = "lower",lab=TRUE)
 @
-    \subcaption{2-day maxima for all variables}
+    \subcaption{Wet 2-day maxima for all variables}
     \label{fig:Heatmap_max2d}
   \end{minipage}
   \hfill
   \begin{minipage}{0.48\textwidth}
-<<PHeatmap_max2d>>=
+<<PHeatmap_maxi>>=
 # Maxima a day
 ggcorrplot(p_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
 @
     \subcaption{Daily maxima for all variables}
-    \label{fig:Heatmap_max}
+    \label{fig:Heatmap_maxip}
   \end{minipage}
 \caption{Heatmap consisting of Pearson correlation coefficients of the variables: hourly mean precipitation intensity (P), precipitation intensity (PI), wind strength (FH), relative humidity (RH), temperature(T) and dewpoint temperature(TD). The heatmaps are computed for all wet hours for all variables, except CAPE (a), for CAPE with other variables (b), for 2-day (c) and daily (d) maxima of all variables. Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
+\label{fig:Pearsonheatmap}
 \end{figure}
 
-Explain Pearson correlations, all wet hours
-Explain 2-day maxima (look at extremes)
 
-To see whether we get a stronger signal if we look at daily maxima, two times higher resolution, but lower extremes..
+Figure \ref{fig:Heatmap_allp} provides an overview of the Pearson correlation coefficients for all variables, except CAPE, for all wet hours. The two highest coefficients are between T and TD (0.97) and P and I (0.75). Both relationships are logical for wet hours, namely the dewpoint temperature is the temperature till which air has to be cooled to become saturated. The difference is determined by the amount of moisture available, which differs less when only wet hours are considered. A correlation coeffcient of almost zero, means that higher dewpoint temperatures correspond to higher temperatures, and that the difference between T en Td is approximately the same for all wet hours, so a direct linear relationship is assumably present. The mean hourly precipitation intensity (PI) is the product of the hourly duration, DR, and intensity, I. The relationship between PI and I is stronger (0.75), than the relationship between PI and DR (0.35). % because I is computed from PI and DR
+The third highest coefficient is the one between DR and RH (0.38). The higher the relative humidity, the higher the percentage is fullfilled which is needed for saturation at a certain temperature. Apparently this percentage says more about the duration of precipitation within an hour, than about the magnitude of the precipitation sum (or mean precipitation intensity PI). % It is also explainable that this coefficient is not higher than 0.38, as there are also short-lastig, high intensity precipitation events.
+Four other postive correlation coefficients, which are a bit higher than the rest, are those between (i) PI and T, (ii) PI and Td, (iii) I and T, and (iv) I and Td. From section \ref{subsec:theory} we know that temperature can influence precipitation amount (P) and intensity (PI) via enhanced evaporation and updrafts and higher ability of air to hold moisture. As evaporation is important at the place and time of moisture influx, it could be that this relation holds a non-insitu and lagged relationship. Hence, the relationship does not have to be significant for comparison between temperature and precipitation measured at the same time and only on the location of precipitation. The relationship between P or I and T via enhanced updrafts, should also be present in the relationship between CAPE and P or I. The relationship between CAPE and T is indeed relatively strong for this time scale and for this location,as can be deduced from the high correlation coefficient (0.49) in Figure \ref{fig:CAPE_p}. Moreover,the theory in which the ability of air to hold moisture is higher at higher temperature is confirmed by the correlation coefficient between Td and P, as Td is a measure for the amount of moisture in an air parcel. In spite of all these relationships between T and P, the coefficient between P and T is not so high (0.15). However, more and counteracting relationships can play a role. What is more striking from Figure \ref{fig:Heatmap_allp} is the relatively high negative correlation between RH and FH. So the higher the wind speed, the lower the relative humidity. This could mean that with high wind speed at the moment of precipitation, the frontal or other precipitation system is blown over quickly. However, then DR should have a relatively high correlation with FH, which is not the case. On contrast, high horizontal wind speeds also occur at times of strong vertical mixing when contrasting winds converge at the place where air is lifted. Nontheless, this relationship between a daily maximum in CAPE (CAPEmax) and a daily maximum in wind speed is not found back in the corresponding correlation coefficient (-0.08) in Figure \ref{fig:CAPE_p}. The reason of the relatively strong negative relationship between FH and RH remains unclear. The highest correlation between CAPE and precipitation variables, is the one between CAPEmax with the daily maxima in precipitation intensity (0.35). N shows the influence of the varying number of CAPE measurements a day, which is relatively high, but lower than the correlation coefficient between CAPEmax and the maxima in precipitation intensity or temperature. Note, that here the daily maxima and sums are considered, which can explain the higher correlation coefficients in this heatmap, compared to the correlation coefficients for all wet hours. %why?
+
+As we studied the maxima in mean hourly precipitation intensity for independent 2-day periods in Chapter 3 (REF CH trends), we also included the correlation coefficients for 2-day maxima in P and I in relation to the 2-day maxima in T, Td, FH and CAPE. Eventually we want to explain the observed trends found in Chapter 3. Therefore, it is relevant to investigate the correlation coefficients for the same temporal resolution. This approach also zooms in on the precipitation extremes. Note, that the maxima do not have to be measured at the same moment in time. On the one hand, this can enhance correlations in a biased way, if the hours are widely spaced in time. On the other hand, lower correlation coefficients are found when we look at correlation between 2-day maxima in P and the variables T, TD, and FH, measured at the time of the maximum in P. Negative feedbacks are then assumed to play a role, as for example cooling of the air due to precipitation. We observe the same relationships which are relative high as in Figures \ref{fig:Heatmap_allp} and \ref{fig:CAPE_p}, but than stronger. Correlation coefficients between 0.3 and 0.32 between the  2-day maxima in hourly precipitation sums (Pmax2d) and 2-day maxima in T, Td and CAPE. Even higher coefficients (0.33-0.38) are found when the 2-day maxima in precipitation intensities are considered instead of Pmax2d. Futher, we investigate whether we get an even stronger signal if we look at maxima of wet days. This would give a two times higher resolution, but lower extremes are then considered. The results are shown in Figure \ref{fig:Heatmap_maxip}, were maxima in CAPE are excluded, because we already plotted these in Figure \ref{fig:CAPE_p}. We observe slightly higher correlations in general, except for the coefficient corresponding to the relation between maxima in CAPE and PI.
 and wet-day only daily maxima ..
 
 % The highest correlations between the maximum hourly precipitation sum of wet-days only and the other variables, are those of maxima in T (0.412), TD (0.402). Also contributing, but less importance are correlation of FHmax(0.23) and RHmax (0.171) with Pmax. For intensity the relation with Tmax is even a bit higher (0.423), but for TD, FHmax and RHmax lower (respectievely 0.384,0.175 and 0.088).
 
+Till now we used Pearson coefficients, which indicate the strength of linear relationships between variables (REF method). However, what if some or most of the variables depend in a non-linear way on each other? In order to investigate the type of relationship (i.e. linear or non-linear) we plotted the point clouds of all possible relations for maxima in T, TD, CAPE, FH and P (Figure \ref{fig:pointclouds})
 
-However, what if non-linear relationships???
-Plot ...
-
-
+\begin{figure}[H]
+  \centering
+  \textbf{Point clouds}\par\medskip
+  \begin{minipage}{0.48\textwidth}
 <<Plotting_points_allvariables,cache=TRUE>>=
 load("./inst/tussenStap/CAPE_day.rda")
 load("./inst/tussenStap/M_max.rda")
 M_CAPE <- subset(CAPE_day,select=c(CAPEmax,Date))
 M_allmax <- merge(M_max,M_CAPE,by="Date")
-M_trial <- subset(M_allmax, select=c("Tmax", "TDmax","CAPEmax","FHmax","Pmax"))
+M_trial <- subset(M_allmax, select=c("Tmax", "TDmax","CAPEmax","FHmax","Pmax")) #, "PImax"
 plot(M_trial)
 @
+\caption{Points clouds showing the type of relationship between the maxima of the following variables: temperature(T), dewpoint temperature(TD), convective available potential energy (CAPE), wind strength (FH), and hourly mean precipitation intensity (P). Note, the x- and y-axes differ in scale.}
+\label{fig:pointclouds}
+\end{figure}
 
-
-Then talk about assumptions ... ; we saw in CH2 non-normal distribution of P and I ,
-while we need two normal distributed variables to not violate assumption for Pearson.
-
-Therefore, use of Spearman
+Figure \ref{fig:pointsclouds} confirms the linear relationship between (maxima in) T and Td, which we already suggested. Multiple point clouds indicate on exponential relations; maxima in P with maxima in T or Td,  and maxima in CAPE with maxima in T and Td. To a lesser extent this is applies on the relationship between maxima in CAPE and FH. The other point clouds, CAPE maxima with precipitation maxima, FH maxima with P,T and Td maxima, do not have a distinctive form. Nontheless, it is appearent that linearity can not be assumed to be the case for most relationships. Besides, another assumption for pearson correlation coefficients is normal-distributed variables (REF method). In Chapter 3 (REF CH3) we already observed non-normal distributions for all hours and 2-day maxima in P. However, the Spearman correlation coefficient does not assume normal-distributed data, and is a measure of non-linear relationships (REF method). Figure \ref{fig:Spearmanheatmap} shows heat maps of all wet hours, CAPE-only, wet 2-day maxima and wet daily maxima.
 
 \begin{figure}[H]
   \centering
-  \textbf{Spearman Heat maps}\par\medskip
+  \textbf{Heat maps of Spearman coefficients}\par\medskip
   \begin{minipage}{0.48\textwidth}
 <<SPHeatmap_all>>=
 # All hours
 ggcorrplot(sp_corr, hc.order = FALSE,type = "lower",lab=TRUE)
 @
-    \subcaption{Spearman: All hours}
+    \subcaption{All wet hours}
     \label{fig:Heatmap_allsp}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+<<SPHeatmap_CAPE>>=
+ggcorrplot(Cmatsp,lab=TRUE) #, p.mat=p.mat, insig="blank"
+
+@
+    \subcaption{CAPE a wet day}
+    \label{fig:CAPE_sp}
+  \end{minipage}
+    \hfill
+  \begin{minipage}{0.48\textwidth}
+<<SPHeatmap_max2d>>=
+# Maxima a day
+ggcorrplot(sp_corr_max2d, hc.order = FALSE,type = "lower",lab=TRUE)
+@
+    \subcaption{Wet 2-day maxima for all variables}
+    \label{fig:Heatmap_max2dsp}
   \end{minipage}
   \hfill
   \begin{minipage}{0.48\textwidth}
@@ -490,62 +517,103 @@ ggcorrplot(sp_corr, hc.order = FALSE,type = "lower",lab=TRUE)
 ggcorrplot(sp_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
 @
     \subcaption{Spearman: Maxima}
-    \label{fig:Heatmap_maxisp }
+    \label{fig:Heatmap_maxisp}
   \end{minipage}
-  \caption{Heatmap consisting of correlation coefficients of the variables: intensity (I), wind strength (FH), measure of relative humidity (RH), hourly precipitation sum (P), temperature(T) and dewpoint temperature(TD). The heatmaps are computed according to the Pearson method (a,b) or the Spearman approac (c,d), for all wet hours (a,c) and daily maxima of wet days (b,d). Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
+  \caption{Heatmap consisting of correlation coefficients of the variables: intensity (I), wind strength (FH), measure of relative humidity (RH), hourly precipitation sum (P), temperature(T) and dewpoint temperature(TD). The heatmaps are computed according to the Pearson method (a,b) or the Spearman approach (c,d), for all wet hours (a,c) and daily maxima of wet days (b,d). Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
+  \label{fig:Spearmanheatmap}
 \end{figure}
 
-
-<<SpHeatmap_CAPE>>=
-ggcorrplot(CAPE_spcorr, hc.order = TRUE,type = "lower",lab=TRUE) #, p.mat=p.mat, insig="blank"
-#heatmap(CAPE)
-@
-Explain what kind of correlation for CAPE, and cumsum gives 0.0803031
-
-<<PHeatrow_CAPE>>=
-ggcorrplot(Cmat,lab=TRUE)
-@
-
+Describe Spearman coefficients
 Explain difference Pearson/ Spearman
 
+To summarize, ..... have high correlation..
 
 \subsection{Trends in key variables}
 
-quantile regression time of normal and 2day max in time
+In this section we investigate whether the key variables, wind strength, CAPE, temperature and dewpoint temperature, regress in time. We will consider the 2-day maxima, so that we can compare the appearance of the trends and their rates with the trends in 2-day maxima in hourly precipitation intensity. %(and frequency of wet hours and 2-day precipitation sum)
+First, we plot the probability density distributions in order to choose the appropriate method(s) of trend analysis for each variable, i.e. linear regression on normal distributed data and quantile regression for both normal and non-normal distributed data. Note, trend analysis on 2-day CAPE maxima is applied for the time period for which CAPE data is available (1993-2015).
 
-Plot distribution
---> normal? LS fitting (T and TD)
---> lognormal/not-normal --> quantile regression (CAPE, FH?)
-
-four plots
-T in time
-Td in time
-FH in time
-CAPE in time
-
-with p-table and rates
-
-
-
-<<>>=
+<<Load_d2var>>=
+#load("./inst/tussenStap/data2d.rda")
 # All max2d (except CAPE --> as it has other resolution)
-max2d_all <- data2d[, list(Pmax2d=max(P),Imax2d=max(I),Tmax2d=max(T),TDmax2d=max(TD),RHmax2d=max(RH),FHmax2d=max(FH),DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)]),by= list(d2,STN)]
-
-allmax2d <- CAPE2d[, list(),by=d2]
-@
-
-<<>>=
-
-
-
+#max2d_all <- data2d[!is.na(FH)][, list(Pmax2d=max(P),PImax2d=max(I),Tmax2d=max(T),TDmax2d=max(TD),RHmax2d=max(RH),FHmax2d=max(FH),DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)]),by= list(d2,STN)]
 @
 
 
+\begin{figure}[H]
+  \centering
+  \textbf{Probability density distribution of 2-day maxima}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+<<label=dist_FHmax2d>>=
+plot(density(Allmax2d_mat$FHmax2d), type='l',col='orange', lwd=3, main=NA,   #Distribution of nr of wet hours
+      xlab="2-day max FH (m/s)", ylab="Probability density")
+@
+    \caption{2-day max FH}
+    \label{fig:dist_FHmax2d}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+<<label=dist_Tmax2d>>=
+plot(density(Allmax2d_mat$Tmax2d),col="red",lwd=3, main=NA,   #Distribution of nr of wet hours
+      xlab="2-day max T (degrees C)", ylab="Probability density")
+@
+    \caption{2-day max T}
+    \label{fig:dist_Tmax2d}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+<<label=dist_TDmax2d>>=
+plot(density(Allmax2d_mat$TDmax2d),col="purple",lwd=3, main=NA,   #Distribution of nr of wet hours
+      xlab="2-day max Td (degrees C)", ylab="Probability density")
+@
+    \caption{2-day max Td}
+    \label{fig:dist_TDmax2d}
+  \end{minipage}
+  \hfill
+<<label=dist_CAPEmax2d>>=
+plot(density(Allmax2d_mat$CAPEmax2d),col="gray",lwd=3, main=NA,   #Distribution of nr of wet hours
+      xlab="2-day max CAPE (J/kg)", ylab="Probability density")
+@
+    \caption{2-day max CAPE}
+    \label{fig:dist_CAPEmax2d}
+  \end{minipage}
+\caption{Probability density distributions of 2-day maxima in wind strength (a), temperature (b), dewpoint temperature (c), and convective available potential energy (d). Note, the x- and y-axes differ in scale per variable.}
+\label{fig:pointclouds}
+\end{figure}
+
+
+%'   \begin{minipage}{0.48\textwidth}
+%' <<label=dist_Pmax2d>>=
+%' plot(density(Allmax2d_mat[Pmax2d<30]$Pmax2d), type='l',col='blue', lwd=3, main=NA,   #Distribution of nr of wet hours
+%'       xlab="2-day max", ylab="Probability density")
+%' @
+%'     \caption{2-day max P}
+%'     \label{fig:dist_Pmax2d}
+%'   \end{minipage}
+%'   \hfill
+%'   \begin{minipage}{0.48\textwidth}
+%' <<label=dist_PImax2d>>=
+%' plot(density(Allmax2d_mat$PImax2d), type='l',col='green', lwd=3, main=NA,   #Distribution of nr of wet hours
+%'       xlab="2-day max I (mm/hr)", ylab="Probability density")
+%' @
+%'     \caption{2-day max PI}
+%'     \label{fig:dist_PImax2d}
+%'   \end{minipage}
+%'   \hfill
+%'
+%' \caption{Probability distributions of 2-day maxima in hourly precipitation sum (a), precipitation intensity (b), wind strength (c), temperature (d), dewpoint temperature (e), and convective available potential energy (e). Note, the x- and y-axes differ in scale per variable.}
 % See comments QR_all, for quantile fits
 
 % Make rq
 <<QR_Temp>>=
-QR_all(allmax2d)
+load("./inst/tussenStap/allmax2d.rda")
+#make one QR function with conditions for different variables
+or different subsets, with same name for max & apply 1 function!
+CAPEmax2d <- subset(Allmax2d, select=c("d2","CAPEmax2d"))
+# check 4200 d2 from 1993 - 2015 ; 23*365/2 = [1] 4197.5
+setnames(CAPEmax2d,c("d2","max"))
+
+QR_all(Allmax2d_mat)
 
 
 
@@ -559,6 +627,12 @@ QR_all(allmax2d)
 <<QR_DewTemp>>=
 #ggplot(hrKNMI,aes(x=Date,y=TD)) + geom_quantile(formula=y~Date,quantiles=c(0.25,0.50,0.75,0.95))
 @
+
+
+with p-table and rates
+
+
+
 
 \subsubsection{Changing distribution or relations}
 
@@ -595,7 +669,7 @@ For the most important factors (maxima in T, TD and CAPE) regarding the correlat
 
 <<PmaxvsTmax>>=
 #Subset for maxima data
-M_max <- hrKNMI[, list(Pmax=max(P), Imax=max(I), Tmax=max(T), TDmax=max(TD),RHmax=max(RH),FHmax=max(FH)),by=list(Date,Season)]
+M_max <- hrKNMI[, list(Pmax=max(P), PImax=max(PI), Tmax=max(T), TDmax=max(TD),RHmax=max(RH),FHmax=max(FH)),by=list(Date,Season)]
 M_max[Pmax>0] #only wet days
 # TEMPERATURE
 ## Plots showing relation Pmax and Tmax, differentiated on season
@@ -648,7 +722,7 @@ plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), hjust=0, ncol = 1, nrow =
 
 <<PmaxvsTmean>>=
 #Subset for maxima data
-M_max <- hrKNMI[, list(Pmax=max(P), Imax=max(I), Tmean=mean(T), TDmax=max(TD),RHmax=max(RH),FHmax=max(FH)),by=list(Date,Season)]
+M_max <- hrKNMI[, list(Pmax=max(P), PImax=max(PI), Tmean=mean(T), TDmax=max(TD),RHmax=max(RH),FHmax=max(FH)),by=list(Date,Season)]
 #M_max[Pmax>0] #only wet days
 # TEMPERATURE
 ## Plots showing relation Pmax and Tmean, differentiated on season
@@ -702,7 +776,7 @@ plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), hjust=0, ncol = 1, nrow =
 
 
 In figure \ref{fig:PvsT}A the precipitation maxima of wet days only increase with maxima in temperature in a non-linear way. Clear differences are visible between winter and summer. The winter precipitation are generally lower and the points slope more gently with respect to temperature maxima. The summer data resembles a triangle shape, with exponential increase till the maximum precipitation of 50 mm hr$^{-1}$ at approximately 20 degrees and an exponential decrease for further temperature increase. The summer and winter distributions of temperature are demonstrated in Figure \ref{fig:PvsT}B. They have similar Gaussian shapes, but are different positioned with respect to temperature. The maxima in number of winter data per bin of 2 degrees celsius is at 6-8 $^{\circ}$C, while the summer data is concentrated around 14-16 degrees celsius. The triangle shape observed in the summer data could be influenced by its distribution. However, the peak in precipitation data is then for higher temperature than expected and for winter data it does not hold. In order to remove any influence of the way temperature is distributed, we also plotted the mean precipitation maxima per bin. Moreover, the 95\% and 99\% quantile lines are plotted to visualize the temperature relation with \enquote{high} extremes in precipitation. The mean and quantile lines are compared to Clausius Clapeyron (CC) scaling. From Figure \ref{fig:PvsT}C can be deduced that the super CC-scaling (twice what is expected from the CC equation) found by Lenderink is also observed here for the summer mean and the quantiles. Note, that the mean here is a mean of maxima precipitation sum a day, with only wet hours considered. For the winter data the colder part scales with Clausius Clapeyron, while for temperatures higher than 7$^{\circ}$C the mean shows a rate which is slightly weaker than the double CC-scaling. The reason for the off-set between summer and winter data in mean and quantiles can be explained by .. ? (data number difference)
-The increase of precipitation maxima with temperature maxima might be induced from a shift between stratiform-dominated to convection-dominated precipitation as suggested by \citep{Berg2009}. As no data about synoptic conditions is included, this relationship seems hard to verify. However, stratiform and convective precipitation might be seperated on values of CAPE. (BRON!)
+The increase of precipitation maxima with temperature maxima might be induced from a shift between stratiform-dominated to convection-dominated precipitation as suggested by \citep{Berg2013}. As no data about synoptic conditions is included, this relationship seems hard to verify. However, stratiform and convective precipitation might be seperated on values of CAPE. (BRON!)
 
 To analyse the relationship between daily CAPE and precipitation maxima (for days with CAPE measurements), we also plotted the point clouds, distribution of CAPE and binned mean and quantile lines.
 
@@ -714,7 +788,7 @@ To analyse the relationship between daily CAPE and precipitation maxima (for day
 load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
 # calculate max CAPE (and max of other variables) for days on which CAPE-measurements are available
 # study between [(HH==11)|(HH=17)] ??
-CAPE_day <- Compare[N>0][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE),Psum=sum(P), Pmax=max(P),Imax=max(I), N=mean(N)),by=list(Date,Season)]
+CAPE_day <- Compare[N>0][(Year > 1993) | (Month > 2)][, list(CAPEmax = max(sbCAPE, na.rm = TRUE),Psum=sum(P), Pmax=max(P),PImax=max(PI), N=mean(N)),by=list(Date,Season)]
 M_CAPEmax <- subset(CAPE_day,select=c(Pmax,CAPEmax,Season))[(Season=="Summer")|(Season=="Winter")][CAPEmax<2500]
 Q_CAPEbin <- M_CAPEmax[,CAPE_bin := .bincode(CAPEmax, breaks=seq(0,2500,50),include.lowest=TRUE)]
 
