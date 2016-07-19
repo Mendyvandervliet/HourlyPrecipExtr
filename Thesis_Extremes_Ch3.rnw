@@ -444,13 +444,12 @@ ggcorrplot(p_corr_max2d, hc.order = FALSE,type = "lower",lab=TRUE)
 # Maxima a day
 ggcorrplot(p_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
 @
-    \subcaption{Daily maxima for all variables}
+    \subcaption{Wet daily maxima for all variables}
     \label{fig:Heatmap_maxip}
   \end{minipage}
-\caption{Heatmap consisting of Pearson correlation coefficients of the variables: hourly mean precipitation intensity (P), precipitation intensity (PI), wind strength (FH), relative humidity (RH), temperature(T) and dewpoint temperature(TD). The heatmaps are computed for all wet hours for all variables, except CAPE (a), for CAPE with other variables (b), for 2-day (c) and daily (d) maxima of all variables. Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
+\caption{Heatmap consisting of Pearson correlation coefficients of the variables: hourly mean precipitation intensity (P), precipitation intensity (PI), wind strength (FH), relative humidity (RH), temperature(T) and dewpoint temperature(TD). The heatmaps are computed from: all wet hours for all variables except CAPE (a), from daily CAPE maxima in relation to other variables (b), for 2-day maxima of all variables (c) and daily maxima of all variables except CAPE (d). Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
 \label{fig:Pearsonheatmap}
 \end{figure}
-
 
 Figure \ref{fig:Heatmap_allp} provides an overview of the Pearson correlation coefficients for all variables, except CAPE, for all wet hours. The two highest coefficients are between T and TD (0.97) and P and I (0.75). Both relationships are logical for wet hours, namely the dewpoint temperature is the temperature till which air has to be cooled to become saturated. The difference is determined by the amount of moisture available, which differs less when only wet hours are considered. A correlation coeffcient of almost zero, means that higher dewpoint temperatures correspond to higher temperatures, and that the difference between T en Td is approximately the same for all wet hours, so a direct linear relationship is assumably present. The mean hourly precipitation intensity (PI) is the product of the hourly duration, DR, and intensity, I. The relationship between PI and I is stronger (0.75), than the relationship between PI and DR (0.35). % because I is computed from PI and DR
 The third highest coefficient is the one between DR and RH (0.38). The higher the relative humidity, the higher the percentage is fullfilled which is needed for saturation at a certain temperature. Apparently this percentage says more about the duration of precipitation within an hour, than about the magnitude of the precipitation sum (or mean precipitation intensity PI). % It is also explainable that this coefficient is not higher than 0.38, as there are also short-lastig, high intensity precipitation events.
@@ -466,7 +465,6 @@ Till now we used Pearson coefficients, which indicate the strength of linear rel
 \begin{figure}[H]
   \centering
   \textbf{Point clouds}\par\medskip
-  \begin{minipage}{0.48\textwidth}
 <<Plotting_points_allvariables,cache=TRUE>>=
 load("./inst/tussenStap/CAPE_day.rda")
 load("./inst/tussenStap/M_max.rda")
@@ -475,8 +473,8 @@ M_allmax <- merge(M_max,M_CAPE,by="Date")
 M_trial <- subset(M_allmax, select=c("Tmax", "TDmax","CAPEmax","FHmax","Pmax")) #, "PImax"
 plot(M_trial)
 @
-\caption{Points clouds showing the type of relationship between the maxima of the following variables: temperature(T), dewpoint temperature(TD), convective available potential energy (CAPE), wind strength (FH), and hourly mean precipitation intensity (P). Note, the x- and y-axes differ in scale.}
-\label{fig:pointclouds}
+  \caption{Points clouds showing the type of relationship between the maxima of the following variables: temperature(T), dewpoint temperature(TD), convective available potential energy (CAPE), wind strength (FH), and hourly mean precipitation intensity (P). Note, the x- and y-axes differ in scale.}
+  \label{fig:pointclouds}
 \end{figure}
 
 Figure \ref{fig:pointsclouds} confirms the linear relationship between (maxima in) T and Td, which we already suggested. Multiple point clouds indicate on exponential relations; maxima in P with maxima in T or Td,  and maxima in CAPE with maxima in T and Td. To a lesser extent this is applies on the relationship between maxima in CAPE and FH. The other point clouds, CAPE maxima with precipitation maxima, FH maxima with P,T and Td maxima, do not have a distinctive form. Nontheless, it is appearent that linearity can not be assumed to be the case for most relationships. Besides, another assumption for pearson correlation coefficients is normal-distributed variables (REF method). In Chapter 3 (REF CH3) we already observed non-normal distributions for all hours and 2-day maxima in P. However, the Spearman correlation coefficient does not assume normal-distributed data, and is a measure of non-linear relationships (REF method). Figure \ref{fig:Spearmanheatmap} shows heat maps of all wet hours, CAPE-only, wet 2-day maxima and wet daily maxima.
@@ -496,7 +494,6 @@ ggcorrplot(sp_corr, hc.order = FALSE,type = "lower",lab=TRUE)
   \begin{minipage}{0.48\textwidth}
 <<SPHeatmap_CAPE>>=
 ggcorrplot(Cmatsp,lab=TRUE) #, p.mat=p.mat, insig="blank"
-
 @
     \subcaption{CAPE a wet day}
     \label{fig:CAPE_sp}
@@ -516,12 +513,34 @@ ggcorrplot(sp_corr_max2d, hc.order = FALSE,type = "lower",lab=TRUE)
 # Maxima a day
 ggcorrplot(sp_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
 @
-    \subcaption{Spearman: Maxima}
+    \subcaption{Daily Maxima}
     \label{fig:Heatmap_maxisp}
   \end{minipage}
-  \caption{Heatmap consisting of correlation coefficients of the variables: intensity (I), wind strength (FH), measure of relative humidity (RH), hourly precipitation sum (P), temperature(T) and dewpoint temperature(TD). The heatmaps are computed according to the Pearson method (a,b) or the Spearman approach (c,d), for all wet hours (a,c) and daily maxima of wet days (b,d). Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
+  \caption{Heatmaps consisting of Spearman correlation coefficients of the variables: intensity (I), wind strength (FH), measure of relative humidity (RH), hourly precipitation sum (P), temperature(T) and dewpoint temperature(TD). The heatmaps are computed from: all wet hours for all variables except CAPE (a), from daily CAPE maxima in relation to other variables (b), for 2-day maxima of all variables (c) and daily maxima of all variables except CAPE (d). Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
   \label{fig:Spearmanheatmap}
 \end{figure}
+
+The Spearman correlation coefficients are all lower than the Pearson correlation coefficients for all wet hours, except for those corresponding to the relation between duration and TD or T, and to the linear relation between T and TD. %Whether these relationships are found linear is based on \ref{fig:pointsclouds_2}
+Whereas the correlation coefficient between P and PI decreases slightly, the correlation coefficient between DR and P increases notable (from 0.35 to 0.59). The correlation coefficients between PI or P and the explanatory factors T, TD, and FH, all decrease a bit. Is unexpected, as these are non-linear relationships
+
+However, 2-day maxima of Spearman are higher?
+Maybe show only Spearman 2-day, as this gives extremes better than all, and daily does not improve significantly , so better comparable to found trends!
+
+
+%' \begin{figure}[H]
+%'   \centering
+%'   \textbf{Point clouds of all wet hours}\par\medskip
+%' <<Plotting_points_allvariables2,cache=TRUE>>=
+%' #M <- hrKNMI[P>0][, list(P=P, PI=I,DR=DR,T, TD, RH=RH,FH=FH)]
+%' M <- subset(M, select=c("T","TD","P","PI","DR")) #, "PImax"
+%' M_wet <- M[P>0]
+%' plot(M_wet)
+%' @
+%'   \caption{Points clouds showing the type of relationship between the maxima of the following variables: temperature(T), dewpoint temperature(TD), hourly mean precipitation intensity (P), hourly intensity (PI) and precipitation duration within an hour (DR). Note, the x- and y-axes differ in scale.}
+%'   \label{fig:pointclouds_2}
+%' \end{figure}
+
+
 
 Describe Spearman coefficients
 Explain difference Pearson/ Spearman
@@ -542,7 +561,7 @@ load("./inst/tussenStap/Allmax2d_mat.rda")
 plot(density(Allmax2d_mat$FHmax2d), type='l',col='orange', lwd=3, main=NA,   #Distribution of nr of wet hours
       xlab="2-day max FH (m/s)", ylab="Probability density")
 @
-    \caption{2-day max FH}
+    \subcaption{2-day max FH}
     \label{fig:dist_FHmax2d}
   \end{minipage}
   \hfill
@@ -551,7 +570,7 @@ plot(density(Allmax2d_mat$FHmax2d), type='l',col='orange', lwd=3, main=NA,   #Di
 plot(density(Allmax2d_mat$Tmax2d),col="red",lwd=3, main=NA,   #Distribution of nr of wet hours
       xlab="2-day max T (degrees C)", ylab="Probability density")
 @
-    \caption{2-day max T}
+    \subcaption{2-day max T}
     \label{fig:dist_Tmax2d}
   \end{minipage}
   \hfill
@@ -560,21 +579,21 @@ plot(density(Allmax2d_mat$Tmax2d),col="red",lwd=3, main=NA,   #Distribution of n
 plot(density(Allmax2d_mat$TDmax2d),col="purple",lwd=3, main=NA,   #Distribution of nr of wet hours
       xlab="2-day max Td (degrees C)", ylab="Probability density")
 @
-    \caption{2-day max Td}
+    \subcaption{2-day max Td}
     \label{fig:dist_TDmax2d}
   \end{minipage}
   \hfill
+  \begin{minipage}{0.48\textwidth}
 <<label=dist_CAPEmax2d>>=
-plot(density(Allmax2d_mat$CAPEmax2d),col="gray",lwd=3, main=NA,   #Distribution of nr of wet hours
+plot(density(Allmax2d_mat$CAPEmax2d),col="darkgreen",lwd=3, main=NA,   #Distribution of nr of wet hours
       xlab="2-day max CAPE (J/kg)", ylab="Probability density")
 @
-    \caption{2-day max CAPE}
+    \subcaption{2-day max CAPE}
     \label{fig:dist_CAPEmax2d}
   \end{minipage}
 \caption{Probability density distributions of 2-day maxima in wind strength (a), temperature (b), dewpoint temperature (c), and convective available potential energy (d). Note, the x- and y-axes differ in scale per variable.}
 \label{fig:pointclouds}
 \end{figure}
-
 
 %'   \begin{minipage}{0.48\textwidth}
 %' <<label=dist_Pmax2d>>=
@@ -605,7 +624,7 @@ plot(density(Allmax2d_mat$CAPEmax2d),col="gray",lwd=3, main=NA,   #Distribution 
 
 load("./inst/tussenStap/Allmax2d.rda")
 #make one QR function with conditions for different variables
-or different subsets, with same name for max & apply 1 function!
+#or different subsets, with same name for max & apply 1 function!
 
 CAPEmax2d <- subset(Allmax2d, select=c("d2","Year","CAPEmax2d"))
 setnames(CAPEmax2d,c("d2","Year","max"))
