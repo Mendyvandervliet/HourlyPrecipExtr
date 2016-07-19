@@ -298,7 +298,7 @@ save(CAPE2d,file="./inst/tussenStap/CAPE2d.rda")
 load("./inst/tussenStap/CAPE2d.rda")
 CAPEexclNA <- CAPE2d[, list(sbCAPE = sbCAPE[!is.na(sbCAPE)]),by=d2]
 CAPEexclNA <- CAPEexclNA[,list(CAPEmax2d = max(sbCAPE)),by=d2]
-allmax2d <- CAPE2d[, list(Pmax2d=max(P), PImax2d=max(I),DR_maxP=DR[which.max(P)],Tmax2d=max(T),T_max2dP= T[which.max(P)],TDmax2d=max(TD),TD_max2dP= TD[which.max(P)],RHmax2d=max(RH),FHmax2d=max(FH),FH_max2dP= FH[which.max(P)],DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)]),by=d2]
+allmax2d <- CAPE2d[, list(Pmax2d=max(P), PImax2d=max(I),DR_maxP=DR[which.max(P)],Tmax2d=max(T),T_max2dP= T[which.max(P)],TDmax2d=max(TD),TD_max2dP= TD[which.max(P)],RHmax2d=max(RH),FHmax2d=max(FH),FH_max2dP= FH[which.max(P)],DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)],Year=round(mean(Year),digits=0)),by=d2]
 #,Year=unique(Year),Month=unique(Month)),by=d2] #YM=unique(YM)
 #allmax2d[,yr_Pmean := mean(Pmax2d),by=Year]
 save(allmax2d, file="./inst/tussenStap/allmax2d.rda")
@@ -533,18 +533,12 @@ To summarize, ..... have high correlation..
 In this section we investigate whether the key variables, wind strength, CAPE, temperature and dewpoint temperature, regress in time. We will consider the 2-day maxima, so that we can compare the appearance of the trends and their rates with the trends in 2-day maxima in hourly precipitation intensity. %(and frequency of wet hours and 2-day precipitation sum)
 First, we plot the probability density distributions in order to choose the appropriate method(s) of trend analysis for each variable, i.e. linear regression on normal distributed data and quantile regression for both normal and non-normal distributed data. Note, trend analysis on 2-day CAPE maxima is applied for the time period for which CAPE data is available (1993-2015).
 
-<<Load_d2var>>=
-#load("./inst/tussenStap/data2d.rda")
-# All max2d (except CAPE --> as it has other resolution)
-#max2d_all <- data2d[!is.na(FH)][, list(Pmax2d=max(P),PImax2d=max(I),Tmax2d=max(T),TDmax2d=max(TD),RHmax2d=max(RH),FHmax2d=max(FH),DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)]),by= list(d2,STN)]
-@
-
-
 \begin{figure}[H]
   \centering
   \textbf{Probability density distribution of 2-day maxima}\par\medskip
   \begin{minipage}{0.48\textwidth}
 <<label=dist_FHmax2d>>=
+load("./inst/tussenStap/Allmax2d_mat.rda")
 plot(density(Allmax2d_mat$FHmax2d), type='l',col='orange', lwd=3, main=NA,   #Distribution of nr of wet hours
       xlab="2-day max FH (m/s)", ylab="Probability density")
 @
@@ -605,23 +599,213 @@ plot(density(Allmax2d_mat$CAPEmax2d),col="gray",lwd=3, main=NA,   #Distribution 
 % See comments QR_all, for quantile fits
 
 % Make rq
-<<QR_Temp>>=
-load("./inst/tussenStap/allmax2d.rda")
+<<QR_CAPE>>=
+# QR + LM on: FH, T, TD
+# only QR on CAPE
+
+load("./inst/tussenStap/Allmax2d.rda")
 #make one QR function with conditions for different variables
 or different subsets, with same name for max & apply 1 function!
-CAPEmax2d <- subset(Allmax2d, select=c("d2","CAPEmax2d"))
+
+CAPEmax2d <- subset(Allmax2d, select=c("d2","Year","CAPEmax2d"))
+setnames(CAPEmax2d,c("d2","Year","max"))
+CAPEmax2d[,yr_mean := mean(max),by=Year]
+save(CAPEmax2d,file="./inst/tussenStap/CAPEmax2d.rda")
+
 # check 4200 d2 from 1993 - 2015 ; 23*365/2 = [1] 4197.5
-setnames(CAPEmax2d,c("d2","max"))
-
-QR_all(Allmax2d_mat)
-
+# The first 23 2-days (46 days) have missing values, so we start at d2=24
+QR_CAPEmax2d <- QR_alld2(CAPEmax2d[d2>23])
 
 
-#too large, will give errors
-#ggplot(hrKNMI,aes(x=Date,y=T)) + geom_quantile(formula=y~x,quantiles=c(0.25,0.50,0.75,0.95))
+data <- CAPEmax2d
+title= "CAPE"
+ggplot(data, aes(x = d2))+        # data
+  geom_point(aes(y=max),color="gray",size=0.3) +
+  #geom_smooth(aes(y=max), color="black") +
+  geom_line(aes(y=f50), color="purple") +
+  geom_line(aes(y=f75), color="blue") +
+  geom_line(aes(y=f90), color="green") +
+  geom_line(aes(y=f95), color="orange") +
+  geom_line(aes(y=f99), color="red") +
+  ggtitle(title) + # title
+  #ylim(0,ymax) +
+  #scale_x_discrete(limits=CAPEmax2d$Year)+
+  scale_x_continuous(breaks=c(366,1279,2193,3106,4019),labels=c(1995,2000,2005,2010,2015)) +
+  xlab("Time (2 days)") + ylab("CAPE max (J/kg)")+ # x and y-axis label
+  theme_bw()
 
+
+QR_max2dplotting(data=QR_CAPEmax2d, title="CAPE",ytitle="CAPE max (J/kg)",LM=FALSE)
+# As CAPE in winter is < 500 J/kg, trends are visible for both seasons, both stronger for summer
+@
+
+<<Slopes_CAPE>>=
 # To see differences in slope per quantile , from: http://data.library.virginia.edu/getting-started-with-quantile-regression/
 #plot(summary(qr3), parm="x")
+qs <- c(0.25,0.50,0.75,0.90,0.95,0.99)
+CAPEqr <- rq(max ~ d2, data=CAPEmax2d, tau = qs)
+CAPEqr_yearly <- rq(max ~ Year, data=CAPEmax2d, tau = qs)
+#summary(CAPEqr)
+plot(summary(CAPEqr), parm="d2")
+mtext("Quantiles",side=1,line=4)
+mtext("Slopes (J/kg/2 days)",side=2,line=3)
+
+plot(summary(CAPEqr_yearly), parm="Year",)
+mtext("Quantiles",side=1,line=4)
+mtext("Slopes (J/kg/yr)",side=2,line=3)
+@
+
+
+<<QR_FH>>=
+#2 day max + d2 + year of FH, T, TD
+load("./inst/tussenStap/data2d.rda")
+# all variables except CAPE --> as it has other resolution
+FH <- data2d[!is.na(FH)][, list(FHmax2d=max(FH),DD_maxP=DD[which.max(P)],Year=round(mean(Year),digits=0)),by=d2] #list(d2,STN)
+FHmax2d <- subset(FH, select=c("d2","Year","FHmax2d"))
+setnames(FHmax2d,c("d2","Year","max"))
+FHmax2d[,yr_mean := mean(max),by=Year]
+save(FHmax2d,file="./inst/tussenStap/FHmax2d.rda")
+
+# Check!
+# 10592 d2's (* 5 stns = 52960)     Is correct, namely nr of d2's: 365.25/2*58 = [1] 10592.25
+# Double check
+#Check amount of 2days a year FHmax2d[,length(d2),by=Year] --> seems good
+# FHmax2d[duplicated(d2),] --> 0  , Empty data.table (0 rows) of 15 cols:
+
+QR_FHmax2d <- QR_alld2(FHmax2d)
+# Plotting
+QR_max2dplotting(data=QR_FHmax2d, title="FH",ytitle="FH max (m/s)")
+@
+
+<<Slopes_FH>>=
+qs <- c(0.25,0.50,0.75,0.90,0.95,0.99)
+FHqr <- rq(max ~ d2, data=FHmax2d, tau = qs)
+FHqr_yearly <- rq(max ~ Year, data=FHmax2d, tau = qs)
+#summary(FHqr)
+plot(summary(FHqr), parm="d2")
+mtext("Quantiles",side=1,line=4)
+mtext("Slopes (J/kg/2 days)",side=2,line=3)
+
+plot(summary(FHqr_yearly), parm="Year",)
+mtext("Quantiles",side=1,line=4)
+mtext("Slopes (J/kg/yr)",side=2,line=3)
+
+# Comparison periods 1958-1993, 1993-2015, not so big difference in the end
+# Different resolution after 1993; AWS
+# Try for different periods
+#FHmax2d_begin <- FHmax2d[Year<1993]
+#FHmax2d_end <- FHmax2d[Year<1994]
+###
+# qs <- c(0.25,0.50,0.75,0.90,0.95,0.99)
+# FHqr <- rq(max ~ d2, data=FHmax2d_begin, tau = qs)
+# FHqr_yearly <- rq(max ~ Year, data=FHmax2d_begin, tau = qs)
+# #summary(FHqr)
+# plot(summary(FHqr), parm="d2")
+# mtext("Quantiles",side=1,line=4)
+# mtext("Slopes (J/kg/2 days)",side=2,line=3)
+#
+# plot(summary(FHqr_yearly), parm="Year",)
+# mtext("Quantiles",side=1,line=4)
+# mtext("Slopes (J/kg/yr)",side=2,line=3)
+#
+# Begin: -0.06-0 J/kg/yr , LM of approx -0.05
+###
+# qs <- c(0.25,0.50,0.75,0.90,0.95,0.99)
+# FHqr <- rq(max ~ d2, data=FHmax2d_end, tau = qs)
+# FHqr_yearly <- rq(max ~ Year, data=FHmax2d_end, tau = qs)
+# #summary(FHqr)
+# plot(summary(FHqr), parm="d2")
+# mtext("Quantiles",side=1,line=4)
+# mtext("Slopes (J/kg/2 days)",side=2,line=3)
+#
+# plot(summary(FHqr_yearly), parm="Year",)
+# mtext("Quantiles",side=1,line=4)
+# mtext("Slopes (J/kg/yr)",side=2,line=3)
+#
+# End: -0.05-0.04 J/kg/yr , LM of approx -0.05
+@
+
+
+<<QR_T>>=
+#T <- data2d[, list(Tmax2d=max(T),Year=round(mean(Year),digits=0)),by=d2] #list(d2,STN)
+Tallstn <- data2d[, list(Tmax2d=max(T),Year=round(mean(Year),digits=0)),by=list(d2,STN)]
+
+# Max of all stations
+Tmax2d_allstn <- Tallstn[,max := max(Tmax2d),by=d2]
+# Mean max of all stations
+Tmax2d <- Tallstn[,max := mean(Tmax2d),by=d2]
+
+Tmax2d_allstn <- Tmax2d_allstn[,list(Year=unique(Year),max=unique(max)),by=d2]
+Tmax2d_allstn[,yr_mean := mean(max),by=Year]
+#save(Tmax2d_allstn,file="./inst/tussenStap/Tmax2d_allstn.rda")
+
+Tmax2d <- Tmax2d[,list(Year=unique(Year),max=unique(max)),by=d2]
+Tmax2d[,yr_mean := mean(max),by=Year]
+save(Tmax2d,file="./inst/tussenStap/Tmax2d.rda")
+#Tmax2d is per station, max is meaned for all stations!
+
+
+
+
+
+# Check!
+# 10592 d2's (* 5 stns = 52960)     Is correct, namely nr of d2's: 365.25/2*58 = [1] 10592.25
+# Double check
+#Check amount of 2days a year Tmax2d[,length(d2),by=Year] --> seems good
+# Tmax2d[duplicated(d2),] --> 0  , Empty data.table (0 rows) of 15 cols:
+
+# Plotting quantile regression lines of mean T max of all stations
+QR_Tmax2d <- QR_alld2(Tmax2d)
+QR_max2dplotting(data=QR_Tmax2d, title="T",ytitle="T max (m/s)")
+# Plotting QR of max T of all stations
+QR_Tmax2d_allstn <- QR_alld2(Tmax2d_allstn)
+QR_max2dplotting(data=QR_Tmax2d_allstn, title="T",ytitle="T max (m/s)")
+
+#  Plotting quantile regression lines of all T max (station data bundled)
+QR_Tmax2d <- QR_alld2(Tallstn)
+QR_max2dplotting(data=QR_Tmax2d, title="T",ytitle="T max (m/s)")
+@
+
+<<Slopes_T>>=
+Tqr <- rq(max ~ d2, data=Tmax2d, tau = qs)
+Tqr_yearly <- rq(max ~ Year, data=Tmax2d, tau = qs)
+#summary(Tqr)
+plot(summary(Tqr), parm="d2")
+mtext("Quantiles",side=1,line=4)
+mtext("Slopes (degree T/2 days)",side=2,line=3)
+
+plot(summary(Tqr_yearly), parm="Year",)
+mtext("Quantiles",side=1,line=4)
+mtext("Slopes (degree T/yr)",side=2,line=3)
+# LM: 0.03 degrees a year, QR:0.0275(Q75) to 0.05 (Q99)  and Q25-Q95 around LM
+# So large deviation for Q99, this fit correspond to 1% of the data =
+@
+
+<<QR_TD>>=
+TD <- data2d[, list(TDmax2d=max(TD),Year=round(mean(Year),digits=0)),by=d2] #list(d2,STN)
+TDmax2d <- subset(TD, select=c("d2","Year","TDmax2d"))
+setnames(TDmax2d,c("d2","Year","max"))
+TDmax2d[,yr_mean := mean(max),by=Year]
+save(TDmax2d,file="./inst/tussenStap/TDmax2d.rda")
+# Checked! (similar to others)
+
+QR_TDmax2d <- QR_alld2(TDmax2d)
+# Plotting
+QR_max2dplotting(data=QR_TDmax2d, title="TD",ytitle="TD max (m/s)")
+@
+
+<<Slopes_TD>>=
+TDqr <- rq(max ~ d2, data=TDmax2d, tau = qs)
+TDqr_yearly <- rq(max ~ Year, data=TDmax2d, tau = qs)
+#summary(TDqr)
+plot(summary(TDqr), parm="d2")
+mtext("Quantiles",side=1,line=4)
+mtext("Slopes (degree T/2 days)",side=2,line=3)
+
+plot(summary(TDqr_yearly), parm="Year",)
+mtext("Quantiles",side=1,line=4)
+mtext("Slopes (degree T/yr)",side=2,line=3)
+# LM: 0.024 degrees a year, QR:0.020(Q75) to 0.029 (Q25)  and 0.025-0.026 for Q90-Q99
 @
 
 <<QR_DewTemp>>=
