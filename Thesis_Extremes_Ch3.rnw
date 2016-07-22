@@ -33,7 +33,8 @@ library(reshape2)
 library(cowplot)
 library(lattice)
 library(ggcorrplot)
-
+library(grid)
+library(gridExtra)
 # set global chunk options
 opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
                echo=FALSE, fig.height=5, fig.width=5, #message=FALSE,
@@ -178,7 +179,7 @@ ggplot(Clausius,aes(x=T))+
   \end{minipage}
 \end{figure}
 
-We can deduce from Figure \ref{fig:e_s} that the saturation vapor pressure increases rapidly with temperature. This means that more water vapor can be present in warmer air without reaching saturation. Therefore, the Clausius Clapeyron equation predicts that under the constraint of constant relative humidity \citep{Ingram2002}, an increasing temperature leads to an exponential increase in specific humidity, which is the ratio of the mass of water vapor that could be held in saturation to the total mass of saturated air \citep{Trenberth1999,Allen2002,Pall2007,Pierrehumbert2007}. Hence, atmospheric moisture would increase at the same rate. The heaviest rainfall events are likely to occur when all available moisture in a volume of air is precipitated out effectively. The intensity of these extreme events is dependent on the intensity and therefore we might expect the highest quantiles of the rainfall distribution to increase in ratio with the Clausius Clapeyron equation \citep{Pall2007}.
+We can deduce from Figure \ref{fig:e_s} that the saturation vapor pressure increases rapidly with temperature. This means that more water vapor can be present in warmer air without reaching saturation. Therefore, the Clausius Clapeyron equation predicts that under the constraint of constant relative humidity \citep{Ingram2002}, an increasing temperature leads to an exponential increase in specific humidity, which is the ratio of the mass of water vapor that could be held in saturation to the total mass of saturated air \citep{Trenberth1999,Allen2002,Pall2007,Pierrehumbert2007}. Hence, atmospheric moisture would increase at the same rate. The heaviest rainfall events are likely to occur when all available moisture in a volume of air is precipitated out effectively. The intensity of these extreme events is dependent on the intensity and therefore we might expect the highest quantiles of the rainfall probability density function to increase in ratio with the Clausius Clapeyron equation \citep{Pall2007}.
 
 To investigate the change of the water vapor pressure with increasing temperature we took the derivative of the Clausius-Clapeyron equation to temperature. Figure \ref{fig:Des_dt} demonstrates that a certain increase in temperature has a larger impact on the saturation vapor pressure for colder temperatures, than for warmer temperatures. For T $< 0^{\circ}$ C $e_s$ increases with more  than 7\%, while for temperatures higher than 20$^{\circ}$ Celsius it is less than 6\%. For this reason, we would expect that any trends in extremes caused by global warming-induced changes in moisture-holding capacity, are stronger visible for winter than for summer. (ADD this is confirmed or not confirmed by CH2 in which we compared the relative rates of summer vs winter; Look at magnitude differences between summer and winter trends!!).
 
@@ -267,6 +268,8 @@ In this part we try to identify relationships explaining the trends found in Cha
 (Side remark: misschien dubbelop? Ik heb in het begin van het hoofdstuk al de indeling verteld )
 Note, in this chapter we include duration data to find the true precipitation intensity (PI). This allows us even to distinguish between hours with the same precipitation sum, of which one is very intense and short-lasting, and the other less intense and long-lasting. Here, P is the hourly precipitation sum.
 
+
+
 \subsubsection{Correlation matrices}
 \label{subsubsec:correlationmatrices}
 
@@ -281,7 +284,30 @@ M_max <- M_max[Pmax>0]  #only wet days
 save(M_max,file="./inst/tussenStap/M_max.rda")
 # M_maxi <- subset(M_max[!is.na(FHmax)], select=c(Pmax, Imax,DR_maxP, Tmax,T_maxP, TDmax,TD_maxP,RHmax,FHmax,FH_maxP))
 M_maxi <- subset(M_max[!is.na(FHmax)], select=c(Pmax, PImax,Psum,Tmax,TDmax,RHmax,FHmax))#,DR_maxP
+save(M_maxi,file="./inst/tussenStap/M_maxi.rda")
+
 @
+
+% Relation to CAPE
+% 1) Daily maximum to daily max P and I
+% 2) Cumulative rain amount after CAPE measurement with CAPE value
+
+<<CAPEloading>>=
+CAPE <- CAPEloading("./inst/extData/cape.txt")
+save(CAPE,file="~/Documents/HourlyPrecipExtr/inst/tussenStap/CAPE.rda")
+@
+
+<<Pearson_CAPE,cache=TRUE>>=
+load("~/Documents/HourlyPrecipExtr/inst/tussenStap/CAPE.rda")
+sbCAPE_check <- CAPE[sbCAPE<5000][, list(sbCAPE,Dat)]   # selection ; to remove 1 data point >50000 = error
+hrKNMI_check <- hrKNMI[(STN==260)&(Year > 1992)][, ":="(Dat = format(date,"%Y-%m-%d %H"))]
+Compare <- merge(sbCAPE_check,hrKNMI_check,by="Dat",all.y=TRUE)
+Compare[ , N := length(sbCAPE[!is.na(sbCAPE)]), by = Date]
+Compare[ , Nmean := mean(N), by = Year]
+save(Compare, file="./inst/tussenStap/Compare.rda")
+
+@
+
 
 <<d2,cache=TRUE>>=
 # Combine dataset with 2-day CAPE and other 2-day maxima
@@ -306,10 +332,9 @@ allmax2d <- data2d[, list(Pmax2d=max(P), PImax2d=max(I),Psum2d=sum(P),DR_maxP=DR
 save(allmax2d, file="./inst/tussenStap/allmax2d.rda")
 
 # 2-day maxima, meaned over all stations
-allmax2d_mean <- allmax2d[, list(Pmax2d=mean(Pmax2d), PImax2d=mean(PImax2d),Psum2d=mean(Psum2d),DR_maxP=mean(DR_maxP),Tmax2d=mean(Tmax2d),T_max2dP= mean(T_max2dP),TDmax2d=mean(TDmax2d),TD_max2dP=mean(TD_max2dP),RHmax2d=mean(RHmax2d),FHmax2d=mean(FHmax2d),FH_max2dP=mean(FH_max2dP),DD_maxP=mean(DD_maxP),WW_maxP=mean(WW_maxP),Year=unique(Year)),by=list(d2)]
-
+allmax2d_mean <- allmax2d[, list(Pmax2d=mean(Pmax2d), PImax2d=mean(PImax2d),Psum2d=mean(Psum2d),DR_maxP=mean(DR_maxP),Tmax2d=mean(Tmax2d),T_max2dP= mean(T_max2dP),TDmax2d=mean(TDmax2d),TD_max2dP=mean(TD_max2dP),RHmax2d=mean(RHmax2d),FHmax2d=mean(FHmax2d),FH_max2dP=mean(FH_max2dP),DD_maxP=mean(DD_maxP),WW_maxP=mean(WW_maxP),Year=unique(Year)),by=d2]
+save(allmax2d_mean, file="./inst/tussenStap/allmax2d.rda")
 #Allmax2d <-merge(CAPE2dmax,allmax2d_mean,by="d2")
-#save(Allmax2d, file="./inst/tussenStap/Allmax2d.rda")
 
 # Select variables of interest and remove missing values (present in FHmax2d)
 allmax2d_mat <- subset(allmax2d_mean[!is.na(FHmax2d)], select=c(Pmax2d, PImax2d,Psum2d,Tmax2d,TDmax2d,RHmax2d,FHmax2d)) #,DR_maxP
@@ -332,6 +357,7 @@ save(CAPEmax2d_mat, file="./inst/tussenStap/CAPEmax2d_mat.rda")
 @
 
 <<corr_Pearson+Spearman>>=
+load("./inst/tussenStap/M_maxi.rda")
 p_corr <- round(cor(M,method="pearson"), 2)
 p_pmatrix <- cor_pmat(p_corr)
 p_corr_max <- round(cor(M_maxi,method="pearson"), 2)
@@ -342,6 +368,7 @@ sp_corr_max <- round(cor(M_maxi,method="spearman"), 2)
 sp_pmatrix_max <- cor_pmat(sp_corr_max)
 
 #Corr 2d max
+load("./inst/tussenStap/allmax2d_mat.rda")
 p_corr_max2d <- round(cor(allmax2d_mat,method="pearson"), 2)
 sp_corr_max2d <- round(cor(allmax2d_mat,method="spearman"), 2)
 
@@ -350,27 +377,6 @@ sp_corr_max2d <- round(cor(allmax2d_mat,method="spearman"), 2)
 # ggplot(cordata, aes(x=Var1, y=Var2, fill=value))+   geom_tile() + xlab("") + ylab("")
 # or
 @
-
-% Relation to CAPE
-% 1) Daily maximum to daily max P and I
-% 2) Cumulative rain amount after CAPE measurement with CAPE value
-
-<<CAPEloading>>=
-CAPE <- CAPEloading("./inst/extData/cape.txt")
-save(CAPE,file="~/Documents/HourlyPrecipExtr/inst/tussenStap/CAPE.rda")
-@
-
-<<Pearson_CAPE,cache=TRUE>>=
-load("~/Documents/HourlyPrecipExtr/inst/tussenStap/CAPE.rda")
-sbCAPE_check <- CAPE[sbCAPE<5000][, list(sbCAPE,Dat)]   # selection ; to remove 1 data point >50000 = error
-hrKNMI_check <- hrKNMI[(STN==260)&(Year > 1992)][, ":="(Dat = format(date,"%Y-%m-%d %H"))]
-Compare <- merge(sbCAPE_check,hrKNMI_check,by="Dat",all.y=TRUE)
-Compare[ , N := length(sbCAPE[!is.na(sbCAPE)]), by = Date]
-Compare[ , Nmean := mean(N), by = Year]
-save(Compare, file="./inst/tussenStap/Compare.rda")
-
-@
-
 
 % As we are interested in the effect of CAPE variability on (extreme) precipitation
 % and considering that is known from literature that CAPE decrease again when it is already raining,
@@ -413,11 +419,11 @@ CAPE <- subset(CAPE_day,select=c(CAPEmax,Pmax, PImax,Psum,DR_maxP,Tmax,FHmax,N))
 CAPE_corr <- round(cor(CAPE),2)
 pCAPE_heatmp <- cor_pmat(CAPE_corr)
 CAPE_spcorr <- round(cor(CAPE,method="spearman"),2)
-
+(0.4)
 #Only correlations between CAPE and other variables
 Cmatp <- as.matrix(CAPE_corr[2:8,1])
 dimnames(Cmatp) <- list(c("Pmax","PImax","Psum","DR_maxP","Tmax","FHmax","N"),c("CAPEmax"))
-save(Cmatp,file="./inst/tussenStap/Cmat.rda")
+save(Cmatp,file="./inst/tussenStap/Cmatp.rda")
 
 Cmatsp <- as.matrix(CAPE_spcorr[2:8,1])
 dimnames(Cmatsp) <- list(c("Pmax","PImax","Psum","DR_maxP","Tmax","FHmax","N"),c("CAPEmax"))
@@ -446,7 +452,7 @@ To have an easy and clear overview of the strength of possible relationships bet
 \begin{figure}[H]
   \centering
   \textbf{Heat maps of Pearson coefficients all wet hours}\par\medskip
-<<PHeatmap_all>>=
+<<PHeatmap_all,fig.height=4,fig.width=4>>=
 # All hours
 ggcorrplot(p_corr, hc.order = FALSE,type = "lower",lab=TRUE)
 @
@@ -454,8 +460,9 @@ ggcorrplot(p_corr, hc.order = FALSE,type = "lower",lab=TRUE)
     \label{fig:Heatmap_allp}
 \end{figure}
 
-Figure \ref{fig:Heatmap_allp} provides an overview of the Pearson correlation coefficients for all variables, except CAPE, for all wet hours. The two highest coefficients are between T and TD (0.97) and P and I (0.75). The strength of these relationships is pretty comprehendable for wet hours.  For the first relationship, we know that the dewpoint temperature is the temperature till which air has to be cooled to become saturated.% The difference is determined by the amount of moisture available, which differs less when only wet hours are considered.  %% See TB relation TD with T
-A Pearson correlation coeffcient of almost 1, means that higher dewpoint temperatures correspond to higher temperatures, and that the difference between T en Td is approximately the same for all wet hours, so a direct linear relationship is assumably present. The mean hourly precipitation intensity (PI) is the product of the hourly duration, DR, and intensity, I. The relationship between PI and I is stronger (0.75), than the relationship between PI and DR (0.35). % because I is computed from PI and DR
+Figure \ref{fig:Heatmap_allp} provides an overview of the Pearson correlation coefficients for all variables, except CAPE, for all wet hours. The two highest coefficients are between T and TD (0.97) and P and I (0.75). The strength of these relationships is pretty comprehendable for wet hours.  For the first relationship, we know that .%
+
+ The clear relationship between T and TD (dewpoint temperature) is straight forward; following the definition of dew point temperature itself: the dewpoint temperature is the temperature till which air has to be cooled to become saturated. For moist air (RH$>50$\%) the following thumb rule hold: $Td=T-(\frac{100-85}{5}$) \citep{Wallace2006}. As the data considered in this chapter only contains the wet hours, most of them will fulfill the assumption of a moist air and therefore a strong linear correlation is present. This corresponds to Pearson correlation coefficient of almost 1. The mean hourly precipitation intensity (PI) is the product of the hourly duration, DR, and intensity, I. The relationship between PI and I is stronger (0.75), than the relationship between PI and DR (0.35). % because I is computed from PI and DR
 The third highest coefficient is the one between DR and RH (0.38). The higher the relative humidity, the higher the percentage is fullfilled which is needed for saturation at a certain temperature. Apparently this percentage says more about the duration of precipitation within an hour, than about the magnitude of the precipitation sum (or mean precipitation intensity PI). Higher percentage of RH correspond partly to longer durations of precipitation within an hour, which could mean that with higher saturation it takes longer before precipitation stops due to lowered saturation levels. However, there are of course also events where RH is high and the precipitation intensive, this explains why the coefficient is not super high.  % It is also explainable that this coefficient is not higher than 0.38, as there are also short-lastig, high intensity precipitation events.
 Four other postive correlation coefficients, which are a bit higher than the rest, are those between (i) PI and T, (ii) PI and Td, (iii) I and T, and (iv) I and Td. From section \ref{subsec:theory} we know that temperature can influence precipitation amount (P) and intensity (PI) via enhanced evaporation and updrafts and higher ability of air to hold moisture. As evaporation is important at the place and time of moisture influx, it could be that this relation holds a non-insitu and lagged relationship. Hence, the relationship does not have to be significant for comparison between temperature and precipitation measured at the same time and only on the location of precipitation. The relationship between P or I and T via enhanced updrafts, should also be present in the relationship between CAPE and P or I. For De Bilt we plotted the CAPE 2-day maxima in relationship to other 2-day maxima and the cumulative 2-day precipitation sum (see Figure \ref{CAPE2d_p}).
 
@@ -473,6 +480,7 @@ ggcorrplot(p_corr_max2d, hc.order = FALSE,type = "lower",lab=TRUE)
   \hfill
   \begin{minipage}{0.48\textwidth}
 <<PHeatmap_CAPE2d>>=
+load("./inst/tussenStap/CAPE_mat2d.rda")
 ggcorrplot(CAPE_mat2d,lab=TRUE) #, p.mat=p.mat, insig="blank"
 @
     \subcaption{Wet 2-day maxima in CAPE}
@@ -495,53 +503,41 @@ ggcorrplot(Cmatp,lab=TRUE) #, p.mat=p.mat, insig="blank"
     \subcaption{CAPE a wet day}
     \label{fig:CAPE_p}
   \end{minipage}
-\caption{Heatmap consisting of Pearson correlation coefficients of the variables: hourly mean precipitation intensity (P), precipitation intensity (PI), wind strength (FH), relative humidity (RH), temperature(T) and dewpoint temperature(TD). The heatmaps are computed from: 2-day maxima of all variables (meaned over all stations), except CAPE (a), 2-day CAPE maxima in relation to other variables for de Bilt (b), and daily maxima of all variables except CAPE (c), daily CAPE maxima in relation to other variables for de Bilt (d). $N_d2$ (N) is the 2-day (daily) count of CAPE measurements. Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
+\caption{Heatmap consisting of Pearson correlation coefficients of the variables: hourly mean precipitation intensity (P), precipitation intensity (PI), wind strength (FH), relative humidity (RH), temperature(T) and dewpoint temperature(TD). The heatmaps are computed from: 2-day maxima of all variables (meaned over all stations), except CAPE (a), 2-day CAPE maxima in relation to other variables for de Bilt (b), and daily maxima of all variables except CAPE (c), daily CAPE maxima in relation to other variables for de Bilt (d). $N_{d2}$ (N) is the 2-day (daily) count of CAPE measurements. Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
 \label{fig:Pearsonheatmap}
 \end{figure}
 
 The relationship between CAPE and T is indeed relatively strong for this time scale and for this location, as can be deduced from the high correlation coefficient (0.35) in Figure \ref{fig:CAPE_p}.
-In spite of all these relationships between T and P, the coefficient between all-hour P and T is not so high (0.15). However, more and counteracting relationships can play a role. What is more striking from Figure \ref{fig:Heatmap_allp} is the relatively high negative correlation between RH and FH. So the higher the wind speed, the lower the relative humidity. This could mean that with high wind speed at the moment of precipitation, the frontal or other precipitation system is blown over quickly. However, then DR is excepted to have a relatively high correlation with FH, which is not the case. On contrast, high horizontal wind speeds also occur at times of strong vertical mixing when contrasting winds converge at the place where air is lifted. Nontheless,this relationship between 2-day maxima in CAPE (CAPEmax2d) and FH is not found back in the corresponding correlation coefficient (-0.1) in Figure \ref{fig:CAPE2d_p}. The highest correlation between 2-day CAPE and precipitation variables, is the one between CAPEmax2d with the 2-day maxima in precipitation intensity (0.14). N shows the effect of the number of CAPE measurements a 2 days on the magnitude of the CAPE 2-day maxima, which is just as strong as the relation between CAPEmax2d and PImax2d, but weaker than the relation between 2-day CAPE and temperature or dewpoint temperature. As we studied the maxima in mean hourly precipitation intensity for independent 2-day periods in Chapter 3 (REF CH trends), we also included the correlation coefficients for 2-day maxima in P and I and the 2-day precipitation sum (Psum) in relation to the 2-day maxima in T, Td, FH, and RH. Eventually we want to explain the observed trends found in Chapter 3. Therefore, it is relevant to investigate the correlation coefficients for the same temporal resolution. Besides, this approach zooms in more on the precipitation extremes, as 2-day maxima are considered. Keep into mind that the maxima of the different variables do not have to be measured at the same moment in time. On the one hand, this can enhance correlations in a biased way, if the hours are widely spaced in time. On the other hand, lower correlation coefficients are found when we look at correlation between 2-day maxima in P and the variables T, TD, and FH, measured at the time of the maximum in P. Negative feedbacks are then assumed to play a role, as for example cooling of the air due to precipitation. We observe the same relationships which are relative high as in Figures \ref{fig:Heatmap_allp}, but than stronger, just like in \ref{fig:CAPE_p}. This shows that the relationships are stronger for the extremes. Correlation coefficients between 0.28 and 0.36 between the 2-day maxima in hourly precipitation sums (Pmax2d) and 2-day maxima in T and Td. Hence,the theory in which precipitation intensity of more intense precipitation events, relate to the ability of air to hold moisture, matches with the relatively high correlation coefficient (0.38) between 2-day maxima in PI and TD, with the latter as measure of moisture. Even higher coefficients (0.32-0.38) are found when the 2-day maxima in precipitation intensities are considered instead of Pmax2d. The correlation coefficients between precipitation 2-day maxima and CAPE are lower, 0.11-0.14. In fact, the largest changes in magnitude of correlation coefficients are detected for FH values. Whereas, no strong correlation are found between all-hour FH and other variables, except with RH, the 2-day maxima in FH correlate well with the precipitation and temperature maxima. Especially the correlation between the 2-day maxima in FH and the 2-day precipitation is high (0.44). 2-day precipitation sum correspond more to long-lasting precipitation events and maxima in hourly precipitation sum and intensity to short-lasting events. Besides, long-(short)-lasting events are generally characterized by events of a larger (more local) scale. Therefore, it could be explained by the synoptic settings corresponding to high 2-day precipitation sums. Stable high pressure area's are associated with stable weather conditions and maybe local convective showers, while unstable low pressure area's are associated with unstable conditions and passing frontal systems. A higher pressure difference results in higher wind speeds. In short, the correlation between 2-day precipitation sums and 2-day maxima in wind speeds could be explained by the synoptic setting. On the contrary, the relationship between FH and RH is weaker for the maxima. Futher, we investigate whether we get an even stronger signal if we look at maxima of wet days. This would give a two times higher resolution, but lower extremes are then considered. The results are shown in Figure \ref{fig:Heatmap_maxip}, were maxima in CAPE are excluded, and in Figure \ref{fig:CAPE_p} were daily maxima in CAPE are considered. We do observe stronger correlations for the daily, compared to the 2-day maxima.
+In spite of all these relationships between T and P, the coefficient between all-hour P and T is not so high (0.15). However, more and counteracting relationships can play a role. What is more striking from Figure \ref{fig:Heatmap_allp} is the relatively high negative correlation between RH and FH. So the higher the wind speed, the lower the relative humidity. This could mean that with high wind speed at the moment of precipitation, the frontal or other precipitation system is blown over quickly. However, then DR is excepted to have a relatively high correlation with FH, which is not the case. On contrast, high horizontal wind speeds also occur at times of strong vertical mixing when contrasting winds converge at the place where air is lifted. Nontheless,this relationship between 2-day maxima in CAPE (CAPEmax2d) and FH is not found back in the corresponding correlation coefficient (-0.1) in Figure \ref{fig:CAPE2d_p}. The highest correlation between 2-day CAPE and precipitation variables, is the one between CAPEmax2d with the 2-day maxima in precipitation intensity (0.14). N shows the effect of the number of CAPE measurements a 2 days on the magnitude of the CAPE 2-day maxima, which is just as strong as the relation between CAPEmax2d and PImax2d, but weaker than the relation between 2-day CAPE and temperature or dewpoint temperature. As we studied the maxima in mean hourly precipitation intensity for independent 2-day periods in Chapter 3 (REF CH trends), we also included the correlation coefficients for 2-day maxima in P and I and the 2-day precipitation sum (Psum) in relation to the 2-day maxima in T, Td, FH, and RH. Eventually we want to explain the observed trends found in Chapter 3. Therefore, it is relevant to investigate the correlation coefficients for the same temporal resolution. Besides, this approach zooms in more on the precipitation extremes, as 2-day maxima are considered. Keep into mind that the maxima of the different variables do not have to be measured at the same moment in time. On the one hand, this can enhance correlations in a biased way, if the hours are widely spaced in time. On the other hand, lower correlation coefficients are found when we look at correlation between 2-day maxima in P and the variables T, TD, and FH, measured at the time of the maximum in P. Negative feedbacks are then assumed to play a role, as for example cooling of the air due to precipitation. We observe the same relationships which are relative high as in Figures \ref{fig:Heatmap_allp}, but than stronger, just like in \ref{fig:CAPE_p}. This shows that the relationships are stronger for the extremes. Correlation coefficients between 0.28 and 0.36 between the 2-day maxima in hourly precipitation sums (Pmax2d) and 2-day maxima in T and Td. Hence,the theory in which precipitation intensity of more intense precipitation events, relate to the ability of air to hold moisture, matches with the relatively high correlation coefficient (0.38) between 2-day maxima in PI and TD, with the latter as measure of moisture. Even higher coefficients (0.32-0.38) are found when the 2-day maxima in precipitation intensities are considered instead of Pmax2d. The correlation coefficients between precipitation 2-day maxima and CAPE are lower, 0.11-0.14. In fact, the largest changes in magnitude of correlation coefficients are detected for FH values. Whereas, no strong correlation are found between all-hour FH and other variables, except with RH, the 2-day maxima in FH correlate well with the precipitation and temperature maxima. Especially the correlation between the 2-day maxima in FH and the 2-day precipitation is high (0.44). 2-day precipitation sum correspond more to long-lasting precipitation events and maxima in hourly precipitation sum and intensity to short-lasting events. Besides, long-(short)-lasting events are generally characterized by events of a larger (more local) scale. Therefore, it could be explained by the synoptic settings corresponding to high 2-day precipitation sums. Stable high pressure area's are associated with stable weather conditions and maybe local convective showers, while unstable low pressure area's are associated with unstable conditions and passing frontal systems. A higher pressure difference results in higher wind speeds. In short, the correlation between 2-day precipitation sums and 2-day maxima in wind speeds could be explained by the synoptic setting. On the contrary, the relationship between FH and RH is weaker for the maxima. Futher, we investigate whether we get an even stronger signal if we look at maxima of wet days. This would give a two times higher resolution, but lower extremes are then considered. The results are shown in Figure \ref{fig:Heatmap_maxip}, were maxima in CAPE are excluded, and in Figure \ref{fig:CAPE_p} were daily maxima in CAPE are considered. We do not observe notable stronger correlations for the daily maxima, compared to the 2-day maxima, except for CAPE.
 
 % The highest correlations between the maximum hourly precipitation sum of wet-days only and the other variables, are those of maxima in T (0.412), TD (0.402). Also contributing, but less importance are correlation of FHmax(0.23) and RHmax (0.171) with Pmax. For intensity the relation with Tmax is even a bit higher (0.423), but for TD, FHmax and RHmax lower (respectievely 0.384,0.175 and 0.088).
-Till now we used Pearson coefficients, which indicate the strength of linear relationships between variables (REF method). However, what if some or most of the variables depend in a non-linear way on each other? In order to investigate the type of relationship (i.e. linear or non-linear) we plotted the point clouds of all possible relations for maxima in T, TD, CAPE, FH and P (Figure \ref{fig:pointclouds})
+Till now we used Pearson coefficients, which indicate the strength of linear relationships between variables (REF method). However, what if some or most of the variables depend in a non-linear way on each other? In order to investigate the type of relationship (i.e. linear or non-linear) we plotted the point clouds of all possible relations for wet 2-day maxima in T, TD, CAPE, FH and P (Figure \ref{fig:pointclouds})
+
 
 \begin{figure}[H]
   \centering
   \textbf{Point clouds}\par\medskip
 <<Plotting_points_allvariables,cache=TRUE>>=
-load("./inst/tussenStap/CAPE_day.rda")
-load("./inst/tussenStap/M_max.rda")
-M_CAPE <- subset(CAPE_day,select=c(CAPEmax,Date))
-M_allmax <- merge(M_max,M_CAPE,by="Date")
-M_trial <- subset(M_allmax, select=c("Tmax", "TDmax","CAPEmax","FHmax","Pmax")) #, "PImax"
-plot(M_trial)
+#all stations, without CAPE
+#load("./inst/tussenStap/allmax2d_mean.rda")
+#M_trial <- subset(allmax2d_mean, select=c("Pmax2d","Tmax2d", "TDmax2d","FHmax2d")) #, "PImax"
+# De Bilt only
+load("./inst/tussenStap/CAPEmax2d_mat.rda")
+M_trialB <- subset(CAPEmax2d_mat, select=c("Pmax2d","Tmax2d", "TDmax2d","CAPEmax2d","FHmax2d")) #, "PImax2d"
+plot(M_trialB)
 @
-  \caption{Points clouds showing the type of relationship between the maxima of the following variables: temperature(T), dewpoint temperature(TD), convective available potential energy (CAPE), wind strength (FH), and hourly mean precipitation intensity (P). Note, the x- and y-axes differ in scale.}
+  \caption{Points clouds showing the type of relationship between the wet 2-day maxima of the following variables: temperature(T), dewpoint temperature(TD), convective available potential energy (CAPE), wind strength (FH), and hourly mean precipitation intensity (P), measured in De Bilt. Note, the x- and y-axes differ in scale.}
   \label{fig:pointclouds}
 \end{figure}
 
-Figure \ref{fig:pointsclouds} confirms the linear relationship between (maxima in) T and Td, which we already suggested. Multiple point clouds indicate on exponential relations; maxima in P with maxima in T or Td,  and maxima in CAPE with maxima in T and Td. To a lesser extent this is applies on the relationship between maxima in CAPE and FH. The other point clouds, CAPE maxima with precipitation maxima, FH maxima with P,T and Td maxima, do not have a distinctive form. Nontheless, it is appearent that linearity can not be assumed for most of the relationships. Besides, another assumption for pearson correlation coefficients is normal-distributed variables (REF method). In Chapter 3 (REF CH3) we already observed non-normal distributions for all hours and 2-day maxima in P. However, the Spearman correlation coefficient does not assume normal-distributed data, and is a measure of non-linear relationships (REF method). Figure \ref{fig:Spearmanheatmap} shows two heat maps, one for all wet 2-day maxima of all variables, except CAPE, and one for the variables in relation to CAPE for De Bilt only. As shifting to a daily maxima did not result in improvement for the previous Figure, we do not include dialy figures for this approach.
+Figure \ref{fig:pointsclouds} confirms the linear relationship between (maxima in) T and Td, which we already suggested.  Multiple point clouds indicate on semi-exponential and exponential relationships. With semi-exponential we mean that aswell a linear shape, as an exponential shape can be recognized. This is the case for 2-day maxima in P in relation tot 2-day maxima in T or Td. On contrast, the 2-day maxima in CAPE relate to all other variables clearly in an exponential way. The 2-day maxima in FH relate to P and CAPE maxima in a more exponential form, while the relations with 2-day maxima in T and Td do not have a distinctive form. Nontheless, it is apparent that linearity can not be assumed for most of the relationships. Besides, another assumption for pearson correlation coefficients is normal-distributed variables (REF method). In Chapter 3 (REF CH3) we already observed non-normal probability density functions for all hours and 2-day maxima in P. However, the Spearman correlation coefficient does not assume normal-distributed data, and is a measure of non-linear relationships (REF method). Figure \ref{fig:Spearmanheatmap} shows two heat maps, one for all wet 2-day maxima of all variables, except CAPE, and one for the variables in relation to CAPE for De Bilt only. As shifting to a daily maxima did not result in improvement for the previous Figure, we do not include dialy figures for this approach.
 
-\begin{figure}[H]
+% If include PI - P point cloud;
+% The slope of a linear line between the hourly precipitation sum (P) and the intensity (I) depend on the duration, D ($I*D=P$).
+
+ \begin{figure}[H]
   \centering
   \textbf{Heat map of Spearman coefficients on 2-day maxima}\par\medskip
-%'   \begin{minipage}{0.48\textwidth}
-%' <<SPHeatmap_all>>=
-%' # All hours
-%' ggcorrplot(sp_corr, hc.order = FALSE,type = "lower",lab=TRUE)
-%' @
-%'     \subcaption{All wet hours}
-%'     \label{fig:Heatmap_allsp}
-%'   \end{minipage}
-%'   \hfill
-%'   \begin{minipage}{0.48\textwidth}
-%' <<SPHeatmap_CAPE>>=
-%' ggcorrplot(Cmatsp,lab=TRUE) #, p.mat=p.mat, insig="blank"
-%' @
-%'     \subcaption{CAPE a wet day}
-%'     \label{fig:CAPE_sp}
-%'   \end{minipage}
-%'     \hfill
   \begin{minipage}{0.48\textwidth}
 <<SPHeatmap_max2d>>=
 # Maxima a day
@@ -552,61 +548,48 @@ ggcorrplot(sp_corr_max2d, hc.order = FALSE,type = "lower",lab=TRUE)
   \end{minipage}
   \hfill
   \begin{minipage}{0.48\textwidth}
-<<SPHeatmap_CAPE2d>>=
+<<SPHeatmap_CAPE2d,fig.height=2.5>>=
+load("./inst/tussenStap/CAPE_spmat2d.rda")
 ggcorrplot(CAPE_spmat2d,lab=TRUE) #, p.mat=p.mat, insig="blank"
 @
-    \subcaption{Wet 2-day maxima in CAPE}
-    \label{fig:CAPE2d_sp}
+
+<<SPHeatmap_CAPE,fig.height=2.5>>=
+ggcorrplot(Cmatsp,lab=TRUE) #, p.mat=p.mat, insig="blank"
+@
+    \subcaption{Wet 2-day (top) and daily (bottom) maxima in CAPE}
+    \label{fig:CAPE_sp}
   \end{minipage}
-%'   \hfill
-%'   \begin{minipage}{0.48\textwidth}
-%' <<SPHeatmap_maxi>>=
-%' # Maxima a day
-%' ggcorrplot(sp_corr_max, hc.order = FALSE,type = "lower",lab=TRUE)
-%' @
-%'     \subcaption{Daily Maxima}
-%'     \label{fig:Heatmap_maxisp}
-%'   \end{minipage}
-  \caption{Heatmap consisting of Spearman correlation coefficients of the variables: intensity (I), wind strength (FH), measure of relative humidity (RH), hourly precipitation sum (P), temperature(T) and dewpoint temperature(TD).The heatmaps are computed from: 2-day maxima of all variables (meaned over all stations), except CAPE (a), 2-day CAPE maxima in relation to other variables for de Bilt (b). N_d2 is the 2-day count of CAPE measurements. Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
-  \label{fig:Heatmap_max2dsp}
+  \caption{Heatmap consisting of Spearman correlation coefficients of the variables: intensity (I), wind strength (FH), measure of relative humidity (RH), hourly precipitation sum (P), temperature(T) and dewpoint temperature(TD).The heatmaps are computed from: 2-day maxima of all variables (meaned over all stations), except CAPE (a), 2-day CAPE maxima and daily CAPE maxima in relation to other variables for de Bilt (b). $N_{d2}$ is the 2-day count of CAPE measurements. Colouring from blue to red gives the sign and strength of the relationship as is shown in the legend.}
+  \label{fig:Spearsonheatmap}
 \end{figure}
 
-The Spearman correlation coefficients are all lower than the Pearson correlation coefficients for wet 2-day maxima, except for those corresponding to the possible relations with FH 2-day maxima, the relations between the different precipitation maxima (P, PI and Psum) and the linear relation between T and TD 2-day maxima. %Whether these relationships are found linear is based on \ref{fig:pointsclouds_2}
-The wind speed is not only for 2-day precipitation sums, but also for 2-day maxima in P and PI the strongest explanatory factor (coefficients of 0.37-0.47).
-It's strange that although the relationships mainly seem to be non-linear that the Spearman correlation coefficients are not higher in general, than the Pearson correlations. However, the Spearman approach is more correct from a statistical point of view.
+The Spearman correlation coefficients are all lower than the Pearson correlation coefficients for wet 2-day maxima, except for those corresponding to the possible relations with FH 2-day maxima, the relations between the different precipitation maxima (P, PI and Psum) and the linear relation between T and TD 2-day maxima (Figure \ref{Spearsonheatmap}). %Whether these relationships are found linear is based on \ref{fig:pointsclouds_2}
+The wind speed is both for 2-day precipitation sums, and for 2-day maxima in P and PI the strongest explanatory factor (coefficients of 0.37-0.47). It's strange that although the relationships mainly seem to be non-linear that the Spearman correlation coefficients are not higher in general, than the Pearson correlations. Especially the 2-day maxima in CAPE correlate relatively weakly with precipitation maxima (0.07 and 0.1 with P and PI), However, the Spearman approach is more correct from a statistical point of view. As we except Spearman correlation coefficients  to be stronger for daily CAPE maxima, we plotted these also in Figure \ref{CAPE_sp}. The correlations are indeed higher for the dialy resolution compared to the 2-day resolution, even 2.5-3 times. Nevertheless, we want to explain changes in 2-day precipitation maxima, so we can only conclude that the influence of the 2-day CAPE maxima is likely to be not that high regarding the strength of the relationship.
 
-To summarize, ..... have high correlation..
-
-%' \begin{figure}[H]
-%'   \centering
-%'   \textbf{Point clouds of all wet hours}\par\medskip
-%' <<Plotting_points_allvariables2,cache=TRUE>>=
-%' #M <- hrKNMI[P>0][, list(P=P, PI=I,DR=DR,T, TD, RH=RH,FH=FH)]
-%' M <- subset(M, select=c("T","TD","P","PI","DR")) #, "PImax"
-%' M_wet <- M[P>0]
-%' plot(M_wet)
-%' @
-%'   \caption{Points clouds showing the type of relationship between the maxima of the following variables: temperature(T), dewpoint temperature(TD), hourly mean precipitation intensity (P), hourly intensity (PI) and precipitation duration within an hour (DR). Note, the x- and y-axes differ in scale.}
-%'   \label{fig:pointclouds_2}
-%' \end{figure}
-
+To summarize, we find relatively high correlation coefficients for the factors T, Td, CAPE and FH of which we know from theory to have an influence on precipitation changes. These correlations are stronger for the extremes in these variables. Different forms of relationships (linear, exponential, combination of both) are recognized by point clouds. 2-day T and Td maxima relate in a semi-expontential form to precipitation maxima. CAPE and FH 2-day maxima have a distinctive exponential relationship with precipitation maxima. With respect to 2-day P, the Pearson correlations are higher for T and Td 2-day maxima (cor=0.33 and 0.36 respectively),than the Spearman correlations. This approach considers the strenght of linear relationships. The Spearman correlations describe non-linear relationships and are much higher and the highest of all explanatory variables for 2-day maxima in P corresponds to the 2-day maxima in FH (cor=0.4). Despite of the exponential dependancy between 2-day CAPE and precipitation maxima, corresponding Spearman correlations are lower than the Pearson correlations. Following 2-day maxima FH, the order of strength regarding the Spearman correlation with 2-day maxima in P (of which significant trends are found in Chapter 3 REF) is: TD (cor=0.3), T (cor=0.2), and lastly CAPE (cor=0.07).
 
 
 \subsection{Trends in key variables}
 
+% Mean (max) over station --> detect common signal
 
-% Mind mean (max) over station or bundle with vectors
-
-In this section we investigate whether the key variables, wind strength, CAPE, temperature and dewpoint temperature, regress in time. We will consider the 2-day maxima, so that we can compare the appearance of the trends and their rates with the trends in 2-day maxima in hourly precipitation intensity. %(and frequency of wet hours and 2-day precipitation sum)
-First, we plot the probability density distributions in order to choose the appropriate method(s) of trend analysis for each variable, i.e. linear regression on normal distributed data and quantile regression for both normal and non-normal distributed data. Note, trend analysis on 2-day CAPE maxima is applied for the time period for which CAPE data is available (1993-2015).
+In this section we investigate whether the key variables, wind strength, CAPE, temperature and dewpoint temperature, regress in time. First, we plot the probability density functions in order to choose the appropriate method(s) of trend analysis for each variable, i.e. linear regression on normal distributed data and quantile regression for both normal and non-normal distributed data. Second, we plot the fitted quantile and linear regression lines for all 2-day maxima. In order to detect the common trend for these variables, we have meaned these maxima over the 5 stations. (The resulting trends can are then compared based on their appearance and rates to the trends in 2-day maxima in hourly precipitation intensity. --> if we add relative trends in Chapter 3 and here)  %(and frequency of wet hours and 2-day precipitation sum)
+Note, trend analysis on 2-day CAPE maxima is applied for the time period for which CAPE data is available (1993-2015) and not meaned over stations, as only CAPE data from de Bilt is available. We do not study in depth the historical changes in instrumentation and measuring sites as we did for precipitation, due to the time restriction of this research. Third, we apply a significance test on the trends.
 
 \begin{figure}[H]
   \centering
-  \textbf{Probability density distribution of 2-day maxima}\par\medskip
+  \textbf{Probability density functions of 2-day maxima}\par\medskip
   \begin{minipage}{0.48\textwidth}
 <<label=dist_FHmax2d>>=
-load("./inst/tussenStap/Allmax2d_mat.rda")
-plot(density(Allmax2d_mat$FHmax2d), type='l',col='orange', lwd=3, main=NA,   #Distribution of nr of wet hours
+# Make data set of 2-day maxima of FH  above the year 1993, to deal with the rounding problem (automatic and rounding on 1 m/s since 1993)
+load("./inst/tussenStap/data2d.rda")
+FH <- data2d[!is.na(FH)][, list(FHmax2d=max(FH),DD_maxP=DD[which.max(P)],Year=round(mean(Year),digits=0)),by=list(d2,STN)]
+save(FH,file="./inst/tussenStap/FH.rda")
+FHmean <- FH[, max := mean(FHmax2d),by=d2]
+FHmean <- FHmean[,list(max=unique(max),Year=unique(Year)),by=d2]
+save(FHmean,file="./inst/tussenStap/FHmean.rda")
+
+plot(density(FHmean[Year>1993]$max), type='l',col='orange', lwd=3, main=NA,   #Distribution of nr of wet hours
       xlab="2-day max FH (m/s)", ylab="Probability density")
 @
     \subcaption{2-day max FH}
@@ -615,7 +598,8 @@ plot(density(Allmax2d_mat$FHmax2d), type='l',col='orange', lwd=3, main=NA,   #Di
   \hfill
   \begin{minipage}{0.48\textwidth}
 <<label=dist_Tmax2d>>=
-plot(density(Allmax2d_mat$Tmax2d),col="red",lwd=3, main=NA,   #Distribution of nr of wet hours
+load("./inst/tussenStap/allmax2d_mean.rda")
+plot(density(allmax2d_mean$Tmax2d),col="red",lwd=3, main=NA,   #Distribution of nr of wet hours
       xlab="2-day max T (degrees C)", ylab="Probability density")
 @
     \subcaption{2-day max T}
@@ -624,7 +608,7 @@ plot(density(Allmax2d_mat$Tmax2d),col="red",lwd=3, main=NA,   #Distribution of n
   \hfill
   \begin{minipage}{0.48\textwidth}
 <<label=dist_TDmax2d>>=
-plot(density(Allmax2d_mat$TDmax2d),col="purple",lwd=3, main=NA,   #Distribution of nr of wet hours
+plot(density(allmax2d_mean$TDmax2d),col="purple",lwd=3, main=NA,   #Distribution of nr of wet hours
       xlab="2-day max Td (degrees C)", ylab="Probability density")
 @
     \subcaption{2-day max Td}
@@ -633,43 +617,23 @@ plot(density(Allmax2d_mat$TDmax2d),col="purple",lwd=3, main=NA,   #Distribution 
   \hfill
   \begin{minipage}{0.48\textwidth}
 <<label=dist_CAPEmax2d>>=
-plot(density(Allmax2d_mat$CAPEmax2d),col="darkgreen",lwd=3, main=NA,   #Distribution of nr of wet hours
+load("./inst/tussenStap/CAPE2dmax.rda")
+plot(density(CAPE2dmax$CAPEmax2d),col="darkgreen",lwd=3, main=NA,   #Distribution of nr of wet hours
       xlab="2-day max CAPE (J/kg)", ylab="Probability density")
 @
     \subcaption{2-day max CAPE}
     \label{fig:dist_CAPEmax2d}
   \end{minipage}
-\caption{Probability density distributions of 2-day maxima in wind strength (a), temperature (b), dewpoint temperature (c), and convective available potential energy (d). Note, the x- and y-axes differ in scale per variable.}
-\label{fig:pointclouds}
+\caption{Probability density functions of 2-day maxima in wind strength (a), temperature (b), dewpoint temperature (c) meaned over all 5 stations, and 2-day maxima in convective available potential energy for only De Bilt (d). The probability density function of FH is computed from 2-day FH maxima between 1993-2015, to deal with the difference in rouding due to automatization around the year 1993. The other probability density functions are computed from data between 1958-2015. Note, the x- and y-axes differ in scale per variable.}
+\label{fig:pdfall}
 \end{figure}
 
-%'   \begin{minipage}{0.48\textwidth}
-%' <<label=dist_Pmax2d>>=
-%' plot(density(Allmax2d_mat[Pmax2d<30]$Pmax2d), type='l',col='blue', lwd=3, main=NA,   #Distribution of nr of wet hours
-%'       xlab="2-day max", ylab="Probability density")
-%' @
-%'     \caption{2-day max P}
-%'     \label{fig:dist_Pmax2d}
-%'   \end{minipage}
-%'   \hfill
-%'   \begin{minipage}{0.48\textwidth}
-%' <<label=dist_PImax2d>>=
-%' plot(density(Allmax2d_mat$PImax2d), type='l',col='green', lwd=3, main=NA,   #Distribution of nr of wet hours
-%'       xlab="2-day max I (mm/hr)", ylab="Probability density")
-%' @
-%'     \caption{2-day max PI}
-%'     \label{fig:dist_PImax2d}
-%'   \end{minipage}
-%'   \hfill
-%'
-%' \caption{Probability distributions of 2-day maxima in hourly precipitation sum (a), precipitation intensity (b), wind strength (c), temperature (d), dewpoint temperature (e), and convective available potential energy (e). Note, the x- and y-axes differ in scale per variable.}
-% See comments QR_all, for quantile fits
+All the probability density functions shown in Figure \ref{fig:pdfall} are computed from the 2-day maxima between 1958-2015, except for the probability density function of the FH maxima. Before the automatization of wind speed measurements (in 1993), data was not rounded to 1 m/s. As two types of data (rounded and non-rounded) give a strange appearance of the probability density function, we decided to only plot the 2-day FH maxima measured from 1993 onwards. However, the form of this probability density function is not different from the probability density function consisting of all FH maxima. The 2-day maxima in FH, T and TD are distributed in a more normal way, compared to 2-day maxima in CAPE which are distributed more in a non-normal way (Figure \ref{fig:pdfall}). Note, that the probability density function of wind speed is not entirely symmetric. For this difference in probability density functions, we only apply linear regression on the 2-day maxima of FH, T and TD. For 2-day CAPE maxima we study the behaviour of the yearly mean of 2-day maxima, which is normal-distributed. For all data we study the quantile regression fits on the 2-day maxima. As precipitation extremes are stronger correlated to the extremes in the explanatory factors, the trends in the higher quantiles are the most interesting.
 
 % Make rq
 <<QR_CAPE>>=
 # QR + LM on: FH, T, TD
 # only QR on CAPE
-
 load("./inst/tussenStap/Allmax2d.rda")
 #make one QR function with conditions for different variables
 #or different subsets, with same name for max & apply 1 function!
@@ -678,137 +642,131 @@ CAPEmax2d <- subset(Allmax2d, select=c("d2","Year","CAPEmax2d"))
 setnames(CAPEmax2d,c("d2","Year","max"))
 CAPEmax2d[,yr_mean := mean(max),by=Year]
 save(CAPEmax2d,file="./inst/tussenStap/CAPEmax2d.rda")
-
+load("./inst/tussenStap/CAPEmax2d.rda")
 # check 4200 d2 from 1993 - 2015 ; 23*365/2 = [1] 4197.5
 # The first 23 2-days (46 days) have missing values, so we start at d2=24
 QR_CAPEmax2d <- QR_alld2(CAPEmax2d[d2>23])
-#
-# data <- CAPEmax2d
-# title= "CAPE"
-# ggplot(data, aes(x = d2))+        # data
-#   geom_point(aes(y=max),color="gray",size=0.3) +
-#   #geom_smooth(aes(y=max), color="black") +
-#   geom_line(aes(y=f50), color="purple") +
-#   geom_line(aes(y=f75), color="blue") +
-#   geom_line(aes(y=f90), color="green") +
-#   geom_line(aes(y=f95), color="orange") +
-#   geom_line(aes(y=f99), color="red") +
-#   ggtitle(title) + # title
-#   #ylim(0,ymax) +
-#   #scale_x_discrete(limits=CAPEmax2d$Year)+
-#   scale_x_continuous(breaks=c(366,1279,2193,3106,4019),labels=c(1995,2000,2005,2010,2015)) +
-#   xlab("Time (2 days)") + ylab("CAPE max (J/kg)")+ # x and y-axis label
-#   theme_bw()
 
+# Legend
+Legendgrob5 <- legendGrob(c("LM","50%","75%","90%","95%","99%"), pch=15,
+                          gp=gpar(col=c("black","purple","blue","green","orange","red"),cex=1), ncol=3)
 
-QR_max2dplotting(data=QR_CAPEmax2d, title="CAPE",ytitle="CAPE max (J/kg)",LM=FALSE)
-# As CAPE in winter is < 500 J/kg, trends are visible for both seasons, both stronger for summer
-@
-
-<<Slopes_CAPE>>=
 # To see differences in slope per quantile , from: http://data.library.virginia.edu/getting-started-with-quantile-regression/
 #plot(summary(qr3), parm="x")
 qs <- c(0.25,0.50,0.75,0.90,0.95,0.99)
 CAPEqr <- rq(max ~ d2, data=CAPEmax2d, tau = qs)
 CAPEqr_yearly <- rq(max ~ Year, data=CAPEmax2d, tau = qs)
+@
+
+\begin{figure}[H]
+  \centering
+  \textbf{Trends in 2-day CAPE maxima}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+<<Trend_CAPE>>=
+QR_max2dplotting(data=QR_CAPEmax2d, title="CAPE",ytitle="CAPE max (J/kg)",LM=FALSE)
+@
+    \subcaption{Quantile regression}
+    \label{fig:CAPEqr_yearly}
+  \end{minipage}
+  \begin{minipage}{0.48\textwidth}
+  <<Legend_CAPE,fig.height=1>>=
+grid.arrange(Legendgrob5)
+@
+
+<<Yearlyslopes_CAPE,fig.height=4>>=
+#grid.arrange(Legendgrob5)
+plot(summary(CAPEqr_yearly), parm="Year")
+mtext("Quantiles",side=1,line=4)
+mtext("Slopes (J/kg/yr)",side=2,line=3)
+@
+    \subcaption{Legend and yearly rates}
+    \label{fig:yr_rates_CAPE}
+  \end{minipage}
+\caption{Quantile regression lines with $\tau = 75, 90, 95, 99, 99.9$ \%  of 2-day maxima in convective available potential energy meaned over all stations (a), the corresponding legend and yearly rates in CAPE in J/kg/yr (b). The black line provides the linear regression fit of the yearly mean in 2-day CAPE maxima.}
+\label{fig:Trends_CAPE}
+\end{figure}
+
+<<2dSlopes_CAPE,eval=FALSE>>=
 #summary(CAPEqr)
 plot(summary(CAPEqr), parm="d2")
 mtext("Quantiles",side=1,line=4)
 mtext("Slopes (J/kg/2 days)",side=2,line=3)
-
-plot(summary(CAPEqr_yearly), parm="Year",)
-mtext("Quantiles",side=1,line=4)
-mtext("Slopes (J/kg/yr)",side=2,line=3)
 @
+% CHECK yearly mean dist
+From Figure \ref{fig:CAPEqr_yearly} we can deduce that CAPE values decrease between 1993 and 2015 for station De Bilt. The linear regression of the yearly mean in 2-day maxima has a negative slope of approximately -10 J/kg/yr (Figure \ref{fig:yr_rates_CAPE}), %= 2.9%/yr (intercept +- 350), is for 23 years, 66% decrease
+which is stronger negative than the lower (25\%- and 50\%-) quantiles, but weaker negative than the higher (75\%-,90\%-,95\%,99\%) quantiles. The strongest trend is found for the 5\% highest 2-day CAPE maxima, which decrease of 42 J/kg/yr. Furthermore, we can observe that the higher the quantile, the larger the confidence interval. The reason for this is that a lower samples size  belongs to a higher quantile, which enhances the uncertainty in the regression fit. At the end of this section we will investigate the significance of all the different quantile regression lines for all variables.
 
-
+% COMPARE relative trends to relative trends in 2-day P, F and Psum
 <<QR_FH>>=
 #2 day max + d2 + year of FH, T, TD
-load("./inst/tussenStap/data2d.rda")
-# all variables except CAPE --> as it has other resolution
-FH <- data2d[!is.na(FH)][, list(FHmax2d=max(FH),DD_maxP=DD[which.max(P)],Year=round(mean(Year),digits=0)),by=d2] #list(d2,STN)
-FHmax2d <- subset(FH, select=c("d2","Year","FHmax2d"))
-setnames(FHmax2d,c("d2","Year","max"))
-FHmax2d[,yr_mean := mean(max),by=Year]
-save(FHmax2d,file="./inst/tussenStap/FHmax2d.rda")
-
+load("./inst/tussenStap/FHmean.rda")
+# Mean over stations
 # Check!
 # 10592 d2's (* 5 stns = 52960)     Is correct, namely nr of d2's: 365.25/2*58 = [1] 10592.25
 # Double check
-#Check amount of 2days a year FHmax2d[,length(d2),by=Year] --> seems good
-# FHmax2d[duplicated(d2),] --> 0  , Empty data.table (0 rows) of 15 cols:
+#Check amount of 2days a year FHmean[,length(d2),by=Year] --> seems good
+# FHmean[duplicated(d2),] --> 0  , Empty data.table (0 rows) of 15 cols:
 
-QR_FHmax2d <- QR_alld2(FHmax2d)
-# Plotting
-QR_max2dplotting(data=QR_FHmax2d, title="FH",ytitle="FH max (m/s)")
+QR_FHmax2d <- QR_alld2(FHmean)
+#Slopes FH
+qs <- c(0.25,0.50,0.75,0.90,0.95,0.99)
+FHqr <- rq(max ~ d2, data=FHmean, tau = qs)
+FHqr_yearly <- rq(max ~ Year, data=FHmean, tau = qs)
 @
 
-<<Slopes_FH>>=
-qs <- c(0.25,0.50,0.75,0.90,0.95,0.99)
-FHqr <- rq(max ~ d2, data=FHmax2d, tau = qs)
-FHqr_yearly <- rq(max ~ Year, data=FHmax2d, tau = qs)
-#summary(FHqr)
-plot(summary(FHqr), parm="d2")
-mtext("Quantiles",side=1,line=4)
-mtext("Slopes (J/kg/2 days)",side=2,line=3)
+\begin{figure}[H]
+  \centering
+  \textbf{Trends in 2-day FH maxima}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+<<PlottingQR_FH>>=
+QR_max2dplotting(data=QR_FHmax2d, title="FH",ytitle="FH max (m/s)",LM=TRUE)
+@
+    \subcaption{Quantile regression}
+    \label{fig:QR_2dFH}
+  \end{minipage}
+  \begin{minipage}{0.48\textwidth}
+  <<Legend_FH,fig.height=1>>=
+grid.arrange(Legendgrob5)
+@
 
+<<Yearlyslopes_FH,fig.height=4>>=
+#grid.arrange(Legendgrob5)
 plot(summary(FHqr_yearly), parm="Year")
 mtext("Quantiles",side=1,line=4)
-mtext("Slopes (J/kg/yr)",side=2,line=3)
+mtext("Slopes (m/s/yr)",side=2,line=3)
+@
+    \subcaption{Legend and yearly rates}
+    \label{fig:yr_rates_FH}
+  \end{minipage}
+\caption{Quantile regression lines with $\tau = 75, 90, 95, 99, 99.9$ \%  of 2-day maxima in wind speed meaned over all stations (a), the corresponding legend and yearly rates in FH in m/s/yr (b). The black line provides the linear regression fit of the 2-day FH maxima.}
+\label{fig:Trends_FH}
+\end{figure}
 
-# Comparison periods 1958-1993, 1993-2015, not so big difference in the end
-# Different resolution after 1993; AWS
-# Try for different periods
-#FHmax2d_begin <- FHmax2d[Year<1993]
-#FHmax2d_end <- FHmax2d[Year<1994]
-###
-# qs <- c(0.25,0.50,0.75,0.90,0.95,0.99)
-# FHqr <- rq(max ~ d2, data=FHmax2d_begin, tau = qs)
-# FHqr_yearly <- rq(max ~ Year, data=FHmax2d_begin, tau = qs)
-# #summary(FHqr)
-# plot(summary(FHqr), parm="d2")
-# mtext("Quantiles",side=1,line=4)
-# mtext("Slopes (J/kg/2 days)",side=2,line=3)
-#
-# plot(summary(FHqr_yearly), parm="Year",)
-# mtext("Quantiles",side=1,line=4)
-# mtext("Slopes (J/kg/yr)",side=2,line=3)
-#
-# Begin: -0.06-0 J/kg/yr , LM of approx -0.05
-###
-# qs <- c(0.25,0.50,0.75,0.90,0.95,0.99)
-# FHqr <- rq(max ~ d2, data=FHmax2d_end, tau = qs)
-# FHqr_yearly <- rq(max ~ Year, data=FHmax2d_end, tau = qs)
-# #summary(FHqr)
-# plot(summary(FHqr), parm="d2")
-# mtext("Quantiles",side=1,line=4)
-# mtext("Slopes (J/kg/2 days)",side=2,line=3)
-#
-# plot(summary(FHqr_yearly), parm="Year",)
-# mtext("Quantiles",side=1,line=4)
-# mtext("Slopes (J/kg/yr)",side=2,line=3)
-#
-# End: -0.05-0.04 J/kg/yr , LM of approx -0.05
+<<Slopes_FHd2,eval=FALSE>>=
+plot(summary(FHqr), parm="d2")
+mtext("Quantiles",side=1,line=4)
+mtext("Slopes (m/s/2 days)",side=2,line=3)
 @
 
+Next to CAPE, a negative signal is also detected for the 2-day maxima in FH (Figure \ref{fig:QR_2dFH}). Figure \ref{fig:Trends_FH} presents all the quantile and linear regression fits and the corresponding rates. For the period 1958-2015 the linear regression of 2-day maxima has the exact same negative slope as the 50\%-quantile regression line; -0.014 m/s/yr (\ref{fig:yr_rates_FH}). % 0.014/8.75*100 = -0.16% /yr   = for 58 years -9.1%
+Additionally, we again find higher slopes for the higher quantiles and the strongest trend for the 95\%-quantile (-0.02 m/s/yr). % -0.02111111/17*100 = -0.124183  = for 58 years -7.2%
+It is worth noting that Figure \ref{fig:yr_rates_FH} shows that the 99\% quantile regression fit has relatively a very wide confidence interval, so there is high uncertainty for this fit.
 
-<<QR_T>>=
+% COMPARE relative trends to relative trends in 2-day P, F and Psum
+<<QR_T,cache=TRUE>>=
 #T <- data2d[, list(Tmax2d=max(T),Year=round(mean(Year),digits=0)),by=d2] #list(d2,STN)
 Tallstn <- data2d[, list(Tmax2d=max(T),Year=round(mean(Year),digits=0)),by=list(d2,STN)]
 
 # Max of all stations
 Tmax2d_allstn <- Tallstn[,max := max(Tmax2d),by=d2]
 # Mean max of all stations
-Tmax2d <- Tallstn[,max := mean(Tmax2d),by=d2]
+Tmean <- Tallstn[,max := mean(Tmax2d),by=d2]
+Tmean <- Tmean[, list(max=unique(max),Year=unique(Year)),by=d2]
+save(Tmean,file="./inst/tussenStap/Tmean.rda")
 
 Tmax2d_allstn <- Tmax2d_allstn[,list(Year=unique(Year),max=unique(max)),by=d2]
 Tmax2d_allstn[,yr_mean := mean(max),by=Year]
 #save(Tmax2d_allstn,file="./inst/tussenStap/Tmax2d_allstn.rda")
-
-Tmax2d <- Tmax2d[,list(Year=unique(Year),max=unique(max)),by=d2]
-Tmax2d[,yr_mean := mean(max),by=Year]
-save(Tmax2d,file="./inst/tussenStap/Tmax2d.rda")
-#Tmax2d is per station, max is meaned for all stations!
 
 # Check!
 # 10592 d2's (* 5 stns = 52960)     Is correct, namely nr of d2's: 365.25/2*58 = [1] 10592.25
@@ -816,66 +774,188 @@ save(Tmax2d,file="./inst/tussenStap/Tmax2d.rda")
 #Check amount of 2days a year Tmax2d[,length(d2),by=Year] --> seems good
 # Tmax2d[duplicated(d2),] --> 0  , Empty data.table (0 rows) of 15 cols:
 
-# Plotting quantile regression lines of mean T max of all stations
-QR_Tmax2d <- QR_alld2(Tmax2d)
-QR_max2dplotting(data=QR_Tmax2d, title="T",ytitle="T max (m/s)")
+# quantile regression lines of mean T max of all stations
+QR_Tmax2d <- QR_alld2(Tmean)
+@
+
+<<max_and_bundled_QR_T,eval=FALSE>>=
 # Plotting QR of max T of all stations
 QR_Tmax2d_allstn <- QR_alld2(Tmax2d_allstn)
-QR_max2dplotting(data=QR_Tmax2d_allstn, title="T",ytitle="T max (m/s)")
+QR_max2dplotting(data=QR_Tmax2d_allstn, title="T",ytitle="T max (degrees C)")
 
 #  Plotting quantile regression lines of all T max (station data bundled)
 QR_Tmax2d <- QR_alld2(Tallstn)
-QR_max2dplotting(data=QR_Tmax2d, title="T",ytitle="T max (m/s)")
+QR_max2dplotting(data=QR_Tmax2d, title="T",ytitle="T max (degrees C)")
 @
 
-<<Slopes_T,fig.keep='all'>>=
-Tqr <- rq(max ~ d2, data=Tmax2d, tau = qs)
-Tqr_yearly <- rq(max ~ Year, data=Tmax2d, tau = qs)
+<<Slopes_T2d>>=
+Tqr <- rq(max ~ d2, data=Tmean, tau = qs)
+Tqr_yearly <- rq(max ~ Year, data=Tmean, tau = qs)
 #summary(Tqr)
-plot(summary(Tqr), parm="d2")
-mtext("Quantiles",side=1,line=4)
-mtext("Slopes (degree T/2 days)",side=2,line=3)
+# plot(summary(Tqr), parm="d2")
+# mtext("Quantiles",side=1,line=4)
+# mtext("Slopes (degree T/2 days)",side=2,line=3)
+@
+\begin{figure}[H]
+  \centering
+  \textbf{Trends in 2-day T maxima}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+<<PlottingQR_T>>=
+QR_max2dplotting(data=QR_Tmax2d, title="T",ytitle="T max (degrees C)")
+@
+    \subcaption{Quantile regression}
+    \label{fig:QR_2dT}
+  \end{minipage}
+  \begin{minipage}{0.48\textwidth}
+  <<Legend_T,fig.height=1>>=
+grid.arrange(Legendgrob5)
+@
 
-plot(summary(Tqr_yearly), parm="Year",)
+<<Yearlyslopes_T,fig.height=4>>=
+plot(summary(Tqr_yearly), parm="Year")
 mtext("Quantiles",side=1,line=4)
 mtext("Slopes (degree T/yr)",side=2,line=3)
 # LM: 0.03 degrees a year, QR:0.0275(Q75) to 0.05 (Q99)  and Q25-Q95 around LM
 # So large deviation for Q99, this fit correspond to 1% of the data =
 @
+    \subcaption{Legend and yearly rates}
+    \label{fig:yr_rates_T}
+  \end{minipage}
+\caption{Quantile regression lines with $\tau = 75, 90, 95, 99, 99.9$ \%  of 2-day maxima in temperature meaned over all stations (a), the corresponding legend and yearly rates in T maxima in $^{\circ}$C/yr (b). The black line provides the linear regression fit of the 2-day T maxima.}
+\label{fig:Trends_T}
+\end{figure}
 
+Moreover, we studied the trends in temperature for the same period, of which the results are shown in Figure \ref{fig:Trends_T}. In contrast to CAPE and FH, positive quantile and linear regression trends are found for the 2-day maxima in T (\ref{fig:QR_2dT}). What is more striking, is that for the quantile lines we can not hold the rule; the higher the quantile, the stronger the trend. Although, Figure \ref{fig:yr_rates_T} demonstrates that the strongest slope is detected for the 99\%-quantile (increase in 2-day maxima of 0.06 $^{\circ}$C/yr), % 0.05563636/27.5*100*58 = 0.2%/yr = for 58 yrs  11.73%
+the weakest slope is detected for the 75\%-quantile (0.025 $^{\circ}$C/yr). Besides, not only the 90\%- and 95\%-quantile lines have a stronger slope than the linear regression line, but also the 25\%- and 50\%-quantile lines. The yearly linear regression of the 2-day T maxima gives an increase of 0.034 $^{\circ}$C/yr. % 0.034 / 12.75 * 100 = 0.27%/yr = for 58 yrs 15.5%
+
+% COMPARE relative trends to relative trends in 2-day P, F and Psum
 <<QR_TD>>=
-TD <- data2d[, list(TDmax2d=max(TD),Year=round(mean(Year),digits=0)),by=d2] #list(d2,STN)
-TDmax2d <- subset(TD, select=c("d2","Year","TDmax2d"))
-setnames(TDmax2d,c("d2","Year","max"))
-TDmax2d[,yr_mean := mean(max),by=Year]
-save(TDmax2d,file="./inst/tussenStap/TDmax2d.rda")
+TD <- data2d[, list(TDmax2d=max(TD),Year=round(mean(Year),digits=0)),by=list(d2,STN)] #list(d2,STN)
+# Mean max
+TDmean <- TD[,list(max=unique(mean(TDmax2d)),Year=unique(Year)),by=d2]
+TDmean[,yr_mean := mean(max),by=Year]
+save(TDmean,file="./inst/tussenStap/TDmean.rda")
 # Checked! (similar to others)
 
-QR_TDmax2d <- QR_alld2(TDmax2d)
-# Plotting
-QR_max2dplotting(data=QR_TDmax2d, title="TD",ytitle="TD max (m/s)")
+QR_TDmax2d <- QR_alld2(TDmean)
 @
 
 <<Slopes_TD,fig.keep='all'>>=
-TDqr <- rq(max ~ d2, data=TDmax2d, tau = qs)
-TDqr_yearly <- rq(max ~ Year, data=TDmax2d, tau = qs)
+TDqr <- rq(max ~ d2, data=TDmean, tau = qs)
+TDqr_yearly <- rq(max ~ Year, data=TDmean, tau = qs)
 #summary(TDqr)
-plot(summary(TDqr), parm="d2")
-mtext("Quantiles",side=1,line=4)
-mtext("Slopes (degree T/2 days)",side=2,line=3)
+# plot(summary(TDqr), parm="d2")
+# mtext("Quantiles",side=1,line=4)
+# mtext("Slopes (degree T/2 days)",side=2,line=3)
+@
+\begin{figure}[H]
+  \centering
+  \textbf{Trends in 2-day TD maxima}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+<<PlottingQR_TD>>=
+QR_max2dplotting(data=QR_TDmax2d, title="TD",ytitle="TD max (m/s)")
+@
+    \subcaption{Quantile regression}
+    \label{fig:QR_2dTD}
+  \end{minipage}
+  \begin{minipage}{0.48\textwidth}
+  <<Legend_TD,fig.height=1>>=
+grid.arrange(Legendgrob5)
+@
 
+<<Yearlyslopes_TD,fig.height=4>>=
 plot(summary(TDqr_yearly), parm="Year")
 mtext("Quantiles",side=1,line=4)
 mtext("Slopes (degree T/yr)",side=2,line=3)
 # LM: 0.024 degrees a year, QR:0.020(Q75) to 0.029 (Q25)  and 0.025-0.026 for Q90-Q99
 @
+    \subcaption{Legend and yearly rates}
+    \label{fig:yr_rates_TD}
+  \end{minipage}
+\caption{Quantile regression lines with $\tau = 75, 90, 95, 99, 99.9$ \%  of 2-day maxima in dewpoint temperature meaned over all stations (a), the corresponding legend and yearly rates in TD maxima in $^{\circ}$C/yr (b). The black line provides the linear regression fit of the 2-day TD maxima.}
+\label{fig:Trends_TD}
+\end{figure}
 
-<<QR_DewTemp>>=
-#ggplot(hrKNMI,aes(x=Date,y=TD)) + geom_quantile(formula=y~Date,quantiles=c(0.25,0.50,0.75,0.95))
+Finally, we applied trend analysis on the 2-day maxima in TD (see Figure \ref{fig:Trends_TD}). From Figure \ref{fig:QR_2DTD} we can deduce that 2-day maxima increase in time for the period 1958-2015. The linear regression line slopes relatively steeply with a rate of 0.025 $^{\circ}$C/yr. Only two quantiles have stronger slopes, the 25\%-quantile and the 95\% quantile. The slope of the 25\%-quantile is remarkably the highest; 0.031 $^{\circ}$C/yr. % 0.03058824/9*100 = 0.34 %/yr *58 = 19.7%
+However, the confidence interval is relatively wide for the lower quantiles. Nevertheless, the lower boundary of the confidence interval is always above 0.012, so these trends are probably significantly positive.
+
+% COMPARE relative trends to relative trends in 2-day P, F and Psum
+
+<<p_test_allvar,eval=FALSE>>=# P test with means
+load("./inst/tussenStap/FHmean.rda")
+load("./inst/tussenStap/Tmean.rda")
+load("./inst/tussenStap/TDmean.rda")
+load("./inst/tussenStap/CAPEmax2d.rda")
+
+# tau's --> qs
+# mind switch obs > reps to obs < reps for negative trends,
+# for T and TD expected positive trends, for FH and CAPE expected negative trends
+p_test_all <- function(data=data,N=9999,taus=qs,method="fn"){
+  p <- c(5,5,5,5,5,5)
+  for(i in 1:length(taus)){
+  tmp <- data[, list(replicate(N, round(as.numeric(coef(rq(sample(max) ~ d2, tau=taus[i],method=method))[2]),digits=10)))]
+  tmp$obs <- data[, list(round(as.numeric(coef(rq(max ~ d2, tau=taus[i], method=method))[2]),digits=10))]
+  setnames(tmp, c("reps","obs"))
+  p[i] <- tmp[, list(unique((1+sum(obs < reps))/(N+1)))]
+  }
+  p <- data.table(Q25=p[1],Q50=p[2],Q75=p[3],Q90=p[4],Q95=p[5],Q99=p[6])
+  return(p)
+}
+FHp <- p_test_all(data=FHmean)
+Tp <- p_test_all(data=Tmean)
+TDp <-p_test_all(data=TDmean)
+CAPEp <- p_test_all(data=CAPEmax2d) #[d2>23]
+
+p <- rbind(FHp,Tp,TDp,CAPEp)
+#library(xtable)
+#xtable(p)
 @
 
+<<p_test_LMall,cache=TRUE>>=
+p_test_LMall <- function(data=data,N=9999,neg=FALSE){
+  tmp <- data[, list(replicate(N, round(as.numeric(coef(lm(sample(max) ~ d2))[2]),digits=10)))]
+  tmp$obs <- data[, list(round(as.numeric(coef(lm(max ~ d2))[2]),digits=10))]
+  setnames(tmp, c("reps","obs"))
+  if(neg==FALSE){ # Positive trends
+  p <- tmp[, list(unique((1+sum(obs > reps))/(N+1)))]
+  }
+  else{           # Negative trends
+  p <- tmp[, list(unique((1+sum(obs < reps))/(N+1)))]
+  }
+  return(p)
+}
+#ptry <- p_test_LMall(data=FHmean,neg=TRUE)
+#ptry
+p_LMall <- p_test_LMall(data=FHmean,neg=TRUE)
+setnames(p,c("FH"))
+p_LMall[, T := p_test_LMall(data=Tmean)$V1]
+p_LMall[, TD := p_test_LMall(data=TDmean)$V1]
+p_LMall[, CAPE := p_test_LMall(data=CAPEmax2d,neg=TRUE)$V1]
+save(p_LMall,file="./inst/tussenStap/p_LMall.rda")
+#xtable(p_LM)
+@
 
-with p-table and rates
+In order to investigate this, and also for the trends in the 2-day maxima of the other variables, we conduct a 9999 Monte Carlo permutation test. Table \ref{p_rates_all} gives an overview of the significance of the trends. All the linear and quantile regression trends are significant, except for the 99\%-quantile of 2-day maxima in FH (p=0.94), of which we already discusses the large uncertainty expressed by the wide confidence interval for this quantile. In fact, all the trends are significant on the 99\% confidencence level, except for the 99\%-quantile for FH and CAPE. It should be stressed that the 2-day maxima in CAPE are based only on data of De Bilt and for the period 1993-2015. Due to this different temporal lenght of the data set the resolution is 60\% lower than for the 2-day maximain T, TD and FH. Nontheless, the 99\%-quantile trend for this variable is significant on the 95\% confidence level and the other quantile trends on the 99\% confidence level.
+
+\begin{table}[ht]
+\centering
+\caption{The p values of the quantile regression trends with Q25-Q99 corresponding to the $\tau$=25-99\%-quantile.}
+\begin{tabular}{l|r|r|r|r|r|r|r}
+  \hline
+ Variable & Q25 & Q50 & Q75 & Q90 & Q95 & Q99 & LM \\
+  \hline
+FH & \cellcolor{red}1.00 & \cellcolor{red}1.00 & \cellcolor{red}1.00 & \cellcolor{red}1.00 & \cellcolor{red}1.00 & 0.94 & \cellcolor{red}1.00\\
+T & \cellcolor{green}1.00 & \cellcolor{green}1.00 & \cellcolor{green}1.00 & \cellcolor{green}1.00 & \cellcolor{green}1.00 & \cellcolor{green}1.00 & \cellcolor{green}1.00\\
+TD & \cellcolor{green}1.00 & \cellcolor{green}1.00 & \cellcolor{green}1.00 & \cellcolor{green}1.00 & \cellcolor{green}1.00 & \cellcolor{green}1.00 &  \cellcolor{green}1.00\\
+CAPE & \cellcolor{red}1.00 & \cellcolor{red}1.00 & \cellcolor{red}1.00 & \cellcolor{red}1.00 & \cellcolor{red}1.00 & \cellcolor{red}0.98  & \cellcolor{red}1.00\\
+   \hline
+\end{tabular}
+\label{tab:p_rates_all}
+\end{table}
+
+
+
+(Maybe add summer and winter plots of quantile rates+ p table??)
 
 <<trial_bundle>>=
 # y=as.vector(1:5)
@@ -909,14 +989,16 @@ with p-table and rates
 # rq()
 @
 
+% INCLUDE summer and winter trends ???
+% maybe not, already considered in next paragraph
+% then discuss why not in beginningn of section
 
 \subsubsection{Changing distribution or relations}
 
 % IMPROVE, two periods
 
-In this part we start with a coarse way of observing the different relationships. In Figure ... all variables are plotted against each other, which already hint on whether a relationship is likely and what kind of relationship it is. The clear relationship between T and TD (dewpoint temperature) is straight forward; following the definition of dew point temperature itself for moist air (RH$>50$\%), $Td=T-(\frac{100-85}{5}$) \citep{Wallace2006}. As the data considered in this chapter only contains the wet hours, most of them will fulfill the assumption of a moist air and therefore a linear line is shown. The slope of a linear line between the hourly precipitation sum (P) and the intensity (I) depend on the duration, D ($I*D=P$). Next to these more linear features, some of the subplots (T, TD, RH and FH versus P or I) demonstrate non-linear behaviour. The relationships between relative humidity (RH) and FH (wind strength) mutually and with TD or T are less clear and as we focuss on explaining precipitation changes we will not cover these relationships in much more depth.
-
-<<Wind>>=
+Here we bundle data, as we divide all p
+<<Wind,eval=FALSE>>=
 #Code to include wind (is later used to make subplots per wind regime)
 # Variable dividing data into 8 windregimes
 M_allmax[, Wind_maxP := 0]
@@ -940,7 +1022,9 @@ save(M_allmax,file="./inst/tussenStap/M_allmax.rda")
 
 
 
-For the most important factors (maxima in T, TD and CAPE) regarding the correlation heat maps (\ref{subsubsec:correlationmatrices}) we plotted the relationship between the daily maximum hourly precipitation sums and the maxima of other variables as point clouds. As the type of relationship can be influenced by how the data is distributed, we also plotted the distribution. We differentiated between summer and winter to have a better understanding of seasonal differences in precipitation explained by the key variables.
+For the most important factors (maxima in T, TD and CAPE) regarding the correlation heat maps (\ref{subsubsec:correlationmatrices}) we plotted the relationship between the daily maximum hourly precipitation sums and the maxima of other variables as point clouds. --> DOUBLE??
+
+As the type of relationship can be influenced by how the data is distributed, we also plotted the distribution. We differentiated between summer and winter to have a better understanding of seasonal differences in precipitation explained by the key variables.
 
 
 <<PmaxvsTmax>>=
@@ -1044,13 +1128,6 @@ plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), hjust=0, ncol = 1, nrow =
 # Q_TDbin[,":="(CC = Pmeanmax[1]*(1.07^(TDmid-TDmid[1])), CC95 = Q95[1]*(1.07^(TDmid-TDmid[1])),CC99 = Q99[1]*(1.07^(TDmid-TDmid[1])))]
 @
 
-
-
-
-
-
-
-
 In figure \ref{fig:PvsT}A the precipitation maxima of wet days only increase with maxima in temperature in a non-linear way. Clear differences are visible between winter and summer. The winter precipitation are generally lower and the points slope more gently with respect to temperature maxima. The summer data resembles a triangle shape, with exponential increase till the maximum precipitation of 50 mm hr$^{-1}$ at approximately 20 degrees and an exponential decrease for further temperature increase. The summer and winter distributions of temperature are demonstrated in Figure \ref{fig:PvsT}B. They have similar Gaussian shapes, but are different positioned with respect to temperature. The maxima in number of winter data per bin of 2 degrees celsius is at 6-8 $^{\circ}$C, while the summer data is concentrated around 14-16 degrees celsius. The triangle shape observed in the summer data could be influenced by its distribution. However, the peak in precipitation data is then for higher temperature than expected and for winter data it does not hold. In order to remove any influence of the way temperature is distributed, we also plotted the mean precipitation maxima per bin. Moreover, the 95\% and 99\% quantile lines are plotted to visualize the temperature relation with \enquote{high} extremes in precipitation. The mean and quantile lines are compared to Clausius Clapeyron (CC) scaling. From Figure \ref{fig:PvsT}C can be deduced that the super CC-scaling (twice what is expected from the CC equation) found by Lenderink is also observed here for the summer mean and the quantiles. Note, that the mean here is a mean of maxima precipitation sum a day, with only wet hours considered. For the winter data the colder part scales with Clausius Clapeyron, while for temperatures higher than 7$^{\circ}$C the mean shows a rate which is slightly weaker than the double CC-scaling. The reason for the off-set between summer and winter data in mean and quantiles can be explained by .. ? (data number difference)
 The increase of precipitation maxima with temperature maxima might be induced from a shift between stratiform-dominated to convection-dominated precipitation as suggested by \citep{Berg2013}. As no data about synoptic conditions is included, this relationship seems hard to verify. However, stratiform and convective precipitation might be seperated on values of CAPE. (BRON!)
 
@@ -1094,7 +1171,6 @@ plot_grid(plot1, plot2, plot3, labels=c("A", "B","C"), hjust=0, ncol = 1, nrow =
 \end{figure}
 
 The values of CAPE maxima are very seasonal dependent, as can been deduced from figure \ref{fig:PvsCAPE}. No clear patterns can be detected in A. However, the winterdata is confined in precipitation maxima till 10 mmhr$^{-1}$ and CAPE maxima till 600 Jkg$^{-1}$, whereas the summer has precipitation maxima till 33 mmhr$^{-1}$ and the highest CAPE maxima exceed the 4000 Jkg$^{-1}$. The distribution are lognormal, with an intenser exponential decrease with increasing CAPE for winter than summer.
-
 
 In section \ref{subsubsec:moist} relative humidity and dewpoint temperature are described as measures for atmospheric moisture. As relative humidity is assumed to stay constant and we are interested in variables explaining trends in intensification of precipitation extremes, we consider the relationship between precipitation and dewpoint temperature.
 
@@ -1149,6 +1225,38 @@ In general, in summer we have high temperature (mainly between 12-24$^{\circ}$),
 The same factors plotted against intensity maxima is similar in characterstics and patterns.
 
 \newpage
+
+% Improve, but use bundled data!
+<<FH,eval=FALSE>>=
+#2 day max + d2 + year of FH, T, TD
+load("./inst/tussenStap/data2d.rda")
+# all variables except CAPE --> as it has other resolution
+FH <- data2d[!is.na(FH)][, list(FHmax2d=max(FH),DD_maxP=DD[which.max(P)],Year=round(mean(Year),digits=0)),by=list(d2,STN)]
+save(FH,file="./inst/tussenStap/FH.rda")
+
+# Seasons
+load(file="./inst/tussenStap/data2dS.rda")
+max2dS <- data2dS[, list(Pmax2d=unique(Pmax2d), PImax2d=max(I),Psum2d=sum(P),DR_maxP=DR[which.max(P)],Tmax2d=max(T),T_max2dP= T[which.max(P)],TDmax2d=max(TD),TD_max2dP= TD[which.max(P)],RHmax2d=max(RH),FHmax2d=max(FH),FH_max2dP= FH[which.max(P)],DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)],Year=round(mean(Year),digits=0)),by=list(d2,STN)]
+save(max2dS, file="./inst/tussenStap/max2dS.rda")
+FHS <- subset(max2dS[!is.na(FH)], select=c("d2","FHmax2d","Year"))
+save(FHS,file="./inst/tussenStap/FHS.rda")
+
+load(file="./inst/tussenStap/data2dW.rda")
+max2dW <- data2dW[, list(Pmax2d=unique(Pmax2d), PImax2d=max(I),Psum2d=sum(P),DR_maxP=DR[which.max(P)],Tmax2d=max(T),T_max2dP= T[which.max(P)],TDmax2d=max(TD),TD_max2dP= TD[which.max(P)],RHmax2d=max(RH),FHmax2d=max(FH),FH_max2dP= FH[which.max(P)],DD_maxP=DD[which.max(P)],WW_maxP=WW[which.max(P)],Year=round(mean(Year),digits=0)),by=list(d2,STN)]
+save(max2dW, file="./inst/tussenStap/max2dW.rda")
+FHW <- subset(max2dW[!is.na(FH)], select=c("d2","FHmax2d","Year"))
+save(FHW,file="./inst/tussenStap/FHW.rda")
+
+FHtrial <- rq(FHmax2d ~ d2, data=FH[STN==260], tau=0.90)
+
+data <- FH[, f95 := as.numeric(fitted.values(rq(FHmax2d ~ d2, tau =0.95,method="fn")))]
+data <- FH[STN==235][, f95 := as.numeric(fitted.values(rq(FHmax2d ~ d2, tau =0.95,method="fn")))]
+data <- FH[STN==260][, f95 := as.numeric(fitted.values(rq(FHmax2d ~ d2, tau =0.95,method="fn")))]
+data <- FH[STN==280][, f95 := as.numeric(fitted.values(rq(FHmax2d ~ d2, tau =0.95,method="fn")))]
+data <- FH[STN==310][, f95 := as.numeric(fitted.values(rq(FHmax2d ~ d2, tau =0.95,method="fn")))]
+data <- FH[STN==380][, f95 := as.numeric(fitted.values(rq(FHmax2d ~ d2, tau =0.95,method="fn")))]
+
+@
 
 <<PlotWind_PmaxvsTDmax,fig.cap='The maxima in Precipitation are plotted against maxima in dewpoint temperature in A. B gives the distribution of dewpoint temperature maxima, and C demonstrates mean and the 95-percent quantile change in precipitation for every bin dewpoint temperature. Dewpoint temperature is binned with steps of 2 degrees.'>>=
 # Calculate mean Pmax, 95 and 99% quantiles for each bin, per season
