@@ -247,7 +247,7 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4, plot5, Legendgrob2, ncol=2)
              ncol= 1)
 @
   \caption{For all stations quantile regression fits with $\tau = 75, 90, 95, 99, 99.9$ \% on 2-day maxima in
-hourly precipitation intensitie (I) in mm/hr, given by colored lines. The black lines are the linear regression on the yearly means of 2-day intensity maxima.}
+hourly precipitation intensities (I) in mm/hr, given by colored lines. The black lines are the linear regression on the yearly means of 2-day intensity maxima.}
   \label{fig:QR_max2d}
 \end{figure}
 
