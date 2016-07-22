@@ -22,7 +22,7 @@ library(knitr)
 library(data.table)
 library(quantreg)
 library(HourlyPrecipExtr)
-
+library(PCICt)
 # set global chunk options
 opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
                echo=FALSE, fig.height=5, fig.width=5, #message=FALSE,
@@ -39,11 +39,9 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 
 Only temperature at hour of daily max.
 
-
-
-
 <<load_Spaindata>>=
 #Spain_loading <- function(file){
+# Loading file with all maxima per Spanisch station (stns are following each other vertically)
 file <- "./inst/extData/Spain_dailymaxP_T.txt"
 tmp <- fread(file)
 setnames(tmp,c("YYYYMMDD", "Pmax", "Tmax"))
@@ -58,6 +56,19 @@ tmp[, ':='(Pmax = Pmax * 0.1, Tmax= Tmax*0.1)] # P in mm, T and Td in degrees Ce
 
 #CHECK negative , or very large numbers??
 
+
+# Nr of daily P and T max;
+# 19800101 - 20141222, 356 * 35  - 9 = 12451 days
+# Nr of stn's?
+# tmp[YYYYMMDD==20140101][,length(Pmax),by=YYYYMMDD]   = 89
+# tmp[YYYYMMDD==20120101][,length(Pmax),by=YYYYMMDD]   = 90
+# tmp[YYYYMMDD==20100101][,length(Pmax),by=YYYYMMDD]   = 85
+#--> variable
+tmp[,nr_day := length(Pmax),by=YYYYMMDD]
+tmp[,nr_yr := length(Pmax),by=Year]
+ggplot(tmp) + geom_point(aes(x=YYYYMMDD,y=nr_day))
+# shows that
+ggplot(tmp) + geom_line(aes(x=Year,y=nr_yr))
 # Generate a column indicating season
 # tmp[,Season := 0]
 # tmp <- within(tmp, Season[(Month == 12) | (Month == 1)| (Month == 2)] <- "Winter")
