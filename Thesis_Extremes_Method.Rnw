@@ -47,7 +47,8 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 \chapter{Method}
 
 \section{Introduction}
-In this section an overview is given of the method involved in this work. Firstly, the meta data used and its relevance is described. Secondly, theory about linear trend analysis and quantile regression is discussed. Furthermore, the relevance of independent data in trend analysis is discussed. Moreover, methods of gaining independent data and testing for significance are given. Lastly, we elaborate on how we expanded the general statistical analysis in such a way relevant mechanisms can be investigated. This include Pearson and Spearmann correlations, multiple regression and regression of binned quantiles.
+In this section an overview is given of the method involved in this work. Firstly, the meta data used and its relevance is described. Secondly, theory about linear trend analysis and quantile regression is discussed. Furthermore, the relevance of independent data in trend analysis is discussed. Moreover, methods of gaining independent data and testing for significance are given. Lastly, we elaborate on how we expanded the general statistical analysis in such a way relevant mechanisms can be investigated. This include Pearson and Spearmann correlations %, multiple regression
+and regression of binned quantiles.
 
 \subsection{Data}
 
@@ -391,6 +392,16 @@ Quantile regression was performed using the R package \enquote{quantreg} \citep{
 
 When serial correlation is present, the linear regression estimates may be potentially invalid and inconsistent \citep{CFAmanual}.\citet[pp.128]{Koenker2005} stated that the typical independent and identically distributed errors (IID) condition (in other words the condition that all random variables have the same probability distribution as the others and are mutually independent) is most of the time influencing the regression error terms for both the mean- and quantile regression. Therefore, it is important to correct for autocorrelation when applying quantile regression to detect a trend \citep{Huo2013}. Autocorrelation is serial correlation or cross-correlation of a signal with itself at different points in time. Partial autocorrelations are serial correlations with intermediate autocorrelations removed. Based on the autocorrelation function (acf) and partial autocorrelation function (pacf) repeating time-dependent patterns can be recognized. To have a time-independent data set a sampling spacing larger than the significant lags of these patterns can be chosen.
 
+% Various auto-regressive and moving average patterns leave distinctive footprints on the autocorrelation and partial autocorrelation functions.  Time-series analysis is more appropriate for data with autocorrelation than, say, multiple regression, for two reasons. The first is that there is explicit violation of the assumption of independence of errors. The errors are correlated due to the patterns over time in the data. Type I error rate is substantially increased if regression is used when there is autocorrelation. The second is that the patterns may either obscure or spuriously enhance the effect of an intervention unless accounted for in the model.
+%
+% From: https://datajobs.com/data-science-repo/Time-Series-Analysis-Guide.pdf:
+% cite as Time-Series  Analysis.[Internet]  [cited  2014  July  8].  Available  from: https://datajobs.com/data-science-repo/Time-Series-Analysis-Guide.pdf
+% % The first three steps in the analysis, identification, estimation, and diagnosis, are devoted to modeling the patterns in the data. The first step is identification in which autocorrelation functions (ACFs) and partial autocorrelation functions (PACFs) are examined to see which of the potential three patterns are present in the data.
+%
+% The second step in modeling the series is estimation in which the estimated size of a lingering auto-regressive or moving average effect is tested against the null hypothesis that it is zero. The third step is diagnosis, in which residual scores are examined to determine if there are still patterns in the data that are not accounted for. Residual scores are the differences between the scores predicted by the model and the actual scores for the series. If all patterns are accounted for in the model, the residuals are random. In many applications of time series, identifying and modeling the patterns in the data are sufficient to produce an equation, which is then used to predict the future of the process. This is called forecasting, the goal of many applications of time series in the economic arena. However, often the goal is to assess the impact of an intervention. The intervention
+%
+% A word of caution about using multiple regression techniques with time series data: because of the autocorrelation nature of time series, time series violate the assumption of independence of errors.  Type I error rates will increase substantially when autocorrelation is present.  Also, inherent patterns in the data may dampen or enhance the effect of an intervention; in time series analysis, patterns are accounted for within the analysis. From: \url{http://userwww.sfsu.edu/efc/classes/biol710/timeseries/timeseries1.htm}
+
 \subsection{Testing and significance}
 
 Whether least square or quantile fits on the independent data are significant, has to be tested. First, we start with an hypothesis of stationarity against a linear trend. In the case of stationarity the fitted value (f.e. the quantile of interest) is constant over time, i.e.
@@ -436,83 +447,40 @@ A major disadvantage of permutation tests is that they can be very demanding in 
 %
 \section{Mechanism}
 
-Not worked out yet; includes explanation correlations (Pearson, Spearman), regression of binned quantiles and multiple regression
+A comprehensive fourfolth study into the mechanism behind the observed trends is carried out in chapter 4. First, we identify variables related to the production of (extreme) precipitation from theory. Second, key variables are distinquished based on their correlation matrices and plotting patterns (precipitation over key variable x). Third,  on variable(s) which are likely to cause changes in precipitation, quantile and linear regression in time is carried out. Finally, changes in the distribution and in the quantile regresion relationship of precipitation over a variable are investigated for each variable by comparison of two time periods. For this part we binned mean hourly precipitation intensity with respect to the explanatory variable(s). In this section we describe how we computed the correlation matrices, and carried out the binning and corresponding analysis.
+
 % ?! only intensity?
-% A comprehenisve study into the mechanism behind the observed trends is carried out in chapter 4. First, we start with a theoretical framework to find precipitation-related variables. Moreover, we define key variables based on their correlation matrices and plotting patterns (precipitation over key variable x). Furthermore, lead-lag relationships are investigated and multiple regression is applied. (?! quantile regression is applied  to focus on the extreme part of the precipitation distribution. Finally, on the variable(s) which are the most likely to cause changes in precipitation, quantile regression in time carried out. The similarity in type and magnitude of a detected trend determines the likelyhood of an explanatory mechanism.
-%
-% \subsection{Identification}
-% To investigate whether and what kind of relationships exist between the variables in our metadata we follow three steps in order to get closer to the key variables of interest. Correlation matrices of the variables which are related to precipitation based on literature gives a first-hand overview of the strength of any possible linear relationships. Plotting of the most promising variables against precipitation differentiated on season gives more information about the type and seasonal-dependance of the relation, whether this is linear(non-linear) and for which spectrum the correlation is best. To determine whether the relationships show any causality and in which direction, the correlation for each lag is considered. At last, trend analysis on the variable(s) explaining precipitation changes is applied to verify whether these are responsible for the intensification of hourly precipitation extremes. (?! and frequency)
-%
-%
-% \subsubsection{Pearson and Spearman correlation}
-% The correlations of the variables which are related to precipitation based on literature are shown in a heat map
-% all data vs max -> extremes
-%
-% What is Pearson
-% %https://statistics.laerd.com/statistical-guides/pearson-correlation-coefficient-statistical-guide.php
-%
+%includes explanation correlations (Pearson, Spearman), regression of binned quantiles
+
+\subsubsection{Pearson and Spearman correlation matrices}
+The correlations of the key variabels are shown in a heat map, which is a correlation matrix in which the cells are colored from blue to red; from strong negative to strong positive correlation, with inbetween white indicating zero correlation. First, we calculated Pearson correlation coefficients. We computed such a Pearson heatmap for 5 different sets of data: (i) all wet hours for precipitation variables (hourly duration, intensity, and sum) and the key variables without CAPE, (ii) wet 2-day maxima of these variables, (iii) wet 2-day maxima in CAPE, (iv) wet daily maxima of variables from (i), (v) wet daily maxima in CAPE. The Pearson correlation coefficient is also known as the product-moment correlation coefficient and defined as: $r = \sum{\frac{z_xz_y}{N}} $, where $z_x$ and $z_y$ are the $z$ scores of variables x and y and N the sample size \citep{Cohen2004}. The $z$ score is a measure of how many standard deviations an element is from the mean, $z = \frac{X- \mu}{\sigma}$. The Pearson correlation coefficient is 1.0, the highest magnitude, when all samples have the same z score for both variables. In the case the formula recuces to $r = \sum{\frac{z^2}{N}} $. This always equals 1.0, as the variance of a set of $z$ scores is  $\frac{\sum{z-\bar{z}}^2}{N}$ and always 1,\bar{z} is always 0, so $\sum{\frac{z^2}{N}=1.0$} \citep{Cohen2004}. A Pearson correlation coefficient of -1.0 is reached when every sample has the same z score, but with opposite sign. All correlation which deviating z scores between x and y have coefficient of a magnitude between 1.0 and zero. Pearson's correlation assumes normal distributed data and that the data is related to each other in a linear way \citep{Artusi2002}. A restriction to Pearson correlation is its sensitivity to outliers \citep{Chok2010}. Second, we also calculated Spearman correlation coefficients, which we applied on data sets (ii), (iii) and (v). Spearman's correlation indicates the strength of association between two ranked variables and can be seen as the nonparametric version of the Pearson's product-moment correlation \citep{Cohen2004}. In contrast to Pearson correlation, Spearman correlation has no assumptions about the way data is distributed. The assumtions of Spearman's correlations are that data must be at least ordinal and that the variables are related in a monotonoically way \citep{Artusi2002,Cohen2004}. A function of a certain relationship can be called monotonic if it is entirely decreasing or increasing. Comparison of Pearson and Spearman correlation coefficients for the same variables indicates whether a relation is more linear or more (monotonically) non-linear.
+
+
 % Non-normality
-% % http://d-scholarship.pitt.edu/8056/1/Chokns_etd2010.pdf
-% % http://link.springer.com.proxy.library.uu.nl/article/10.1007/s10459-010-9222-y/fulltext.html
-% % --> also for non-normal data Pearson can be used.
-%
-% Use Spearman : Spearman rank correlation is a non-parametric test that is used to measure the degree of association between two variables.  It was developed by Spearman, thus it is called the Spearman rank correlation.  Spearman rank correlation test does not assume any assumptions about the distribution of the data and is the appropriate correlation analysis when the variables are measured on a scale that is at least ordinal. Assumptions; Spearman rank correlation test does not make any assumptions about the distribution. The assumptions of Spearman rho correlation are that data must be at least ordinal and scores on one variable must be montonically related to the other variable. from: http://www.statisticssolutions.com/correlation-pearson-kendall-spearman/
-% But difference between Pearson and Spearman says something about linearity vs monotone increase of trends
-% % From:http://www.gene-quantification.org/artusi-corr-2002.pdf,
-% % http://www.degruyter.com.proxy.library.uu.nl/dg/viewarticle.fullcontentlink:pdfeventlink/$002fj$002fquageo.2011.30.issue-2$002fv10117-011-0021-1$002fv10117-011-0021-1.pdf?t:ac=j$002fquageo.2011.30.issue-2$002fv10117-011-0021-1$002fv10117-011-0021-1.xml
-% %http://support.minitab.com/en-us/minitab-express/1/help-and-how-to/modeling-statistics/regression/supporting-topics/basics/a-comparison-of-the-pearson-and-spearman-correlation-methods/
-%
-% additional info
-% % http://www.statisticssolutions.com/correlation-pearson-kendall-spearman/
-%
-%
-% How to make simple heatmaps, also Spearman:
-% %http://www.sthda.com/english/wiki/ggcorrplot-visualization-of-a-correlation-matrix-using-ggplot2
-% %http://proven-inconclusive.com/blog/spearman_correlation_heat_map_with_correlation_coefficient_and_significance_in_r.html
-%
-% \subsubsection{Plotting}
-%
-% In order to study better linearity/monoticity of the relationships, we just plot the maxima of the important variables against precipitation maxima. Differences in the number of measurements for each unit of a variable can influence the fit, therefore we consider the distribution of each variable. When needed we apply binning of the variable to reduce the influence of distribution. The number of observations per bin must be $>$ .... For each bin the mean and the 95\% quantiles is calculated and a line is fitted through all the means and quantiles. As only the maxima are considered, the 95\% quantiles represent \enquote{high} extremes with values till 25 mm hr{-1}. Furthermore, all the three plots per variable are differentiated on season.
-%
-%
-%
-% \subsubsection{Spatial differences explained?}
-% ??!
-%
-% \subsection{Lead-lag relationships}
-%
-% correlation for every lag , frequency > ...
-% for lag=0, looked at the delta P over delta variable, before and after max.
-%
-%
-%
-%
-% \subsection{Quantile regression}
-% ?? more than quantile regression for P data
-%
-%
-% \subsection{}
-%
-% Various auto-regressive and moving average patterns leave distinctive footprints on the autocorrelation and partial autocorrelation functions.  Time-series analysis is more appropriate for data with autocorrelation than, say, multiple regression, for two reasons. The first is that there is explicit violation of the assumption of independence of errors. The errors are correlated due to the patterns over time in the data. Type I error rate is substantially increased if regression is used when there is autocorrelation. The second is that the patterns may either obscure or spuriously enhance the effect of an intervention unless accounted for in the model.
+% http://d-scholarship.pitt.edu/8056/1/Chokns_etd2010.pdf
+% http://link.springer.com.proxy.library.uu.nl/article/10.1007/s10459-010-9222-y/fulltext.html
+% --> also for non-normal data Pearson can be used.
+%http://www.statisticssolutions.com/correlation-pearson-kendall-spearman/
 
+%But difference between Pearson and Spearman says something about linearity vs monotone increase of trends
+% From:http://www.gene-quantification.org/artusi-corr-2002.pdf,
+% http://www.degruyter.com.proxy.library.uu.nl/dg/viewarticle.fullcontentlink:pdfeventlink/$002fj$002fquageo.2011.30.issue-2$002fv10117-011-0021-1$002fv10117-011-0021-1.pdf?t:ac=j$002fquageo.2011.30.issue-2$002fv10117-011-0021-1$002fv10117-011-0021-1.xml
+%http://support.minitab.com/en-us/minitab-express/1/help-and-how-to/modeling-statistics/regression/supporting-topics/basics/a-comparison-of-the-pearson-and-spearman-correlation-methods/
 
-% % From: https://datajobs.com/data-science-repo/Time-Series-Analysis-Guide.pdf:
-% cite as Time-Series  Analysis.[Internet]  [cited  2014  July  8].  Available  from: https://datajobs.com/data-science-repo/Time-Series-Analysis-Guide.pdf
-% The first three steps in the analysis, identification, estimation, and diagnosis, are devoted to modeling the patterns in the data. The first step is identification in which autocorrelation functions (ACFs) and partial autocorrelation functions (PACFs) are examined to see which of the potential three patterns are present in the data.
+%additional info
+% http://www.statisticssolutions.com/correlation-pearson-kendall-spearman/
+
+%How to make simple heatmaps, also Spearman:
+%http://www.sthda.com/english/wiki/ggcorrplot-visualization-of-a-correlation-matrix-using-ggplot2
+%http://proven-inconclusive.com/blog/spearman_correlation_heat_map_with_correlation_coefficient_and_significance_in_r.html
 %
-% ARMA
-% % From: https://datajobs.com/data-science-repo/Time-Series-Analysis-Guide.pdf:
-% The model described in this chapter is auto-regressive, integrated, moving average, called an ARIMA (p, d, q) model. The auto-regressive element, p, represents the lingering effects of preceding scores. The integrated element, d, represents trends in the data, and the moving average element, q, represents the lingering effects of preceding random shocks. A big question is how lingering is lingering? That is, do you have to take into account just the previous score (or shock) or do you get a better model if you take into account two or more of the previous scores (or shocks)?
-%
-% The second step in modeling the series is estimation in which the estimated size of a lingering auto-regressive or moving average effect is tested against the null hypothesis that it is zero. The third step is diagnosis, in which residual scores are examined to determine if there are still patterns in the data that are not accounted for. Residual scores are the differences between the scores predicted by the model and the actual scores for the series. If all patterns are accounted for in the model, the residuals are random. In many applications of time series, identifying and modeling the patterns in the data are sufficient to produce an equation, which is then used to predict the future of the process. This is called forecasting, the goal of many applications of time series in the economic arena. However, often the goal is to assess the impact of an intervention. The intervention
-%
-%
-%
-%
-%
-%
-% Multiple regression
-% % A word of caution about using multiple regression techniques with time series data: because of the autocorrelation nature of time series, time series violate the assumption of independence of errors.  Type I error rates will increase substantially when autocorrelation is present.  Also, inherent patterns in the data may dampen or enhance the effect of an intervention; in time series analysis, patterns are accounted for within the analysis. From: \url{http://userwww.sfsu.edu/efc/classes/biol710/timeseries/timeseries1.htm}
+
+\subsection{Binning}
+
+Differences in the number of measurements for each unit value of a certain variable can influence the fit between two variables, therefore we consider the distribution of each variable. To reduce this influence we apply binning of hourly mean precipitation intensity in unit value for a certain variable (T, Td, CAPE and FH). For temperature and dewpoint temperature we use bins of 2 $^{\circ}$C. For CAPE a binsize of 50 J/kg is applied and for FH a .... % ADD
+The number of observations per bin must be $\geq 100$. All bins are differentiated between summer and winter season, and between the period 1958-1986 and the period 1987-2015. The resolution is limited greatly to binning of the data and differentiating of the measurements on season and time period. Therefore, we use daily maxima in mean hourly intensity and in key variables, instead of 2-day maxima. Wet-only maxima are considered, as we are solely interested in changes in precipitation, not in dryness. Furthermore, we bundle the maxima of the five stations, in order to increase the resolution. Nontheless, we want to study the common relationship, because we observed a robust signal for all stations in increasing precipitation intensity and decreasing frequency of wet hours. For each bin the mean and the 95\%,99\%-quantiles are calculated from the binned intensity maxima and lines are fitted through all the means and quantiles. The two periods have a length of 29 years, and as climate is clasically referred to as the weather of 30 years (WMO), the differences in distribution and binned quantile regression between the two periods can be seen as changes in the state of the climate
+
+% As only the maxima are considered, the 95\% quantiles represent \enquote{high} extremes with values till 25 mm hr{-1}.
 
 \printbibliography
 
