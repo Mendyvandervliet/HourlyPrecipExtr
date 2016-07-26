@@ -33,7 +33,16 @@ SWOT
 
 Strengths:
 - significant trends in intensity, as well as wet fraction
--
+-Next to a higher spatial resolution, analyzing multiple data sets may contribute to the robustness of an observed trend.
+- Seasonal differentiating
+
+
+Different type of precipitation production regarding season.
+ Therefore, studying precipitation both intensity and duration seperatly for the winter and the summer season, gives more detailled information about the type of precipitation and subyearly trends.
+
+This study allows to verify whether the scaling beyond Clausius-Clapeyron found by \citet{Lenderink2008,Lenderink2009,Lenderink2011} may be assigned to mixing of winter and summer dominated processes or to climate change.
+
+
 
 Weaknesses:
 some autocorrelation present in 2 day maxima
@@ -45,9 +54,12 @@ Duplicates?? maybe better ...  Chance on duplicate is ...
 How strong is the significance at 95\% confidence level?
 
 Opportunities:
-CH2 frequency of wet hours -->  decreases? does then the amount of wet events decrease or do the events become shorter??
-impacting events --> on basis of thresholds, for significance more data is needed, and duration has to be taken into account.
-CH3  CAPE > CIN condition, use CIN. p. 245 of Lin2007
+- CH3 frequency of wet hours -->  decreases? does then the amount of wet events decrease or do the events become shorter??
+- impacting events --> on basis of thresholds, for significance more data is needed, and duration has to be taken into account.
+
+- CH4  CAPE > CIN condition, use CIN. p. 245 of Lin2007
+- Compare CAPE trends to trends in precipitation intensity, frequency and sum for the same period (1993-2015).
+
 
 Threats:
 winter and summer,  --> convective and stratiform, but hard to disentangle without radar/synnoptic observations
@@ -57,9 +69,29 @@ Weather code  --> ,but since ... automatic ; also based on intesity . Not distin
 \chapter{Conclusions}
 
 
+CH3
+Multiple significant trends are shown on a spatial and seasonal level. Dissimilarity in quantiles, station, seasons are addresses. Nontheless, we found robust signals of increasing intensity of heavy hourly precipitation (2-day maxima), decreasing frequency of (2-day) wet hours and constant to increasing (2-day) precipitation sums.
 
-Rephrase concl CH2 : Although the trends are characterized by spatial inhomogeneity and dissimilarity with respect to the quantiles, it should be stressed that all significant trends detected are positive. In general, we can conclude that through a time period of 58 years the precipitation intensity of extreme events increases.
 
+Rephrase concl CH3 : Although the trends are characterized by spatial inhomogeneity and dissimilarity with respect to the quantiles, it should be stressed that all significant trends detected are positive. In general, we can conclude that through a time period of 58 years the precipitation intensity of extreme events increases.
+
+
+
+
+CH4
+From Chapter 4 we can deduce that trends in precipitation intensity are more likely to be caused by timewise shifting of temperature and dewpoint temperature distributions to higher values, than to a changes in the P-T and P-TD relationships. Our results confirm to the Clausius Clapeyron equation, explaining intensification of heavy hourly precipitation due to enhanced moisture availibity by increasing temperature. The super CC-scaling found by Lenderink is also partially observed. Complementing on the work of Lenderink ... and... we not only considered regression of precipitation intensity over temperature, but studied the true trends from 1958-2015.
+
+From CH4:
+
+%  Nevertheless, changes in the distribution seem to be more clearly visible for this time period comparison, than changes in the P-T relationships.
+
+
+% the super CC-scaling  found by Lenderink is also observed here for the summer mean and the quantiles. Note, that the mean here is a mean of maxima precipitation sum a day, with only wet hours considered. For the winter data the colder part scales with Clausius Clapeyron, while for temperatures higher than 7$^{\circ}$C the mean shows a rate which is slightly weaker than the double CC-scaling. The reason for the off-set between summer and winter data in mean and quantiles can be explained by .. ? (data number difference)
+% The increase of precipitation maxima with temperature maxima might be induced from a shift between stratiform-dominated to convection-dominated precipitation as suggested by \citep{Berg2013}. As no data about synoptic conditions is included, this relationship seems hard to verify. However, stratiform and convective precipitation might be seperated on values of CAPE. (BRON!)
+
+% To summarize, we found strong seasonal differences in relationships between precipitation and T, Td, FH en CAPE maxima and in the distributions for each variable. In general, in summer we have relatively high daily maxima in temperature (mainly between 12-24$^{\circ}$), dewpoint temperature (most values between 9-20$^{\circ}$), and CAPE values (mainly between 0-2500 J kg$^{-1}$) and relatively low daily maxima in wind speed (2-12 m/s), compared to winter daily maxima (respectively 0-14$^{\circ}$,-2-12$^{\circ}$, 0-500 J/kg, 2-18 m/s). Exponential relationships, comparable with CC- and super CC-scaling, are found for summer and winter precipitation intensity maxima with temperature and dewpoint temperature maxima and for winter precipitation intensity maxima with wind speed maxima. When comparing the second half of the time period to the first half, the P-T and P-TD relationships ar slightly less deviating from the CC-scaling, while the P-FH quantile lines deviate more from the CC-scaling. Moreover, the P-T and P-TD are as strong or stronger for the more extreme P maxima (95\%- and 99\%-quantiles), compared to the mean P maxima. This is vice versa for the P-FH relationship. However, for all three variables the timewise shift in distribution from higher summer and winter T and TD maxima and lower summer and winter FH maxima is more visible than changes in their relationships with P. Furthermore, as we detected negative trends in 2-day FH maxima (Section \ref{subsec:trends}), we do not expect an increase in wind shear as a possible explanation for the increasing precipitation intensity. Besides, the strong relationship between P and FH maxima seems to be more a winter relationship (Figure \ref{fig:PvsFH}), while we observed the highest changes for the highest quantiles, corresponding to summer precipitation data.
+% % Relative rates ?? winter vs summer
+% Therefore, we expect that the changes in precipitation are mainly due to changes in the distribution of temperature and dewpoint temperature. A shift to higher temperature and dewpoint temperature is then linked in an exponential way to higher precipitation intensities, as deduced from subfigures C from \ref{fig:PvsT} and \ref{fig:PvsTD}. The observed trend in precipitation intensity can then be seen as the product of shifting temperature distributions (for both seasons) and the CC- to super CC-scaling of maxima in P more indirectly with T  and more direct with Td. Increasing temperatures lead to an increase of the moisture holding capacity (expressed in Td), which leads to an intensification of what precipitates out in conditions of precipitation production. This also holds with the detected trend of a decrease in the amount of wet hours. Air is less quickly saturated at higher temperatures, consequently there are less (2-day) hours in which saturation is reached. Therefore, the 2-day sum of precipitation stays more or less constant or increases, depending on the exact changes for a certain station and the season.
 
 
 
