@@ -18,8 +18,8 @@
 \usepackage{filecontents}
 \usepackage[backend=bibtex,natbib=true, sorting=nyt,style=authoryear]{biblatex}
 
-\bibliography{references}
-%\addbibresource{references.bib}
+%\bibliography{references}
+\addbibresource{references.bib}
 \overfullrule=2cm             %To spot overfull hboxes
 %------------------------------------------------------------------------------------------------------------------------
 
@@ -47,47 +47,19 @@ opts_chunk$set(eval=TRUE, results = "hide",comment=FALSE,
 \chapter{Method}
 
 \section{Introduction}
-In this section an overview is given of the method involved in this work. Firstly, the meta data used and its relevance is described. Secondly, theory about linear trend analysis and quantile regression is discussed. Furthermore, the relevance of independent data in trend analysis is discussed. Moreover, methods of gaining independent data and testing for significance are given. Lastly, we elaborate on how we expanded the general statistical analysis in such a way relevant mechanisms can be investigated. This include Pearson and Spearmann correlations %, multiple regression
-and regression of binned quantiles.
+In this chapter an overview is given of the method involved in this work. Firstly, the type of data used in the present work and its quality is described. Secondly, theory about linear trend analysis and quantile regression is discussed, which forms the basis for Chapter 5 (REF CH trends). Furthermore, the underlying assumptions of trend analysis are discussed. Moreover, methods of fulfilling the assumption of independence and testing for significance are given. Lastly, we elaborate on how we expanded the general statistical analysis in such a way that the mechanism behind the detected trends in hourly precipitation can be investigated. This include Pearson and Spearman correlations %, multiple regression
+and regression of binned quantiles, of which the results are shown in Chapter 6 (REF CH mech).
 
 \subsection{Data}
 
 \subsubsection{Time and place}
-For the first part of this thesis rain gauge data on an hourly resolution is used from five stations in the Netherlands. Taking into consideration the need for having a long as possible consistent time serie as well as data which is spatially representative for different parts of the country, we were left with data of five stations. These stations are: de Kooy(235), De Bilt(260), Eelde(280), Vlissingen(310) and Maastricht(380), of which the location is shown in Figure \ref{fig:KaartStationsKNMI}. Coordinates and altitude of the stations are listed in Table \ref{tab:location}. For each station data is available on hourly resolution of which the following variables are used in this study: time, hourly precipitation sum, duration, temperature, dew point temperature, relative humidity, wind direction, wind strength, CAPE and weather code. As our focus of interest is precipitation extremes and their lifetime is often on the subhourly to hourly scale, we have chosen a time period by considering both a high resolution as well as a long enough time span, to be able to detect trends. For the period from 01-01-1958 till 31-12-2015 coherent time series for all stations are present, which can be easily compared and simultaneously analysed. Only CAPE data is more restricted in time and place. These CAPE observations are derived from radiosonde measurements in the period 01-03-1993 to 31-12-2015 at the Bilt, not at the other stations. In contrast to the other data, CAPE data also differs in resolution, from a mean of 4 measurements a day to 1 a day in the course of time. Days which were thought to be meteorological interesting, have a daily maximum of 5-6 CAPE measurements.
+For the first part of this thesis hourly rain gauge data is used from five stations in the Netherlands. Taking into consideration the need for having an as long as possible consistent time series as well as data which is spatially representative for different parts of the country, we were left with data of five stations. These stations are: De Kooy (235), De Bilt (260), Eelde (280), Vlissingen (310) and Maastricht (380), of which the location is shown in Figure \ref{fig:KaartStationsKNMI}. Coordinates and altitude of the stations are listed in Table \ref{tab:location}. For each station data is available on hourly resolution of which the following variables are used in this study: time, hourly precipitation sum, duration (defined as the hourly time fraction of precipitation), temperature, dew point temperature, relative humidity, wind strength and CAPE (source data: \url{http://www.knmi.nl/nederland-nu/klimatologie/uurgegevens}). As our focus of interest is precipitation extremes and their lifetime is often on the sub-hourly to hourly scale, we have chosen a time period by considering both a high resolution as well as a long enough time span for the detection of trends. For the period from 1958 until 2015 coherent time series for all stations are present, which can be easily compared and simultaneously analysed. Only CAPE data is more restricted in time and place. These CAPE observations are derived from radiosonde measurements at the Bilt in the period 01-03-1993 until 2015 (source: de Haan, 2016), and are not available for the other stations. Moreover, CAPE measurements also differs in temporal resolution, from a mean of 4 per day to 1 per day in the course of time (see Figure \ref{fig:CAPEresolution}). Days which were thought to be of meteorological interest, have up to 5-6 CAPE measurements per day.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.7\linewidth]{/usr/people/vliet/Documents/HourlyPrecipExtr/figure/KaartStationsKNMI.png}
-  \caption{A map of the Netherlands showing the locations of the five stations; de Kooy(235), De Bilt(260), Eelde(280), Vlissingen(310) and Maastricht(380).}
+  \includegraphics[width=0.7\linewidth]{./figure/KaartStationsKNMI.png}
+  \caption{A map of the Netherlands showing the locations of the five stations; De Kooy (235), De Bilt (260), Eelde (280), Vlissingen (310) and Maastricht (380).}
   \label{fig:KaartStationsKNMI}
-\end{figure}
-
-<<Nmean>>=
-load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
-Nmean <- Compare[,list(Nmean=unique(Nmean)),by=list(Year)]
-@
-
-\begin{figure}[ht]
-  \centering
-  \textbf{The resolution of CAPE observations}\par\medskip
-  \begin{minipage}{0.48\textwidth}
- <<PointN_CAPE>>=
- # ggplot(Compare[1950:2050][sbCAPE >= 0])+geom_line(aes(x=date,y=sbCAPE))+ scale_x_datetime(date_labels = "%d %H:%M")+theme_bw()
- ggplot(Compare) + geom_point(aes(x=Date, y=N)) + theme_bw()
- @
-     \caption{The number of observations a day, N}
-     \label{fig:NCAPE}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.48\textwidth}
-<<Nmean_CAPE>>=
-ggplot(Nmean) + geom_bar(aes(x=Year,y=Nmean),stat="identity") + theme_bw()
-@
-     \caption{The yearly mean of N}
-     \label{fig:NmeanCAPE}
-  \end{minipage}
-  \caption{The number of CAPE measurements a days showed as a point cloud in a, and as bars representing the yearly means in b.}
-  \label{}
 \end{figure}
 
 \begin{table}[ht]
@@ -107,20 +79,49 @@ ggplot(Nmean) + geom_bar(aes(x=Year,y=Nmean),stat="identity") + theme_bw()
   \label{tab:location}
 \end{table}
 
+<<Nmean>>=
+load("~/Documents/HourlyPrecipExtr/inst/tussenStap/Compare.rda")
+Nmean <- Compare[,list(Nmean=unique(Nmean)),by=list(Year)]
+@
+
+\begin{figure}[ht]
+  \centering
+  \textbf{The resolution of CAPE observations}\par\medskip
+  \begin{minipage}{0.48\textwidth}
+ <<PointN_CAPE>>=
+ # ggplot(Compare[1950:2050][sbCAPE >= 0])+geom_line(aes(x=date,y=sbCAPE))+ scale_x_datetime(date_labels = "%d %H:%M")+theme_bw()
+ ggplot(Compare) + geom_point(aes(x=Date, y=N)) + theme_bw()
+ @
+     \subcaption{The number of observations (N) per day}
+     \label{fig:NCAPE}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+<<Nmean_CAPE>>=
+ggplot(Nmean) + geom_bar(aes(x=Year,y=Nmean),stat="identity") + theme_bw()
+@
+     \subcaption{The yearly mean number of measurements per day}
+     \label{fig:NmeanCAPE}
+  \end{minipage}
+  \caption{The number of CAPE measurements (N) per day showed as a point cloud in a, and as bars representing the yearly means in b.}
+  \label{fig:CAPEresolution}
+\end{figure}
+
 
 \subsubsection{Type of data and instruments}
-\label(subsubsec:typedata)
+\label{subsubsec:typedata}
 
-The variables investigated this thesis, and information about their unit, resolution and measurement instrument, are listed in Table \ref{tab:typeofdata}. Precipitation intensity is defined as the mean hourly intensity in mm hr$^{-1}$, so the accumulated rain amount divided by 1 hour. CAPE is defined as the amount of energy available for free convection, and computed as the amount of work done by the buoyancy force in a parcel of air that is lifted from the lifting condensation level to the level of no buoyancy \citep{Lin2007},
+The variables investigated in this thesis, and their unit, resolution and measurement instrument, are listed in Table \ref{tab:typeofdata}. Precipitation intensity is defined as the mean hourly intensity in mm hr$^{-1}$, so the accumulated rain amount per hour. CAPE is defined as the amount of energy available for free convection, in Joule/kg, and computed as the amount of work done by the buoyancy force in a parcel of air that is lifted from the lifting condensation level to the level of no buoyancy \citep{Lin2007},
 \begin{equation}
 CAPE = \int^{z_{LNB}}_{z_{LCL}} g(\frac{T-\bar{T}}{\bar{T}})dz
 \end{equation}
-In this equation is $T$ the temperature of the air parcel (the temperature inside the radiosonde), and $\bar{T}$ is the temperature of the environment. Further, g is the gravitational acceleration and $z_LNB$ the height at the level of no buoyancy and $z_LCL$ the height of the lifted condensation level.
+In this equation is $T$ the temperature of the air parcel (the temperature inside the radiosonde), and $\bar{T}$ is the temperature of the environment. Further, g is the gravitational acceleration and $z_{LNB}$ the height at the level of no buoyancy and $z_{LCL}$ the height of the lifted condensation level.
+%The weather code is determined by considering the air and wet bulb temperature, meteorological sight, relative humidity, cloud coverage, precipitation type and intensity, wind velocity and number of lightning strikes within 0-15 and 15-20 km distance.
+For more information about the instruments involved and the exact instrument setup for each variable, see \citet[Chapter 14]{KNMIhandboek2000}.
 
-The weather code is determined by considering the air and wet bulb temperature, meteorological sight, relative humidity, cloud coverage, precipitation type and intensity, wind velocity and number of lightning strikes within 0-15 and 15-20 km distance. For more information about the instruments involved and the exact conditions for every code, see \citet[Chapter 14]{KNMIhandboek2000}
 \begin{table}[ht]
   \centering
-  \caption{Data characterstics}
+  \caption{Data characteristics}
   \begin{tabular}{l|r|r|r}
     \hline\hline
     Name                            & Unit                  & Resolution      & Instrument  \\
@@ -133,11 +134,11 @@ The weather code is determined by considering the air and wet bulb temperature, 
     Dewpoint temperature            & $^{\circ}$C           & 0.1 $^{\circ}$C & KNMI Pt-500 and\\
                                     &                       &                 & E\&E33 sensor\\
     CAPE                            & J kg$^{-1}$           & 1 J kg$^{-1}$   & Radiosonde \\
-    Relative humidity (1.5m hoogte) & \%                    & 1 \%            & E\&E33 sensor\\
-    Wind strength                   & Hourly mean m/s       & 0.1 m/s         & AWS op 10m hoogte\\
-    Wind direction                  & Mean of last 10 min.  & 1 degree        & AWS op 10m hoogte\\
-                                    & of the hour, degrees  &                 & \\
-    Weather code                    & Number 0-99           & n/a             & multiple instruments\\
+    Relative humidity               & \%                    & 1 \%            & E\&E33 sensor at 1.5m height)\\
+    Wind strength                   & Hourly mean m/s       & 0.1 m/s         & AWS at 10m height\\
+    % Wind direction                  & Mean of last 10 min.  & 1 degree        & AWS at 10m height\\
+    %                                 & of the hour, degrees  &                 & \\
+    % Weather code                    & Number 0-99           & n/a             & multiple instruments\\
     \hline
   \end{tabular}
   \label{tab:typeofdata}
@@ -146,12 +147,14 @@ The weather code is determined by considering the air and wet bulb temperature, 
 \begin{wrapfigure}{R}{0.2\textwidth}
   \vspace{-15pt}
   \centering
-  \includegraphics[width=0.18\textwidth]{/usr/people/vliet/Documents/HourlyPrecipExtr/figure/Handraingauge.png}
-  \caption{Example of a manual gauge (with the rim at 0.4 m)}
+    \includegraphics[width=0.18\textwidth]{./figure/Handraingauge.png}
+  \caption{Example of a manual gauge (with the rim at 0.4 m).}
   \label{fig:hand}
 \end{wrapfigure}
 
-Untill the beginning of the nineties all precipitation measurements were conducted manually with a pluviograph. This is an instrument which measures the amount of water fallen into the rain gauge with the help of a plastic graduated cylinder \citep[Chapter 6]{KNMIhandboek2000}. Between 1963 and 1981 the manual rain gauges of the different stations were replaced by gauges with an orifice area from 200 cm$^2$ instead of 400 cm$^2$, of with the effect is considered to be small \citet{Denkema1980,Denkema1981,Warmerdam1981,Brandsma2014}. Measurement incertainties of manual rain gauges may be caused by wind-induced transport of water droplets or snow flakes, evaporation of droplets or loss due to over pouring of water (to the graduated cylinder). These errors can be reduced by choosing a good environment \citep[Chapter 6]{KNMIhandboek2000}. Since 1991 (Eelde and Maastricht) or 1993 (De Kooy, De Bilt and Vlissingen) the rain measurements are automatized (\ref{tab:histchanges}). The instrument automatically registers the height of the float, which is attached to a potentiometer, representing the amount of fallen precipitation \citep[Chapter 6]{KNMIhandboek2000}. Any precipitation fallen in the solid phase is first melted by heating of the funnel, in order to be measured in the liquid phase. An illustration of the so-called KNMI rain gauge is given by Figure \ref{fig:automatic} (for more information see \citet{Wauben2004}). The common setup of an automatic measuring site is the English setup (Figure \ref{fig:englishset}). In a comparison study between manual and automatic networks of rain gauges \citet{Brandsma2014} concluded that automatic rain gauges measure 5-8\% less on annual basis (6.5\% averaged over the entire period 2001-2013).
+Until the beginning of the nineties all precipitation measurements were conducted manually with a pluviograph. This is an instrument which measures the amount of water fallen into the rain gauge with the help of a plastic graduated cylinder \citep[Chapter 6]{KNMIhandboek2000}. Between 1963 and 1981 the manual rain gauges of the different stations were replaced by gauges with an orifice, collecting area from 200 cm$^2$ instead of 400 cm$^2$, of with the effect is considered to be small \citep{Denkema1980,Denkema1981,Warmerdam1981,Brandsma2014}. Measurement uncertainties of manual rain gauges may be caused by wind-induced transport of water droplets or snow flakes, evaporation of droplets or loss due to over pouring of water (to the graduated cylinder). These errors can be reduced by choosing a good environment \citep[Chapter 6]{KNMIhandboek2000}. Since 1991 (Eelde and Maastricht) or 1993 (De Kooy, De Bilt and Vlissingen) the rain measurements are automatized (see Table \ref{tab:histchanges}). Table \ref{tab:histchanges} summarizes the most important historical changes for the five stations regarding precipitation measurements (from \url{http://projects.knmi.nl/klimatologie/metadata/}). For historical changes of the other meteorological parameters than precipitation, go the KNMI site (\url{http://projects.knmi.nl/klimatologie/metadata/}). The newer rain gauge automatically registers the height of the float, which is attached to a potentiometer, representing the amount of fallen precipitation \citep[Chapter 6]{KNMIhandboek2000}. Any precipitation fallen in the solid phase is first melted by heating of the funnel, in order to be measured in the liquid phase. An illustration of the so-called KNMI rain gauge is given by Figure \ref{fig:automatic} (for more information see \citet{Wauben2004}). The common setup of an automatic measuring site is the English setup (Figure \ref{fig:englishset}). In a comparison study between manual and automatic networks of rain gauges \citet{Brandsma2014} concluded that automatic rain gauges measure 5-8\% less on annual basis (6.5\% averaged over the entire period 2001-2013).
+
+% Wauben 2004, geen dubbele haakjes ?
 
 \begin{figure}[ht]
   \centering
@@ -168,70 +171,69 @@ Untill the beginning of the nineties all precipitation measurements were conduct
   \end{minipage}
 \end{figure}
 
-In English setup the gauge is placed on a small concrete box with a drainage tube in the middle of a circular wall with a diameter of 3 meters \citep{Brandsma2014}. The standard height of both the top of the rain gauge and the wall is 40 cm. See \citet{Brandsma2014} for futher details about the material and environment surrounding the pit. The English setup was implemented to prevent wind-induced loss, however in a study of \citet{Braak1945} this is contradicted. Currently, most rain gauges are not longer in the English setup, but situated in an Ott windscreen. Compared to the English set up \citet{Wauben2004} concluded that the Ott wind screen has a (extra) reduction in the annual mean precipitation of 1.5\% (to 6\% in windy conditions). Table \ref{tab:histchanges} summarizes the most important historical changes for the five stations regarding precipitation measurements (from \url{http://projects.knmi.nl/klimatologie/metadata/}). For further details about the measurements in temperature, dewpoint temperature, wind direction and wind speed, see \citet{KNMIhandbook2000}. For historical changes of the other meteorolical parameters than precipitation, go the KNMI site (\url{http://projects.knmi.nl/klimatologie/metadata/}). A classification of all weather codes can be found in Appendix A from \citet{Rulfova2013}. To differentiate between stratiform and convective precipitation we hold the same classification based on weather codes, as described in \citet{Rulfova2013}.
+In English setup the gauge is placed on a small concrete box with a drainage tube in the middle of a circular wall with a diameter of 3 meters \citep{Brandsma2014}. The standard height of both the top of the rain gauge and the wall is 40 cm. See \citet{Brandsma2014} for further details about the material and environment surrounding the pit. The English setup was implemented to prevent wind-induced loss, however in a study of \citet{Braak1945} this is contradicted. Currently, most rain gauges are not longer in the English setup, but situated in an Ott windscreen. Compared to the English set up \citet{Wauben2004} concluded that the Ott wind screen has a (extra) reduction in the annual mean precipitation of 1.5\% (to 6\% in windy conditions). For further details about the measurements in temperature, dewpoint temperature, wind direction and wind speed, see \citet{KNMIhandbook2000}.  %A classification of all weather codes can be found in Appendix A from \citet{Rulfova2013}. To differentiate between stratiform and convective precipitation we apply the same classification based on weather codes, as described in \citet{Rulfova2013}.
 
 % minipage environment around tables
 \begin{table}[ht]
   \centering
-  \caption{Historical changes precipitation data}
-  \begin{tabular}{|l|r|}
-    \hline\hline
-    \multicolumn{2}{|c|}{Orifice area reduction from 400 to 200cm$^2$} \\
-    \hline
-    Station     & When  \\
-    \hline
-    De Kooy     & 19930101\\
-    De Bilt     & 19810401 \\
-    Eelde       & 19730502 \\
-    Vlissingen  & 19620410 \\
-    Maastricht  & 19760701\\
-    \hline
-    \multicolumn{2}{|c|}{Automatic measurement}\\
-    \hline
-    Station     & When  \\
-    \hline
-    De Kooy     & 19720801 \\
-    De Bilt     & 19930301 \\
-    Eelde       & 19910316 \\
-    Vlissingen  & 19930501 \\
-    Maastricht  & 19910301 \\
-    \hline
-  \end{tabular}
-  \label{tab:histchanges}
-\end{table}
-
-\begin{table}[ht]
-  \centering
-  \caption{Historical changes precipitation data}
+  \caption{Historical changes in precipitation data}
   \begin{tabular}{|l|r|r|}
     \hline\hline
+    \multicolumn{3}{|c|}{Orifice area reduction from 400 to 200cm$^2$} \\
+    \hline
+    Station     & When  &\\
+    \hline
+    De Kooy     & 19720801 &\\
+    De Bilt     & 19810401 &\\
+    Eelde       & 19730502 &\\
+    Vlissingen  & 19620410 &\\
+    Maastricht  & 19760701 &\\
+    \hline\hline
+    \multicolumn{3}{|c|}{Automatic measurement}\\
+    \hline
+    Station     & When  &\\
+    \hline
+    De Kooy     & 19930101 &\\
+    De Bilt     & 19930301 &\\
+    Eelde       & 19910316 &\\
+    Vlissingen  & 19930501 &\\
+    Maastricht  & 19910301 &\\
+    \hline\hline
     \multicolumn{3}{|c|}{Ott windscreen}\\
+    \hline
+    Station     & When  &\\
     \hline
     De Kooy     & 20070426 &\\
     De Bilt     & 20080925 &\\
     Eelde       & 20090518 &\\
     Vlissingen  & - &\\
     Maastricht  & - &\\
-    \hline
+    \hline\hline
     \multicolumn{3}{|c|}{Relocation of instrument} \\
     \hline
     Station     & When & How much \\
     \hline
-    De Kooy     & - & \\
+    De Kooy     & - & -\\
     De Bilt     & 20080925, 13.00 UT & 200 m\\
-    Eelde       & 19730501  & 750 m\\
-    Vlissingen  & - & \\
+    Eelde       & 19730501 & 750 m\\
+    Vlissingen  & - & -\\
     Maastricht  & 20051101 & 1770 m \\
     \hline
   \end{tabular}
-  \label{tab:histchanges2}
+  \label{tab:histchanges}
 \end{table}
 
-For this study we applied rounding to the lowest hourly precipitation sums, and converted units from 0.1 mm and 0.1 $^{\circ}$C to 1 mm and 1 $^{\circ}$C, and sometimes selected data on a certain criterium. In order to have a consistent rouding of hourly precipitation sums to 0.1 mm, the hours with amounts classifed as $<$ 0.05 mm are treated as being zero in this study. This leads to more dry hours ($\pm$ 8\% of total amount of hours). For frequency analysis we could argue to include these hours and code them as wet, however for intensity analysis this is not desired. The exact amounts are namely not known. Therefore, we choose for a consistent data set, in which wet hours are defined as hours in which precipitation accumulates to amounts higher than 0.05 mm. In Chapter 1(REF CH1) we sometimes consider only wet hours, when we are interested in characterstics of rain events. In Chapter 3 we are interested in the correlation between precipitation and other variables. Therefore, when considering daily maxima, we only take into account wet days (days in which the total amount of precipitation is higher than zero). Another reason to investigate the statistics of wet events only, is that these are less dependent on changes in the atmospheric circulation \citep{Lenderink2011}, which can be handy when studying local factors such as moisture availibility and CAPE.
+ The hourly precipitation data is rounded to 0.1 mm (Table \ref{tab:typeofdata}), except for the hourly precipitation sums of $<$ 0.05 mm. For this study we rounded hourly precipitation sums of $<$ 0.05 mm to 0 in order to have a consistent rounding. This leads to more dry hours ($\pm$ 8\% of total amount of hours). For frequency analysis we could argue to include these hours and code them as wet, however for intensity analysis this is not desired. The exact amounts are namely not known. Therefore, we choose for a consistent data set, in which wet hours are defined as hours in which precipitation accumulates to amounts higher than 0.05 mm. Furthermore, we converted the unit from sums (or degrees, speeds) of 0.1 mm ($^{\circ}$C, m/s)  to sums (or degrees, speeds) of 1 mm ($^{\circ}$C, m/s). Moreover, for some research questions in this thesis we only consider wet hours, days, daily or 2-days maxima. For instance in Chapter 4 (REF 4 S\&S) we analyse only wet hours, when we are interested in the characteristics of precipitation events. In Chapter 3 we are interested in the correlation between precipitation and other variables. Therefore, when considering daily or 2-day maxima in intensity, we only take into account wet maxima (higher than 0.05 mm/hr). Another reason to investigate the statistics of wet events only, is that these are less dependent on changes in the atmospheric circulation \citep{Lenderink2011}, which can be handy when studying local factors such as moisture availability and CAPE.
 
 \subsubsection{Data quality}
 \label{subsubsec:dataquality}
-For trend analysis a high quality data set is desired, especially one whose variability consist solely of changes in weather and climate. This is the definition of an homogeneous climate time series \citep{Freitas2013}. Nonetheless, long instrumental records are rarely homogeneous, for example due to station relocations, changes of rain gauge type, and changes in the rain gaug site \citep{Buishand2013,Freitas2013}. As can be deduced from Table {tab:histchanges} our data sets also have inhomogeneities. Although much attention has been devoted to homogeneity testing and adjusting for inhomogeneities, methods thereof are not considered here for multiple reasons. First of all, inventing and applying homogenization tests for hourly data is a time consuming and difficult task and would not fit within the framework of this thesis. Secondly, there are no excisting homogenization programs available on hourly resolution to implement easily. Thirdly, homogenization tests in which neighbouring stations are used in pairwise comparison would not be suited here, due to the large spatial distance between the stations. Besides there are no other neigbouring stations matching in resolution and length of data set. A possible way of correcting for instrumental errors is by comparing the automatic rain gauges with the hand rain gauges, because we know from \citet{Brandsma2014} that the former measures annually 5-8\% lower than the latter \ref(subsubsec:typedata). This can be explained by errors in evaporation values due to a warming element in the automatic rain gauge and by a relatively less favorable aerodynamic shape \citep{STOWA2004}. However, there are several limitations to this correction. First, the timing of manual measurement is less thrustworthy, especially in case of extreme precipitation, resulting in large absolute differences. Second, the correction factor as applied by \citet{Buishand1988} (multiplying every hour by the factor, $f=D/P$, with D the daiy sum of the manual rain gauge and P of the automatic rain gauge) is not valid here. Rain is namely not evenly distributed over the hours, and this kind of errors will be bigger for extreme rain intensities. Third, the manual and automatic rain gauges at all sites are placed further from each other in the course of time (\ref{tab:histchanges}). The larger the distance and the more local the rain events of interest, the smaller the benefit of this correction technique. As intense convective rain events can be very local, this is a serious limitation. Last, an underestimation of automatic measurements is not that relevant for trends in extremes, when this is consistent in time. Then we can still deduce trends. This leads us to the conclusion that the proposed types of correction are not worthwhile to apply on our data. As we can deduce fromTable {tab:histchanges} some measurement errors change in time due to the implementation of an different kind of instrument or relocation, therefore these errors are not consistent over the entire time period. In order to study possible jumps in our precipitation data, we show the annual precipitation means in combination with the timing of the important historical changes for every station in Figure \ref{fig:mean_histchanges}.
+
+For trend analysis a high-quality data set is required, especially one whose variability consists solely of changes in weather and climate. This is the definition of an homogeneous climate time series \citep{Freitas2013}. Nonetheless, long instrumental records are rarely homogeneous, for example due to station relocations, changes of rain gauge type, and changes in the rain gauge site \citep{Buishand2013,Freitas2013}. As can be deduced from Table \ref{tab:histchanges} our data sets also have inhomogeneities. Although much attention has been devoted to homogeneity testing and adjusting for inhomogeneities, methods thereof are not considered here for multiple reasons. First of all, inventing and applying homogenization tests for hourly data is a time consuming and difficult task and would not fit within the time framework of this thesis. Secondly, there are no existing homogenization programs available on hourly resolution to implement easily. Thirdly, homogenization tests in which neighboring stations are used in pairwise comparison would not be suited here, due to the large spatial distance between the stations. Besides there are no other neighboring stations matching in resolution and length of data set. A possible way of correcting for instrumental errors is by comparing the automatic rain gauges with the hand rain gauges, because we know from \citet{Brandsma2014} that the former measures annually 5-8\% lower than the latter (Section \ref{subsubsec:typedata}). This can be explained by errors in evaporation values due to a warming element in the automatic rain gauge and by a relatively less favorable aerodynamic shape \citep{STOWA2004}. However, there are several limitations to this correction. First, the timing of manual measurement is less trustworthy, especially in case of extreme precipitation, resulting in large absolute differences. Second, the correction factor as applied by \citet{Buishand1988} (multiplying every hour by the factor, $f=D/P$, with D the daily sum of the manual rain gauge and P the daily sum of the automatic rain gauge) is not valid here. Rain is namely not evenly distributed over the hours, and this kind of errors will be bigger for extreme rain intensities. Third, the manual and automatic rain gauges are often placed further from each other in the course of time (Table \ref{tab:histchanges}). The larger the distance and the more local the rain events of interest, the smaller the benefit of this correction technique. As intense convective rain events can be very local, this is a serious limitation. Last, an underestimation of automatic measurements is not that relevant for trends in extremes, when this bias is consistent in time. Then we can still deduce trends. This leads us to the conclusion that the proposed types of correction are not worthwhile to apply on our data. As we can deduce from Table \ref{tab:histchanges} some time-wise steps in measurements are expected due to the implementation of different kind of instruments or due to relocation. Therefore, these errors are not consistent over the entire time period.
+
+In order to study possible jumps in our precipitation data, we show the annual means of the hourly precipitation sums (P) in combination with the timing of the important historical changes for every station in Figure \ref{fig:mean_histchanges}. The regression lines (solid red lines) of the annual means in P are drawn by the {\it geom\_smooth} function of the \enquote{ggplot2} package in R, which are in fact estimates of the conditional mean function. In other words, such a regression line is an estimate of the average of the annual means in P conditional on the year (the type of estimator is called LOESS). %the ggplot function uses a fitting model based on local averaging.
+The gray bands in Figure \ref{fig:mean_histchanges} enclosing the regression lines, are plotted by the same R function, and represent the 95\% confidence level intervals for the predictions from the smoothed LOESS model.
+
+For De Kooy three important historical changes have taken place, of which the timing is indicated in Figure \ref{fig:Kmean_histchanges} by dashed lines. The dashed purple line is linked to the reduction in the orifice area from 400 to 200 cm$^2$ in 1972. In Figure \ref{fig:Kmean_histchanges} this effect seems to be negligible, confirming what was stated in Section \ref{subsubsec:typedata}. The dashed green line represents the change from manual to automatic (electric) measurements in 1993. In this figure it is hard to detect an evident jump in the data between the period before and after the change. The little bump in the year 1993 is not thought to be the result of the change, as we would expect a long-term shift in the data. In other words, we are seeking for simultaneous occurrence of an historical change with a breakpoint in the annual precipitation means. The dashed blue line in Figure \ref{fig:Kmean_histchanges} relates to the change of setup; since 2007 the rain gauge is located in a Ott windscreen instead of an English setup. This would lead to a decrease in the annual means in P of 1.5\%, which could have influenced the breakpoint in the smoothed regression fit around 2007.
 
 \newpage
 
@@ -245,72 +247,69 @@ load("./inst/tussenStap/hrKNMI.rda")
 <<Kmean_histchanges,cache=FALSE,fig.height=2.5>>=
 #De Kooy 1972 (to 200 cm2 orifice area), 1993(automatic) 2007 (Ott wind screen)
 yrmean <- hrKNMI[, list(yrmean = mean(P)),by=list(Year,STN)]
-ggplot(yrmean[STN==235]) + geom_line(aes(x=Year,y=yrmean),colour="lightgray") + geom_point(aes(x=Year,y=yrmean)) + geom_smooth(aes(x=Year,y=yrmean), colour="red") + geom_vline(xintercept=1972, colour="purple",linetype=2) + geom_vline(xintercept=1993, colour="green",linetype=2) + geom_vline(xintercept=2007, colour="blue",linetype=2) + theme_bw()
+ggplot(yrmean[STN==235]) + geom_line(aes(x=Year,y=yrmean),colour="lightgray") + geom_point(aes(x=Year,y=yrmean)) + geom_smooth(aes(x=Year,y=yrmean),method="loess", colour="red") + geom_vline(xintercept=1972, colour="purple",linetype=2) + geom_vline(xintercept=1993, colour="green",linetype=2) + geom_vline(xintercept=2007, colour="blue",linetype=2)+ ylab("yr mean P (mm)") + ylim(c(0.048,0.1416)) + theme_bw()
 @
-  \caption{De Kooy}
+  \subcaption{De Kooy}
   \label{fig:Kmean_histchanges}
   \end{minipage}
   \hfill
   \begin{minipage}{0.48\textwidth}
 <<Bmean_histchanges,cache=FALSE,fig.height=2.5>>=
 #De Bilt 1981 (to 200 cm2 orifice area), 1993(automatic), 2008 (Ott wind screen and relocation)
-ggplot(yrmean[STN==260]) + geom_line(aes(x=Year,y=yrmean),colour="lightgray") + geom_point(aes(x=Year,y=yrmean)) + geom_smooth(aes(x=Year,y=yrmean), colour="red") + geom_vline(xintercept=1981, colour="purple",linetype=2) + geom_vline(xintercept=1993, colour="green",linetype=2) + geom_vline(xintercept=2008, colour="blue")  + theme_bw()
+ggplot(yrmean[STN==260]) + geom_line(aes(x=Year,y=yrmean),colour="lightgray") + geom_point(aes(x=Year,y=yrmean)) + geom_smooth(aes(x=Year,y=yrmean), colour="red") + geom_vline(xintercept=1981, colour="purple",linetype=2) + geom_vline(xintercept=1993, colour="green",linetype=2) + geom_vline(xintercept=2008, colour="blue") + ylim(c(0.048,0.1416)) + ylab("yr mean P (mm)") + theme_bw()
 @
-  \caption{De Bilt}
+  \subcaption{De Bilt}
   \label{fig:Bmean_histchanges}
   \end{minipage}
   \hfill
   \begin{minipage}{0.48\textwidth}
 <<Emean_histchanges,cache=FALSE,fig.height=2.5>>=
 #Eelde 1973 (to 200 cm2 orifice area and relocation) 1991 (automatic), 2009 (Ott wind screen)
-ggplot(yrmean[STN==280]) + geom_line(aes(x=Year,y=yrmean),colour="lightgray") + geom_point(aes(x=Year,y=yrmean)) + geom_smooth(aes(x=Year,y=yrmean), colour="red") + geom_vline(xintercept=1973, colour="purple") + geom_vline(xintercept=1991, colour="green",linetype=2) + geom_vline(xintercept=2009, colour="blue",linetype=2)  + theme_bw()
+ggplot(yrmean[STN==280]) + geom_line(aes(x=Year,y=yrmean),colour="lightgray") + geom_point(aes(x=Year,y=yrmean)) + geom_smooth(aes(x=Year,y=yrmean), colour="red") + geom_vline(xintercept=1973, colour="purple") + geom_vline(xintercept=1991, colour="green",linetype=2) + geom_vline(xintercept=2009, colour="blue",linetype=2) + ylim(c(0.048,0.1416))  + ylab("yr mean P (mm)") + theme_bw()
 @
-  \caption{Eelde}
+  \subcaption{Eelde}
   \label{fig:Emean_histchanges}
   \end{minipage}
   \hfill
   \begin{minipage}{0.48\textwidth}
 <<Vmean_histchanges,cache=FALSE,fig.height=2.5>>=
 #Vlissingen 1962 (to 200 cm2 orifice area), 1993 (automatic)
-ggplot(yrmean[STN==310]) + geom_line(aes(x=Year,y=yrmean),colour="lightgray") + geom_point(aes(x=Year,y=yrmean)) + geom_smooth(aes(x=Year,y=yrmean), colour="red") + geom_vline(xintercept=1962, colour="purple",linetype=2) + geom_vline(xintercept=1993, colour="green",linetype=2) + theme_bw()
+ggplot(yrmean[STN==310]) + geom_line(aes(x=Year,y=yrmean),colour="lightgray") + geom_point(aes(x=Year,y=yrmean)) + geom_smooth(aes(x=Year,y=yrmean), colour="red") + geom_vline(xintercept=1962, colour="purple",linetype=2) + geom_vline(xintercept=1993, colour="green",linetype=2) + ylim(c(0.048,0.1416))  + ylab("yr mean P (mm)") + theme_bw()
 @
-  \caption{Vlissingen}
+  \subcaption{Vlissingen}
   \label{fig:Vmean_histchanges}
   \end{minipage}
   \hfill
   \begin{minipage}{0.48\textwidth}
 <<Mmean_histchanges,cache=FALSE,fig.height=2.5>>=
 #Maastricht 1976 (to 200 cm2 orifice area), 1991 (automatic),  2005 (relocation)
-ggplot(yrmean[STN==380]) + geom_line(aes(x=Year,y=yrmean),colour="lightgray") + geom_point(aes(x=Year,y=yrmean)) + geom_smooth(aes(x=Year,y=yrmean), colour="red") + geom_vline(xintercept=1976, colour="purple",linetype=2) + geom_vline(xintercept=1991, colour="green",linetype=2) + geom_vline(xintercept=2005, colour="orange",linetype=2)  + theme_bw()
+ggplot(yrmean[STN==380]) + geom_line(aes(x=Year,y=yrmean),colour="lightgray") + geom_point(aes(x=Year,y=yrmean)) + geom_smooth(aes(x=Year,y=yrmean), colour="red") + geom_vline(xintercept=1976, colour="purple",linetype=2) + geom_vline(xintercept=1991, colour="green",linetype=2) + geom_vline(xintercept=2005, colour="orange",linetype=2) + ylim(c(0.048,0.1416)) + ylab("yr mean P (mm)") + theme_bw()
 @
-  \caption{Maastricht}
+  \subcaption{Maastricht}
   \label{fig:Mmean_histchanges}
   \end{minipage}
-  \caption{The annual means in precipitations of De Kooy (a), De Bilt (b), Eelde (c), Vlissingen (d), and Maastricht (e), from 1958 till 2015. The vertical dashed lines give the timings of important historical changes, the type of change is indicated by the color: orifice area reduction (purple), automatic measurement (green), Ott windscreen (blue), and relocation of the instrument (orange). When one of the changes occur simultanously with a relocation a normal line instead of dashede line is used.}
+  \caption{The annual means of the hourly precipitation sums (P in mm) of De Kooy (a), De Bilt (b), Eelde (c), Vlissingen (d), and Maastricht (e), from 1958 till 2015. The red line presents a regression fitting of the annual means in P, enclosed by the corresponding 95\% confidence interval (gray band). The vertical dashed lines give the timings of important historical changes, the type of change is indicated by the color: orifice area reduction (purple), automatic measurement (green), Ott windscreen (blue), and relocation of the instrument (orange). When one of the changes occurs simultaneously with a relocation a solid line is used instead of a dashed line.}
   \label{fig:mean_histchanges}
 \end{figure}
 
-For de Kooy three important historical changes have taken place, of which the timing is indicated in Figure \ref{fig:Kmean_histchanges} by dashed lines. The dashed purple line is linked to the reduction in the orifice area from 400 to 200cm$^2$ in 1972. In our figure this effect seems to be neglible, confirming what was stated in \ref(subsubsec:typedata). The dashed green line represents the change from manual to automatic (electric) measurements in 1993. In this figure it is hard to detect an evident jump in our data between the period before and after the change. The little bump in the year 1993 is not thought to be the result of the change, as we would except a long-term shift in our data. In other words, we are seeking for simultaneous occurence of an historical change with a breakpoint in the annual precipitation means. The dashed blue line in Figure \ref{fig:Kmean_histchanges} relates to the change of setup; instead of an English setup the rain gauge is since 2007 located in a Ott windscreen. This would lead to a mean annual difference of 1.5\% lower, which could have influenced the breakpoint in the smoothed regression fit around 2007.
+Contrary to a large temporal jump in the year 1982, we do not spot a clear shift in the precipitation data of De Bilt for the reduction in orifice area (Figure \ref{fig:Bmean_histchanges}). The increase in the annual mean loss due to the change from manual to automatic rain gauge can not be deduced from Figure \ref{fig:Bmean_histchanges}. However, for the implementation of the Ott windscreen and simultaneous relocation (200 m) of the station in 2008, we again observe a breakpoint in the smoothed regression line. It is possible that this change in setup has had an effect on the precipitation measured, although keep in mind that the confidence interval increases at the same time.
 
-Contrary to a large temporal jump in the year 1982, we do not spot a clear shift in the precipitation data of De Bilt for the reduction in orifice area (Figure \ref{fig:Bmean_histchanges}). The increase in the annual mean loss due to the change from manual to automatic rain gauge can not be decuded from Figure \ref{fig:Bmean_histchanges}. However, for the implementation of the Ott windscreen and simultaneous relocation (200 m) of the station in 2008, we again observe a breakpoint in the smoothed regression line. It is possible that this change in setup has had an effect on the precipitation measured, although keep in mind that the confidence interval increases at the same time.
+None of the historical changes regarding precipitation measurements at Eelde can be linked to breakpoints in the regression of the yearly mean (\ref{fig:Emean_histchanges}). This is interesting regarding the change to the Ott windscreen setup, of which we thought it might have influenced the decreasing trends in annual mean P observed in Figures \ref{fig:Kmean_histchanges}, \ref{fig:Bmean_histchanges}. This is apparently not a consistent relationship. Therefore, it is still possible that this decreasing trend starting the early 2000s has another (f.e. climatic) reason. Note, that the uncertainty, expressed by the confidence interval band, is quite high for this time period and station.
 
-None of the historical changes regarding precipitation measurements at Eelde can be linked to breakpoints in the regression of the yearly mean (\ref{fig:Emean_histchanges}). This is interesting regarding the change to the Ott windscreen setup, of which we thought it might have influenced the decreasing trend in yearly mean when studying Figures \ref{fig:Kmean_histchanges},\ref{fig:Bmean_histchanges}. This is apparently not a consistent relationship. Therefore, it is still possible that this decrease starting the early 2000s has another (f.e. climatic) reason. Note, that the uncertainity, expressed by the confidence band, is quite high for this time period and station.
+Figure \ref{fig:Vmean_histchanges} demonstrates the regression and individual points of the annual precipitation means and two historical changes for the station in Vlissingen. Both the change in orifice area, as well as the implementation of an automatic rain gauge, can not be linked to a breakpoint in the regression of the annual means. What is more striking about Figure \ref{fig:Vmean_histchanges}, is the much less pronounced interdecadal pattern in the annual means in precipitation, compared to the other stations.
 
-Figure \ref{fig:Vmean_histchanges} demonstrates the yearly precipitation means and two historical changes for the station in Vlissingen. Both the change in orifice area, as well as the implementation of an autmatic rain gauge, can not be linked to a breakpoint in the regression of the annual means. What is more striking about Figure \ref{fig:Vmean_histchanges}, is the much less pronounced interdecadal pattern in the annual means in precipitation, compared to the other stations.
+The reduction in orifice area (in 1976) and change to an automatic rain gauge (1991) in Maastricht, does not correspond to a clear shift or jump in the annual precipitation means (\ref{fig:Mmean_histchanges}). The relocation in 2005, which was the farthest in distance compared to the other stations, goes hand in hand with a breakpoint. However, this is probably the same start (in the early 2000s) of a decreasing trend as for the other stations, which indicates that the mean driver is not related to a change in type of instrument.
 
-The reduction in orifice area (in 1976) and change to an automatic rain gauge (1991) in Maastricht, does not correspond to a clear shift or jump in the annual precipitation means (\ref{fig:Mmean_histchanges}). The relocation in 2005, which was the farthest in  distance compared to the other stations, goes hand in hand with a breakpoint. However, this is probably the same decrease starting the early 2000s as in the other stations, which indicates that the mean driver is not a instrument-related change.
+Overall, the observed breakpoints in Figure \ref{fig:mean_histchanges} do not match the same type of change for every station. Therefore, the effects of changes in type of instrument, setting and/or location are not likely to have a caused a significant jump in the hourly precipitation data. Whether the observed interdecadal patterns in Figure \ref{fig:mean_histchanges} might be linked to climatic changes (f.e. changes in temperature) will be further investigated in Chapter 6 (REF CH mech).
 
-Overall, the effects of changes in type of instrument, setting and/or location are not likely to have a caused a signicant jump in the precipitation data. Whether the observed interdecadal patterns in Figure \ref{fig:mean_histchanges} are linked to climatic changes (f.e. changes in temperature) will be further investigated in Chapter 3 (REF).
+\section{Definition of extremes}
+A couple of so-called \enquote*{extreme indices} are listed in the Fifth Assessment Report of the IPCC, which are widely used in literature. These indices are based on either the probability of occurrence of given quantities or on absolute or percentage threshold exceedances (relative to the climatological reference period), but also some complex definitions about duration, intensity and persistence of extreme events are involved \citep{IPCC2013}. These extreme indices have been selected on basis of their robust statistical properties, their applicability across a wide range of climate types and extensive data availability over space and time. These indices reflect more ‘moderate’ extremes, as they do not include 1 in 100 year events, but events taking place as often as 5\% or 10\% of all hours per year \citep{IPCC2013}.
 
-\section{Definition Extremes}
-A couple of so-called \enquote*{extreme indices} are listed in the Fifth Assessment Report of the IPCC report, which are widely used in literature. These indices are based on either the probability of occurrence of given quantities or on absolute or percentage threshold exceedances (relative to the climatological reference period), but also some complex definitions about duration, intensity and persistence of extreme events are involved \citep{IPCC2013}. These extreme indices have been selected on basis of their robust statistical properties, their applicability across a wide range of climate types and extensive data availability over space and time. These indices reflect more ‘moderate’ extremes, as they do not include 1 in 100 year events, but events taking place as often as 5\% or 10\% of the time \citep{IPCC2013}.
-
-The indices used in this study are expressions of events occuring $1-45$ times a year, so including \enquote{high} to \enquote{moderate} precipitation extremes. Accordingly, the annual number of events is large enough to apply meaningfull trend analysis on 58 yr time series. Extreme events are defined using the 75,90,95,99,99.9 quantiles, so hours with the highest $25-0.1$\% intensities. Quantiles are cutpoints partitioning a probability distribution into contiguous intervals, expressed as the values above which $100$-$\tau$ (where $\tau$ is f.e. 75\%, the 75\% quantile) of the highest values are situated. For the entire data set with all hourly values, the 99 and 99.9 \%-quantiles express \enquote{moderate} extremes occuring 10-85 times a year, whereas dry hours occuring $\pm$ 88\% of the time. However, we only apply full trend analysis on data consisting of 2-day maxima (the reason for this will be further explained in \ref{subsec:Interdependency_of_data}). The $75-99.9$ quantiles of this data set correspond to $1-45$ times a year and intensities of $>$ $2-24$ mm hr$^{-1}$ of accumulated precipitation per hour. Here, the 99 and 99.9 \% quantiles represents the \enquote{high} extremes, with frequencies of approximately $0.18$ and 2 times per year. The 75, 90, 95 \% quantiles belong to values occuring $\pm$ 10, 18 and 45 times a year. These indices are chosen such that the extremes selected have impacting intensities($>$ $1.6-6$ mm hr$^{-1}$ for \enquote{moderate} extremes and $>$ 8-50 mm/hr for \enquote{high} extremes), as well as a high enough occurence per year for trend analysis.
+The indices used in this study are expressions of events occurring $1-45$ times a year, so including \enquote{high} to \enquote{moderate} precipitation extremes. Accordingly, the annual number of events is large enough to apply meaningful trend analysis on 58 yr time series. Extreme events are defined using the 75, 90, 95, 99, 99.9 \%- quantiles, so hours with the highest $25-0.1$ \% intensities. Quantiles are cut points partitioning a probability distribution into contiguous intervals, expressed as the values above which $100-\tau$ \% (where $\tau$ is f.e. 75\%, the 75\%-quantile) of the highest values are situated. For the entire data set with all hourly values, the 99 and 99.9 \%-quantiles express \enquote{moderate} extremes occurring 10-85 times a year, whereas dry hours occurring $\pm$ 88\% of the time. However, we only apply full trend analysis on data consisting of 2-day maxima (the reason for this will be given in Section \ref{subsec:Interdependency_of_data}). The $75-99.9$ \%-quantiles of this data set correspond to $1-45$ times a year and intensities of $>$ $2-24$ mm hr$^{-1}$. Here, the 99 and 99.9 \%-quantiles represent the \enquote{high} extremes, with frequencies of approximately $0.18$ and 2 times per year. The 75, 90, 95 \%-quantiles belong to values occurring roughly 10, 18 and 45 times a year. These indices are chosen such that the extremes selected have impacting intensities( $>$ $1.6-6$ mm hr$^{-1}$ for \enquote{moderate} extremes and $>$ 8-30 mm/hr for \enquote{high} extremes), as well as a high enough occurrence per year for trend analysis.
 
 \section{Trends}
 
-In Chapter 2 (REF to CH2) trend analysis is applied on intensity and frequency (wet hours a day) data for every station.
-
+In Chapter 2 (REF to CH2) trend analysis is applied on intensity and frequency (number of wet hours per day) data for every station. In this section we will explain how we applied trend analysis and on which assumptions it is based. We differentiate between two linear regression techniques: least-square and quantile regressing. Furthermore, we describe how we tested observed trends on their significance.
 
 \subsection{Simple linear trend}
 
@@ -318,30 +317,25 @@ To detect and quantify historical climate trends  the linear component of the ch
 
 \subsubsection{Least-square regression fitting}
 
-The ordinary least square (OLS) method is a minimization function of the squares of the vertical distance, $\sum{(y_i - \beta_0 - \beta_1 x_i)^2}$ from  the  data points  to  the  regression  line citep{Leng2007}. Figure \ref{fig:LR} illustrates this. The slope of this regression $\hat{\beta_1}$ is given by  $ \frac{\sum{(x_i - \bar{x})(y_i - \bar{y})}}{\sum{(x_i -\bar{x})^2}} = \frac{S_{xy}}{S_yy}$. In a similar way the OLS estimate of X on Y minimizes the horizontal distance between the points and the regeression line. The latter is also named the reverse regression. Ordinary least regression is only applicable when only one of two variables is random citep{Leng2007}.
+The ordinary least square (OLS) method is a minimization function of the sum of squares of the vertical distance, $\sum{(y_i - \beta_0 - \beta_1 x_i)^2}$, from  the  data points  to  the  regression  line \citep{Leng2007}. Figure \ref{fig:LR} illustrates this. The slope of this regression $\hat{\beta_1}$ is given by  $ \frac{\sum{(x_i - \bar{x})(y_i - \bar{y})}}{\sum{(x_i -\bar{x})^2}} = \frac{S_{xy}}{S_yy}$. In a similar way the OLS estimate of X on Y minimizes the horizontal distance between the points and the regression line. The latter is also named the reverse regression. Ordinary least regression is only applicable when only one of two variables is random \citep{Leng2007}.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.7\linewidth]{/usr/people/vliet/Documents/HourlyPrecipExtr/figure/Linearregression.png}
-  \caption{Ordinary least square regression, which minimize the vertical (a) or horizontal (b) distance between the data points and the regression line.}
+  \includegraphics[width=0.7\linewidth]{./figure/Linearregression.png}
+  \caption{Ordinary least square regression, which minimizes the vertical (a) or horizontal (b) distance between the data points and the regression line.}
   \label{fig:LR}
 \end{figure}
-
-(maybe add something about how confidence, gray band is calculated. Used in Figures \ref{fig:Mmean_histchanges})
-% Confidence band; uncertainty are computed using ...
-% (?? The 90\% confidence interval quoted is solely that arising from sampling uncertainty in estimating the trend.
-% Parametric and other remaining uncertainties (Box 2.1), for which estimates are provided with some data sets, are not included in the trend estimates shown here, so that the same method can be applied to all data sets considered.)
 
 \newpage
 \subsubsection{Quantile regression}
 
-Quantile regression can be viewed as an optimatization of a linear $\tau$-dependent fit to a certain data set, thereby estimating the $\tau$-th quantiles of the response variable. As described in \citet{Koenker1978} we can describe the minimization problem to obtain the $\tau$-th sample quantile of data serie $y$ as
+Multiple studies use linear regression for changes in seasonal or annual quantiles. However, when quantiles are calculated from small samples (i.e. from data per season or year), these can be biased. Therefore, quantile regression is used to overcome this problem \citep{Wasko2014,Roth2015}. Quantile regression can be viewed as an optimization of a linear $\tau$-dependent fit to a certain data set, thereby estimating the $\tau$-th quantiles of the response variable. As described in \citet{Koenker1978,KoenkerNg2005} we can describe the minimization problem to obtain the $\tau$-th sample quantile of data series $y$ as function of positive $x$ as
 
 \begin{equation} \label{eq:sample_quant}
-  \min_{\beta\in\R} \sum_{t=1}^{T} \rho_{\tau} (x_s(t) - \beta)
+   \phi (\beta) = \min_{\beta\in\R} \sum_{t=1}^{T} \tau x (y_t - \beta)
 \end{equation}
 
-where $\rho_{\tau}(u) = u(\tau - I (u<0))$
+where the value of $\beta$ for which $\phi$ is minimal is the estimator.
 To solve a linear quantile fit, we specify the $\tau$-th conditional quantile function as $Q_y(\tau|x) = x'\beta(\tau)$ and rewrite \ref{eq:sample_quant}
 
 \begin{equation} \label{eq:cond_quant}
@@ -370,18 +364,18 @@ ggplot(dt,aes(x=x,y=y)) +
    scale_colour_manual(name = 'Quantiles', values=c('black','blue','green'),labels = c('25%','50%','75%'))+
     theme_bw()
 @
-  \caption{For a random data set of 100 values for all x (numbers from 1 to 100) the colored lines (black-green) give quantile regression fits with respectively $\tau$ = 25, 50, 75\%. The dots in black give all values higher than the 25\%-quantile. Note, these dots are overplot by the blue dots which indicate all values higher than the 50\%-quantile. The latter dots are also overplot by the green dots giving all values higher than the 75\%-quantile.}
+  \caption{For a random data set of 100 values of y for all x (numbers from 1 to 100) the colored lines (black-green) give quantile regression fits with respectively $\tau$ = 25, 50, 75\%. The dots in black give all values higher than the 25\%-quantile. Note, these dots are overplotted by the blue dots which indicate all values higher than the 50\%-quantile. The latter dots are also over plot by the green dots giving all values higher than the 75\%-quantile.}
   \label{fig:QR_example}
 \end{figure}
 
-Complementing the least square method, quantile regression not only provides a more robust alternative for estimating the main tendency of the response, but also offers the possibility to investigate better the conditional distribution of the response \citep{Koenker2005}. Quantiles are more relevant for spatial comparison then counts of exceedance over thresholds \citep{KleinTank2003}, as they correspond to the same part of the distribution for all stations, Multiple studies use linear regression for changes in seasonal or annual quantiles. However, when high quantiles are calculated from small samples, these can be biased. Therefore, quantile regression is used to overcome this problem \citep{Wasko2014,Roth2015}.
+Complementing the least square method, quantile regression is less sensitive for outliers and therefore a more robust alternative for estimating the main tendency in extremes \citep{Koenker2005,Roth2015}. Besides, for spatial comparison quantiles are more relevant then counts of exceedance over thresholds \citep{KleinTank2003}, as they correspond to the same part of the distribution for all stations. Therefore, quantile regression offers the possibility to investigate better the conditional distribution ($\tau$-\% of the data) of the response \citep{Koenker2005}. Note, that trend estimates of high quantiles can still be noisy due to data scarcity \citep{Roth2015}.
 
 % Complementing ... method in the use of estimating conditional mean models, quantile regression..
 
 % From \citet{Wasko2014} In this paper, we highlight limitations in the binning approach and present quantile regression as an alternative to the above process. Quantile regression allows estimation of this scaling directly and, unlike binning, is unbiased with sample size.
 % A Mann-Kendall test could also be applied to test the hypothesis of a monotonic trend in the seasonal or annual quantiles. Though, this approach does not visualize the trend itself. Although, linear modelling is broadly accepted, it is not flexible enough when working with long measurement records which encounter possible phases of stagnation. In this case monotone quantile regression can be used. ))
 
-Quantile regression was performed using the R package \enquote{quantreg} \citep{Koenker2013}. The default method for computing quantile regression is a modified version of the Barrodale and Roberts algorithm for l1-regression, described in  detail in \citet{Koenker1987,Koenker1994}.For large data sets (n $> 10000$) we use Frisch-Newton interior point method (see \citet{Koenker2005} for more information) to calculate quantile regression.
+Quantile regression was performed using the R package \enquote{quantreg} \citep{Koenker2013}. The default method for computing quantile regression is a modified version of the Barrodale and Roberts algorithm for l1-regression, described in  detail in \citet{Koenker1987,Koenker1994}. For large data sets (n $> 10000$) we use Frisch-Newton interior point method (\citep{Koenker2005}) to calculate quantile regression.
 
 %In Chapter 3 we used a binned approach, as the differences between intervals of temperature as so big the quantile regression fits are biased. For every 2 degrees bin a quantile is calculated and regression on these quantile points is applied. In order to remove biased in the binned approach, due to low sample size for certain bins, only quantile values of bins containing more than 100 measurements are considered.
 
@@ -390,7 +384,7 @@ Quantile regression was performed using the R package \enquote{quantreg} \citep{
 
 \subsection{Time dependency of data} \label{subsec:Interdependency_of_data}
 
-When serial correlation is present, the linear regression estimates may be potentially invalid and inconsistent \citep{CFAmanual}.\citet[pp.128]{Koenker2005} stated that the typical independent and identically distributed errors (IID) condition (in other words the condition that all random variables have the same probability distribution as the others and are mutually independent) is most of the time influencing the regression error terms for both the mean- and quantile regression. Therefore, it is important to correct for autocorrelation when applying quantile regression to detect a trend \citep{Huo2013}. Autocorrelation is serial correlation or cross-correlation of a signal with itself at different points in time. Partial autocorrelations are serial correlations with intermediate autocorrelations removed. Based on the autocorrelation function (acf) and partial autocorrelation function (pacf) repeating time-dependent patterns can be recognized. To have a time-independent data set a sampling spacing larger than the significant lags of these patterns can be chosen.
+When notable autocorrelation is present, the linear regression estimates may be potentially invalid and inconsistent \citep{CFAmanual}. Autocorrelation is cross-correlation of a signal with itself at different points in time. In other words, hourly values successive in time are dependent on each other. Partial autocorrelations are cross-correlations in time with intermediate autocorrelations removed. Based on the autocorrelation function (acf) and partial autocorrelation function (pacf) repeating time-dependent patterns can be recognized. \citet[pp.128]{Koenker2005} stated that the typical independent and identically distributed errors (IID) condition (i.e. the condition that all random variables have the same probability distribution as the others and are mutually independent) is most of the time influencing the regression error terms for both the mean- and quantile regression. Therefore, it is important to correct for autocorrelation when applying quantile regression to detect a trend \citep{Huo2013}.  To have a time-independent data set a sampling spacing larger than the significant lags of these patterns can be chosen.
 
 % Various auto-regressive and moving average patterns leave distinctive footprints on the autocorrelation and partial autocorrelation functions.  Time-series analysis is more appropriate for data with autocorrelation than, say, multiple regression, for two reasons. The first is that there is explicit violation of the assumption of independence of errors. The errors are correlated due to the patterns over time in the data. Type I error rate is substantially increased if regression is used when there is autocorrelation. The second is that the patterns may either obscure or spuriously enhance the effect of an intervention unless accounted for in the model.
 %
@@ -402,27 +396,28 @@ When serial correlation is present, the linear regression estimates may be poten
 %
 % A word of caution about using multiple regression techniques with time series data: because of the autocorrelation nature of time series, time series violate the assumption of independence of errors.  Type I error rates will increase substantially when autocorrelation is present.  Also, inherent patterns in the data may dampen or enhance the effect of an intervention; in time series analysis, patterns are accounted for within the analysis. From: \url{http://userwww.sfsu.edu/efc/classes/biol710/timeseries/timeseries1.htm}
 
-\subsection{Testing and significance}
+\subsection{Testing of significance}
 
-Whether least square or quantile fits on the independent data are significant, has to be tested. First, we start with an hypothesis of stationarity against a linear trend. In the case of stationarity the fitted value (f.e. the quantile of interest) is constant over time, i.e.
+Whether least square or quantile fits on the independent data are significant, has to be tested. First, we start with an hypothesis of stationarity against a linear trend. In the case of stationarity the fitted value (f.e. of the quantile of interest) is constant over time, i.e.
 \begin{equation}
 H_0: Q_i == \beta
 \end{equation}
-with the time step i,
+with the time step $i$,
 or
 \begin{equation}
 H_0: \alpha == 0
 \end{equation}
+with $\alpha$ presenting the slope.
 
-This can be tested against the alternative that it is increasing or decreasing, i.e.
+This can be tested against the alternative that it is increasing (or decreasing), i.e.
 \begin{equation}
-H_1: Q_{-n} \le Q_i \le Q_{n}
+H_1: Q_i \le Q_{n}
 \end{equation}
-or
+or differently formulated as
 \begin{equation}
 H_1: Q_i = \alpha_0 + \alpha_1 * i, \alpha_1 > 0
 \end{equation}
-with n indicating the nth timestep.
+with n indicating the nth-time step.
 
 % (( Testing: H0 hypothesis of linear trend against monotone increasing trend
 % H0: Qi = alpha_0 + alpha_1 * i, alpha_1 > 0
@@ -430,11 +425,11 @@ with n indicating the nth timestep.
 % Qi = alpha_0 + i *n ,
 % with n as timestep. ))
 
-Here, we test whether the slopes of the fitted regression lines deviate significantly from zero. In a 9999-Monte Carlo permutation test we calculate the slopes of 9999 permutated versions of one time serie, to compare with the observed slope of one single regression. The corresponding p-value is computed as $p= \frac{\sum \alpha_{obs} > \alpha_{perm}}{N}$, with $\alpha_{obs}$ the slopes of the observed values, $\alpha_{perm}$ the slopes of the permutated series and N the number of of permutations. By comparing the p-value to the 1\%,5\%,95\% and 99\% confidence levels in the distribution of all slopes, the observed regression fits can be assigned a significant negative, positive or non-significant trend. Thereby rejecting or accepting the $H_0$ hypothesis.
+Here, we test whether the slopes of the fitted regression lines are significantly larger than zero. In a 9999-Monte Carlo permutation test we calculate the slopes of 9999 permuted versions of one time series, to compare with the observed slope of one single regression. The corresponding p-value is computed as $p= \frac{\sum \alpha_{obs} > \alpha_{perm}}{N}$, with $\alpha_{obs}$ the slope of the observed fitted values, $\alpha_{perm}$ the slopes of the permuted series and N the number of of permutations. By comparing the p-value to the 95\% and 99\% confidence levels in the distribution of all slopes, the observed regression fits can be assigned a significant positive or non-significant trend. Thereby rejecting or accepting the $H_0$ hypothesis.
 
-The reason why a permutation test is chosen, is because this is a non-parametric test. Parametric approaches (f.e. z-,t-, or F-test) assume that the data is normally distributed, while a non-parametric (f.e permutation test) can be applied without the assumption that the data follows a normal distribution (\citet{Srinivasan}). A permutation (randomization) test is a resampling and exact test (the latter means that it is not defined on basis of parametric assumptions and does not use approximate algorithms). A basic premise of the permutation test is that the observations are exchangeable under the null hypothesis (\citet{Srinivasan}), so there should be no difference in location or method of measurement between the data. Although one data set consist of measurements at only one location, we already discussed tiny changes in the measurement settings of that sites in 58 years. These historical changes appeared to be insignificant \ref{subsubsec:dataquality}, so our assumption holds.
+The reason why a permutation test is chosen, is that this is a non-parametric test. Parametric approaches (f.e. z-, t-, or F-test) assume that the data is normally distributed, while a non-parametric (f.e permutation test) can be applied without the assumption that the data follow a normal distribution (\citet{Srinivasan}). A permutation (randomization) test is a resampling and exact test, the latter means that it is not defined on basis of parametric assumptions and does not use approximate algorithms. A basic premise of the permutation test is that the observations are exchangeable under the null hypothesis (\citet{Srinivasan}), so there should be no difference in location or method of measurement between the data. Although one data set consists of measurements at only one location, we already discussed tiny changes in the measurement settings and location in 58 years. These historical changes appeared to be insignificant in Section \ref{subsubsec:dataquality}, so our assumption holds.
 
-A major disadvantage of permutation tests is that they can be very demanding in computational power, therefore it is worthwile to use a Monte carlo approach. With this approach we mean a N-times repeated random sampling (with an specific order), instead of calculating the slope of every possible order of a serie of almost 10940 observated values, which would give 10940! outcomes. As the data set consist of so many points, the chances to have an identical ordered serie in 9999-random sampling is extremely low.
+A major disadvantage of permutation tests is that they can be very demanding in computational power, therefore it is worthwhile to use a Monte Carlo permutation test. With this Monte Carlo approach we mean a N-times repeated random sampling (with an specific order), instead of calculating the slope of every possible order of a series of almost 10940 observed values, which would give 10940! outcomes. As the data set consist of so many points, the chance of producing an identical ordered series in 9999-random sampling is extremely low. So, no significant bias is expected from randomly generated duplicated series.
 
 % Frequency data -->  in stead of 58, 999-random
 
@@ -447,13 +442,13 @@ A major disadvantage of permutation tests is that they can be very demanding in 
 %
 \section{Mechanism}
 
-A comprehensive fourfolth study into the mechanism behind the observed trends is carried out in chapter 4. First, we identify variables related to the production of (extreme) precipitation from theory. Second, key variables are distinquished based on their correlation matrices and plotting patterns (precipitation over key variable x). Third,  on variable(s) which are likely to cause changes in precipitation, quantile and linear regression in time is carried out. Finally, changes in the distribution and in the quantile regresion relationship of precipitation over a variable are investigated for each variable by comparison of two time periods. For this part we binned mean hourly precipitation intensity with respect to the explanatory variable(s). In this section we describe how we computed the correlation matrices, and carried out the binning and corresponding analysis.
+A comprehensive four-fold study into the mechanism behind the observed trends is carried out in chapter 6. First, we identify variables related to the production of (extreme) precipitation from theory. Second, key variables are distinguished based on their correlation matrices and plotting patterns (precipitation over key variable x). Third,  quantile and linear regression in time is carried out on variable(s) which are likely to cause changes in precipitation. Finally, changes in the distribution and in the quantile regression relationship of precipitation over a variable are investigated for each variable by comparison of two time periods. For this part we binned mean hourly precipitation intensity with respect to the explanatory variable(s). In this section we describe how we computed the correlation matrices, and carried out the binning and corresponding analysis.
 
 % ?! only intensity?
 %includes explanation correlations (Pearson, Spearman), regression of binned quantiles
 
 \subsubsection{Pearson and Spearman correlation matrices}
-The correlations of the key variabels are shown in a heat map, which is a correlation matrix in which the cells are colored from blue to red; from strong negative to strong positive correlation, with inbetween white indicating zero correlation. First, we calculated Pearson correlation coefficients. We computed such a Pearson heatmap for 5 different sets of data: (i) all wet hours for precipitation variables (hourly duration, intensity, and sum) and the key variables without CAPE, (ii) wet 2-day maxima of these variables, (iii) wet 2-day maxima in CAPE, (iv) wet daily maxima of variables from (i), (v) wet daily maxima in CAPE. The Pearson correlation coefficient is also known as the product-moment correlation coefficient and defined as: $r = \sum{\frac{z_xz_y}{N}} $, where $z_x$ and $z_y$ are the $z$ scores of variables x and y and N the sample size \citep{Cohen2004}. The $z$ score is a measure of how many standard deviations an element is from the mean, $z = \frac{X- \mu}{\sigma}$. The Pearson correlation coefficient is 1.0, the highest magnitude, when all samples have the same z score for both variables. In the case the formula recuces to $r = \sum{\frac{z^2}{N}} $. This always equals 1.0, as the variance of a set of $z$ scores is  $\frac{\sum{z-\bar{z}}^2}{N}$ and always 1,\bar{z} is always 0, so $\sum{\frac{z^2}{N}=1.0$} \citep{Cohen2004}. A Pearson correlation coefficient of -1.0 is reached when every sample has the same z score, but with opposite sign. All correlation which deviating z scores between x and y have coefficient of a magnitude between 1.0 and zero. Pearson's correlation assumes normal distributed data and that the data is related to each other in a linear way \citep{Artusi2002}. A restriction to Pearson correlation is its sensitivity to outliers \citep{Chok2010}. Second, we also calculated Spearman correlation coefficients, which we applied on data sets (ii), (iii) and (v). Spearman's correlation indicates the strength of association between two ranked variables and can be seen as the nonparametric version of the Pearson's product-moment correlation \citep{Cohen2004}. In contrast to Pearson correlation, Spearman correlation has no assumptions about the way data is distributed. The assumtions of Spearman's correlations are that data must be at least ordinal and that the variables are related in a monotonoically way \citep{Artusi2002,Cohen2004}. A function of a certain relationship can be called monotonic if it is entirely decreasing or increasing. Comparison of Pearson and Spearman correlation coefficients for the same variables indicates whether a relation is more linear or more (monotonically) non-linear.
+The correlations of the key variables are shown in a heat map, which is a correlation matrix in which the cells are colored from blue to red; from strong negative to strong positive correlation, with in between white indicating zero correlation. First, we calculated Pearson correlation coefficients. We computed such a Pearson heat map for 5 different sets of data: (i) all wet hours for precipitation variables (hourly duration, intensity, and sum) and the key variables without CAPE, (ii) wet 2-day maxima of these variables, (iii) wet 2-day maxima in CAPE, (iv) wet daily maxima of variables from (i), (v) wet daily maxima in CAPE. The Pearson correlation coefficient is also known as the product-moment correlation coefficient and defined as: $r = \frac{\sum{z_xz_y}}{N} $, where $z_x$ and $z_y$ are the $z$ scores of variables x and y and N the sample size \citep{Cohen2004}. The $z$ score is a measure of how many standard deviations an element is from the mean, $z = \frac{X - \mu}{\sigma}$. The Pearson correlation coefficient is 1.0, the highest magnitude, when all samples have the same $z$ score for both variables. In the case the formula reduces to $r = \frac{\sum{z^2}}{N} $. This always equals 1.0, as the variance of a set of $z$ scores is  $\frac{\sum{z-\bar{z}}^2}{N}$ and always 1, $\bar{z}$ is always 0, so $\frac{\sum{z^2}}{N}=1.0$ \citep{Cohen2004}. A Pearson correlation coefficient of -1.0 is reached when every sample has the same $z$ score, but with opposite sign. When $z$ scores differ between x and y, the correlation coefficients are of a magnitude between 1.0 and zero. Pearson's correlation assumes normal distributed data and that the data are related to each other in a linear way \citep{Artusi2002}. A restriction to Pearson correlation is its sensitivity to outliers \citep{Chok2010}. Second, we also calculated Spearman correlation coefficients, which we applied on data sets (ii), (iii) and (v). Spearman's correlation indicates the strength of association between two ranked variables and can be seen as the non-parametric version of the Pearson's product-moment correlation \citep{Cohen2004}. In contrast to Pearson correlation, Spearman correlation has no assumptions about the way in which data are distributed. The assumptions of Spearman's correlations are that data must be at least ordinal and that the variables are related in a monotonically way \citep{Artusi2002,Cohen2004}. A function of a certain relationship can be called monotonic if it is entirely decreasing or increasing. Comparison of Pearson and Spearman correlation coefficients for the same variables indicates whether a relation is more linear or more (monotonically) non-linear.
 
 
 % Non-normality
@@ -477,10 +472,10 @@ The correlations of the key variabels are shown in a heat map, which is a correl
 
 \subsection{Binning}
 
-Differences in the number of measurements for each unit value of a certain variable can influence the fit between two variables, therefore we consider the distribution of each variable. To reduce this influence we apply binning of hourly mean precipitation intensity in unit value for a certain variable (T, Td, CAPE and FH). For temperature and dewpoint temperature we use bins of 2 $^{\circ}$C. For CAPE a binsize of 50 J/kg is applied and for FH a binsize of 2 m/s. The number of observations per bin must be $\geq 200$. As we only have CAPE data from 1993 unwards we did not apply time comparison of binned mean and quantile lines for this variable, but only considered the seasonal point clouds and distributions. All bins are differentiated between summer and winter season, and for all variables except CAPE also between the period 1958-1986 and the period 1987-2015. The resolution is limited greatly to binning of the data and differentiating of the measurements on season and time period. Therefore, we use daily maxima in mean hourly intensity and in key variables, instead of 2-day maxima. Wet-only maxima are considered, as we are solely interested in changes in precipitation, not in dryness. Furthermore, we bundle the maxima of the five stations, in order to increase the resolution. Nontheless, we want to study the common relationship, because we observed a robust signal for all stations in increasing precipitation intensity and decreasing frequency of wet hours. For each bin the mean and the 95\%,99\%-quantiles are calculated from the binned intensity maxima and lines are fitted through all the means and quantiles. The two periods have a length of 29 years, and as climate is clasically referred to as the weather of 30 years (WMO), the differences in distribution and binned quantile regression between the two periods can be seen as changes in the state of the climate
-
+Differences in the number of measurements for each unit value of a certain variable can influence the fit between two variables, therefore we consider the distribution of each variable. To reduce this influence we apply binning of hourly mean precipitation intensity in unit value for a certain variable (temperature, dewpoint temperature, CAPE and wind speed). For temperature and dewpoint temperature we use bins of 2 $^{\circ}$C. For CAPE a bin size of 50 J/kg is applied and for wind speed a bin size of 2 m/s. The number of observations per bin must be $\geq 200$. As we only have CAPE data from 1993 onward we did not apply time comparison of binned mean and quantile lines for this variable, but only considered the seasonal point clouds and distributions. All bins are differentiated between summer and winter season, and for all variables except CAPE we also differentiated between the period 1958-1986 and the period 1987-2015. The resolution is limited greatly to binning of the data and differentiating of the measurements on season and time period. Therefore, we use daily maxima of mean hourly intensity and daily maxima of the key variables, instead of 2-day maxima. Wet-only maxima are considered, as we are solely interested in changes in precipitation, not in dryness. Furthermore, we bundle the daily maxima of the five stations, in order to increase the resolution. Besides, we want to study the common relationship, because we observed a robust signal for all stations in increasing precipitation intensity and decreasing frequency of wet hours. For each bin the mean and the 95,99 \%-quantiles are calculated from the binned intensity maxima and lines are fitted through all the means and quantiles. The two periods have a length of 29 years. As climate is classically referred to as the weather of 30 years (WMO), the differences in distribution and binned quantile regression between the two periods can be seen as changes in the climate state.
 % As only the maxima are considered, the 95\% quantiles represent \enquote{high} extremes with values till 25 mm hr{-1}.
 
+% 3 URLS NOT WORKING!
 \printbibliography
 
 \end{document}
