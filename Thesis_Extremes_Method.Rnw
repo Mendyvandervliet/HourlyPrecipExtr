@@ -5,6 +5,7 @@
 
 \usepackage{float}
 \usepackage{amsmath,amsfonts}
+\usepackage{relsize}
 \newcommand{\R}{\mathbb{R}}
 \usepackage{graphicx}
 \usepackage{textcomp,gensymb}
@@ -329,17 +330,19 @@ The ordinary least square (OLS) method is a minimization function of the sum of 
 \newpage
 \subsubsection{Quantile regression}
 
-Multiple studies use linear regression for changes in seasonal or annual quantiles. However, when quantiles are calculated from small samples (i.e. from data per season or year), these can be biased. Therefore, quantile regression is used to overcome this problem \citep{Wasko2014,Roth2015}. Quantile regression can be viewed as an optimization of a linear $\tau$-dependent fit to a certain data set, thereby estimating the $\tau$-th quantiles of the response variable. As described in \citet{Koenker1978,KoenkerNg2005} we can describe the minimization problem to obtain the $\tau$-th sample quantile of data series $y$ as function of positive $x$ as
+Multiple studies use linear regression for changes in seasonal or annual quantiles. However, when quantiles are calculated from small samples (i.e. from data per season or year), these can be biased. Therefore, quantile regression is used to overcome this problem \citep{Wasko2014,Roth2015}. Quantile regression can be viewed as an optimization of a linear $\tau$-dependent fit to a certain data set, thereby estimating the $\tau$-th quantiles of the response variable. As described in \citet{Koenker1978,KoenkerNg2005} we can describe the minimization problem to obtain the $\tau$-th sample quantile of data series $y$ as function of $t$ as
 
 \begin{equation} \label{eq:sample_quant}
-   \phi (\beta) = \min_{\beta\in\R} \sum_{t=1}^{T} \tau x (y_t - \beta)
+    \min_{\beta\in\R} \mathlarger{\mathlarger{\sum_{t=1}^{T}}}\left(\sum_{(y_t - \beta) \le 0} (\tau - 1) (y_t - \beta) + \sum_{(y_t - \beta) > 0} \tau (y_t - \beta)\right)
 \end{equation}
 
-where the value of $\beta$ for which $\phi$ is minimal is the estimator.
-To solve a linear quantile fit, we specify the $\tau$-th conditional quantile function as $Q_y(\tau|x) = x'\beta(\tau)$ and rewrite \ref{eq:sample_quant}
+where the value of $\beta$ for which the function is minimal is the estimator.
+To solve a linear quantile fit, we make the estimator time dependent, $\beta \rightarrow (\beta_0 + \beta_1 * t)$, and rewrite Equation \ref{eq:sample_quant} to
+%specify the $\tau$-th conditional quantile function as $Q_y(\tau|x) = x'\beta(\tau)$ and rewrite \ref{eq:sample_quant}
 
 \begin{equation} \label{eq:cond_quant}
- \min_{\beta\in\R} \sum_{t=1}^{T} \rho_{\tau} (x_s(t) - x'\beta(\tau))
+ %\min_{\beta\in\R} \sum_{t=1}^{T} \rho_{\tau} (x_s(t) - x'\beta(\tau))
+\min_{\beta\in\R} \mathlarger{\mathlarger{\sum_{t=1}^{T}}}\left(\sum_{(y_t - \beta) \le 0}  (\tau - 1) (y_t - (\beta_0 + \beta_1 * t)) + \sum_{(y_t - \beta) > 0} \tau (y_t - \beta_0 + \beta_1 * t)\right)
 \end{equation}
 
 To illustrate how quantile regression works we plotted Figure \ref{fig:QR_example}.
