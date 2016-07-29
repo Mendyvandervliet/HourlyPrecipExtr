@@ -81,6 +81,7 @@ save(hrKNMI, file="./inst/tussenStap/hrKNMI.rda")
 <<loading, cache=FALSE>>=
 load("./inst/tussenStap/hrKNMI.rda")
 @
+(note, next to absolute rates, relative rates will be described in next version of this chapter)
 
 \section{Introduction}
 This chapter focusses on linear trends in hourly precipitation extremes. Whether the hourly intensity (calculated from the hourly precipitation sum as the mean rate of one hour) of extremes increases or decreases linearly in time or remains constant, is investigated for the period 1958 to 2015. Next to intensity, trends in the frequency of wet hours are considered. The latter is counted as the number of wet hours (P $>$0.05 mm) for every 2-day period and for every year, summer or winter. Lastly, we also study trends in the 2-day and yearly precipitation sums. Then we can say something about the importance of a trend in frequency or in intensity for the trends in the total precipitation accumulating, as changes in the latter are expected to be the result of changes in the former two. Both type of trends are compared to the regression of the mean in time, thereby studying the proportional change. In Chapter 1 (REF CH1) we concluded that spatial differences are in general not that high in the Netherlands, however, significant differences exist for extremes. Therefore, it is interesting to consider the trends individual for every station. Moreover, the presence of a signal at multiple stations, enhances the robustness of the trend observed. Furthermore, all three types of data are differentiated on summer and winter season, to deduce the seasonal dependance of trends. Besides, the observed trends are tested on level of significance by a Monte Carlo permutation test. In addition, we quantified the trends by investigating the rates.
@@ -634,6 +635,8 @@ load("./inst/tussenStap/p_W.rda")
 
 No significant trends are detected for the 99\%- and 99.9\%- quantiles, so they are excluded from Table \ref{tab:p_int_S&W}. For both seasons multiple significant positive trends are demonstrated for intensities corresponding to the 50\%-95\%-quantiles (\ref{tab:p_int_S&W}). Even for the 50\%-quantile no significant non-decreasing trends are found. For De Kooy both the summer 75\%- and the 90\% quantile regression lines are significantly increasing, as the winter 90\%- and 95\% quantile regression lines. De Bilt has 1 significant summer trend (75\%-quantile) and two significant winter trends (50\%- and 90\%-quantile). In the data measured at Eelde significant trends are found in both seasons, for values higher than the 75\%- and 90\%-quantile. For Vlissingen significant increases are present for \enquote{low} extremes ($>$ 50\%-quantile) in winter and for \enquote{high} extremes ($>$ 90 and 95\%-quantile) in summer. Only one significant summer trend is detected for Maastricht (90\%-quantile), whereas the 75\% as well as the 95\%-quantile lines is significant for winter data. In contrast to winter trends, summer trends are present for mainly the 75\%- and 90\%-quantiles and none for the 50\%-quantile. The winter trends are less concentrated around a certain quantile and thus have higher spatial dissimilarities in significant quantile trends. Both seasons, however, show a positive signal for the intensity maxima. In Chapter 3 (REF 3) we hope to discover why the intensity maxima increase for both seasons and what explains the dissimilarity in quantiles.
 
+% Remarkable, for both seasons more significant and faster changes in the intensity; (season) overlapping processes behind precipitation intensity changes
+
 <<Rates_peryear_S&W>>=
 
 # Summer
@@ -708,9 +711,8 @@ No significant trends are detected for the 99\%- and 99.9\%- quantiles, so they 
 
 Summer trends have positive rates ranging between 0.01-0.04 2-day maximum mm/hr per year and winter trends have positive rates ranging between 0.003-0.01 2-day maximum mm/hr per year. Comparing summer and winter rates, we can conclude that summer trends resemble better the trends in the highest all-2-day maxima, which is logical because in Figure \ref{fig:QR_int_WvsS} summer maxima in intensity are generally much higher than winter maxima. Over a period of 58 years the highest 5-10\% 2-day intensity maxima have increased with 1.1-2.3 mm/hr for summer data only, and with 0.35-0.6 mm/hr for winter data only. Both seasons show a disproportionality in the growth, with larger rates corresponding to higher quantiles of intensities. The largest summer rates are those corresponding to the 90\%-quantile of De Kooy and the 95\%-quantile of Vlissingen. The largest winter rates correspond to the 95\%-quantiles of De Kooy and Maastricht.
 
-
-To summarize, we found increasing trends in the intensity of 2-day maxima with spatial dissimilarity in the detection of quantile regression. Besides, similar as to other studies we observed that the \enquote{high} exremes increase in a disproportional way, compared to % to the yearly mean?????
-the \enquote{low} and \enquote{moderate} extremes. Moreover, positive trends were present in both winter as summer data. However, the trends in \enquote{high} extremes are likely to be summer trends. The summer 2-day intensity maxima are one order stronger (in absolute way) than the winter trends, but keep into mind that summer intensity maxima are generally one order higher than winter intensity maxima.
+To summarize, we found increasing trends in the intensity of 25-5\% highest 2-day maxima. Besides, similar as to other studies we observed that the \enquote{high} exremes increase in a disproportional way, compared to % to the yearly mean?????
+the \enquote{low} and \enquote{moderate} extremes. Moreover, positive trends were present in both winter as summer data for respectively the 50-5\% and 25-5\% highest 2-day season maxima. However, the trends in \enquote{high} extremes are likely to be summer trends. The summer 2-day intensity maxima are one order stronger (in absolute way) than the winter trends, but keep into mind that summer intensity maxima are generally one order higher than winter intensity maxima. For all trends we observe a spatial dissimilarity in the significance and rate of a trend regarding the type of quantile considered.
 
 %-------------------------
 
@@ -787,9 +789,9 @@ load("./inst/tussenStap/QR_freq2d.rda")
     \flushleft
 <<Density_2dayfreq>>=
 # density plot --> to study probability density function
-plot(density(freq_wet2d$yr_mean), type='l', col='orange', lwd=3, main=NA,
+plot(density(freq_wet2d$f), type='l', col='blue', lwd=3, main=NA, ylim=c(0,0.5), xlim=c(-2,15),
               xlab="F (counts/2day)", ylab="Probability density")
-lines(density(freq_wet2d$f), type='l', col='blue', lwd=3, main=NA,
+lines(density(freq_wet2d$yr_mean), type='l', col='orange', lwd=3, main=NA,
               xlab="F (counts/2day)", ylab="Probability density")
 @
     \subcaption{All 2-day (blue) and yearly mean F (orange)}
@@ -1394,375 +1396,376 @@ save(p_flm_all, file="./inst/tussenStap/p_flm_all.rda")
 % \caption{P-table for linear regression fits for all year, summer and winter frequencies, when all stations are combined}
 % \end{table}
 
-In short, in this section we found multiple indications of decreasing trends in the amount of wet hours for all station. Next to visible negative slopes in the quantile and linear regression, several negative trends in frequency of wet hours were detected being significant, more for data on a 2-day resolution, than for data on a yearly resolution. However, the negative signal for frequency of wet hours is less robust, than the positive signal for intensity maxima, meaning that larger spatial differences exist in the significance of the quantile regression lines and the type of quantile for which trends are found. On the contrary, most of the trend detected were significant at the 99\% confidence level and the magnitude of the rates is in a similar way disproportional as for the rates in intensity, with larger rates for the higher quantiles. For frequency in wet hours we can thus say that the frequency of the wetter year (defined here as the year with the most wet hours) decreases more than for the drier year. The lack of significant trends in frequency based on data of a yearly resolution for the quantile regression approach, as well as the linear regression approach, is likely due to the limited sample size.
+In short, in this section we found multiple indications of decreasing trends in the amount of wet hours for all station. Next to visible negative slopes in the quantile and linear regression, several negative trends in frequency of wet hours were detected being significant for frequency data on a 2-day and on yearly resolution. However, the negative signal for frequency of wet hours is less robust, than the positive signal for intensity maxima, meaning that larger spatial differences exist in the significance of the quantile regression lines and the type of quantile for which trends are found. However, unlike the analysis of intensities we do not use maxima data in frequencies, as we consider 2-day counts of all wet hours. On the contrary, most of the trend detected were significant at the 99\% confidence level and the magnitude of the rates is in a similar way disproportional as for the rates in intensity, with larger rates for the higher quantiles. For frequency in wet hours we can thus say that the frequency of the wetter year (defined here as the year with the most wet hours) decreases more than for the drier year. The lack of significant trends in frequency based on data of a yearly resolution for the quantile regression approach, as well as the linear regression approach, is likely due to the limited sample size.
 
 \subsection{Impacting events}
-MAYBE EXCLUDE THIS SUBSECTION; \\
-too few points to detect significant trends. Does not really add to this chapter
-Is therefore not elaborated.
 
-To investigate the frequency of extreme events with a high potential impact, we will investigate the frequency of wet hours with an intensity between 5-10, 10-15, 15-20 and >20 mm/hr. For more intense hourly values there is to little data. Intensities that can have catastrofic impacts are on the order of 20 mm/hr (sewage) and 30 mm/hr (traffic problems).
-
-
-\subsubsection{Yearly maximum}\par\medskip
-
-In contrast to sections \ref{subsec:allhours}, \ref{subsec:max2d} and \ref{subsec:S&W}, here we consider impacting extremes, occuring ones a year.
-
-<<AggregateByYear>>=
-yearlyMax <- hrKNMI[, list(Pmax = max(P),yr_mean = mean(P)), by = list(STN, Year)]
-#yearlyMax <- hrKNMI[, list(DD= unique(DD), T = unique(T), TD = unique(TD), Pmax = max(P)), by = list(STN, Year)]
-#yearlyMax[, list(Pmax=unique(Pmax)), by=list(Year,STN)]
-@
-
-\begin{figure}[H]
-  \centering
-  \textbf{Trends in quantiles of yearly maxima per station}\par\medskip
-  \begin{minipage}{0.48\linewidth}
-<<Density_yrmax>>=
-ggplot(yearlyMax, aes(x = Pmax)) + geom_histogram(bins=100) + theme_bw()
-@
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.48\linewidth}
-<<Yearlymax>>=
-cols <- c("25%"="purple","50%"="blue","75%"="green")
-ggplot(yearlyMax, aes(x = Year, y = Pmax)) + geom_point() +
-  geom_smooth(colour='black',method=lm) +
-  geom_quantile(formula= y~x,quantiles=0.25, aes(colour="25%"))+
-  geom_quantile(formula= y~x,quantiles=0.50, aes(colour="50%"))+
-  geom_quantile(formula= y~x,quantiles=0.75, aes(colour="75%"))+
-  #geom_quantile(formula= y~x,quantiles=0.90, aes(colour="90%"))+
-  facet_wrap(~STN) +
-  scale_colour_manual(name = 'Quantiles', values=cols)+
-  xlab("Year") + ylab("Annual max mm/hr") + theme_bw()
-@
-  \end{minipage}
-  \caption{The 25, 50, 75 and 90 percentile of annual maximum hourly rainfall for every station}
-  \label{fig:Yearlymax}
-\end{figure}
-
-In the following figure the data of all stations are combined, as this can give a more robust signal.
-
-\begin{figure}[H]
-  \centering
-  \textbf{Trends in quantiles of yearly maxima}\par\medskip
-<<Yearlymax_allcombined>>=
-cols <- c("25%"="purple","50%"="blue","75%"="green","90%"="orange")
-ggplot(yearlyMax, aes(x = Year, y = Pmax)) + geom_point() +
-  #geom_smooth(aes(y=yr_mean, colour='black'),method=lm)+
-  geom_quantile(formula= y~x,quantiles=0.25, aes(colour="25%"))+
-  geom_quantile(formula= y~x,quantiles=0.50, aes(colour="50%"))+
-  geom_quantile(formula= y~x,quantiles=0.75, aes(colour="75%"))+
-  geom_quantile(formula= y~x,quantiles=0.90, aes(colour="90%"))+
-  scale_colour_manual(name = 'Quantiles', values=cols)+
-  xlab("Year") + ylab("Annual max mm/hr") + theme_bw()
-@
-  \caption{The 25, 50, 75 and 90 percentile of annual maximum hourly rainfall for all stations combined}
-  \label{fig:Yearlymax_all)}
-\end{figure}
-
-\subsubsection{Threshold extremes}\par\medskip
-
-<<Real_Intensity>>=
-# Frequency calculation
-freq_I10 <- hrKNMI[(I > 10) & (I <20)][, ':='(f = .N),by = Year]
-freq_I10 <-  freq_I10[, list(Year=unique(Year)),by = f]
-setkey(freq_I10,Year)
-freq_I10 <- QR_freqall(freq_I10,STN=FALSE)
-save(freq_I10, file="./inst/tussenStap/freq_I10.rda")
-@
-
-<<Plot_realint>>=
-YearlymaxI <- hrKNMI[, list(max_yrI = max(I)), by=Year]
-#ggplot(YearlymaxI,aes(x=max_yrI)) + geom_histogram(bins=50)
-#--> looks normal, use LM
-ggplot(YearlymaxI,aes(x=Year,y=max_yrI)) + geom_point() + geom_smooth(method=lm, color="black") + ylab("Yearly max I ")
-@
-
-<<F_I20>>=
-# Frequency calculation
-freq_I20 <- hrKNMI[(I >20)][, ':='(f = .N),by = Year]
-freq_I20 <-  freq_I20[, list(Year=unique(Year)),by = f]
-setkey(freq_I20,Year)
-freq_I20 <- QR_freqall(freq_I20,STN=FALSE)
-save(freq_I20, file="./inst/tussenStap/freq_I20.rda")
-
-@
-
-<<Load_FI>>=
-load("./inst/tussenStap/freq_I10.rda")
-load("./inst/tussenStap/freq_I20.rda")
-@
-
-<<I10>>=
-# ggplot(freq_I10, aes(x = f)) +        # data
-#     geom_histogram(bins=100)
-# quite normal distribution --> use LM
-ggplot(freq_I10, aes(x = Year,y = f)) +        # data
-    geom_point(color="Gray")+
-    geom_smooth(method=lm, color="black")+
-    #geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
-    # geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
-    #geom_quantile(formula= y~x,quantiles=0.75, color="green")+
-    xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
-    theme_bw()
-@
-
-<<I20>>=
-# ggplot(freq_I20, aes(x = f)) +        # data
-#     geom_histogram(bins=100)
-# quite normal distribution --> use LM
-ggplot(freq_I20, aes(x = Year,y = f)) +        # data
-    geom_point(color="Gray")+
-    geom_smooth(aes(y=f),method=lm, color="black")+
-    #geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
-    #geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
-    #geom_quantile(formula= y~x,quantiles=0.75, color="green")+
-    xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
-    theme_bw()
-@
-
- <<label=freqthreshold,cache=TRUE>>=
-# freq_5 <- hrKNMI[(P > 5) & (P <10)][, ':='(f = .N),by = Year]
-# freq_5 <-  freq_5[, list(Year=unique(Year)),by = f]
-# setkey(freq_5,Year)
-# #freq_5 <- QR_freqall(freq_5,STN=FALSE)
-#
-# freq_10 <-  hrKNMI[(P > 10) & (P <15)][, ':='(f = .N),by = Year]
-# freq_10 <-  freq_10[, list(Year=unique(Year)),by = f]
-# setkey(freq_10,Year)
-#freq_10 <- QR_freqall(freq_10,STN=FALSE)
-
-# Percentage of wet hours a month, with P > 10 and <20,
-
-#freq_10 <- QR_freqall(freq_10,STN=FALSE)
-# save(freq_5, file="./inst/tussenStap/freq_5.rda")
-# save(freq_10, file="./inst/tussenStap/freq_10.rda")
-#save(freq_10m, file="./inst/tussenStap/freq_10m.rda")
-@
-
- <<label=loading13,cache=FALSE>>=
-load("./inst/tussenStap/freq_5.rda")
-load("./inst/tussenStap/freq_10.rda")
-@
-
-
-\begin{figure}[H]
-  \hspace{-1cm}
-  \centering
-  \textbf{Quantile regression on threshold based frequency data}\par\medskip
-  \begin{minipage}{0.48\textwidth}
-    \flushleft
-<<label=threshold1,cache=FALSE>>=
-ggplot(freq_5, aes(x = Year,y = f)) +        # data
-    geom_point(color="Gray")+
-    geom_curve(aes(x=1958,xend= 1958+10,y=50, yend=50), curvature=-0.5, color="red",linetype=2)+
-    geom_curve(aes(x=1968,xend= 1968+35,y=50, yend=50), curvature=0.5, color="red",linetype=2)+
-    geom_curve(aes(x=2003,xend= 1998+17,y=50, yend=50), curvature=-0.5, color="red",linetype=2)+
-    geom_smooth(aes(y=f),method=lm, color="black")+
-    geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
-    geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
-    geom_quantile(formula= y~x,quantiles=0.75, color="green")+
-    xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
-    theme_bw()
-@
-    \subcaption{Hours with intensity 5-10 mm/hr}
-    \label{fig:threshold1}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.48\textwidth}
-    \flushleft
-<<label=threshold2,cache=FALSE>>=
-ggplot(freq_10, aes(x = Year,y = f)) +        # data
-    geom_point(color="Gray")+
-    #geom_curve(aes(x=1958,xend=1978,y=3.7, yend=4), curvature=-0.45, color="red",linetype=2)+
-    #geom_curve(aes(x=1978,xend=1992,y=4, yend=4.4), curvature=0.35, color="red",linetype=2)+
-    #geom_curve(aes(x=1992,xend=2015,y=4.4, yend=7), curvature=-0.45, color="red",linetype=2)+
-    geom_smooth(aes(y=f),method=lm, color="black")+
-    geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
-    geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
-    geom_quantile(formula= y~x,quantiles=0.75, color="green")+
-    xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
-    theme_bw()
-@
-    \subcaption{Hours with intensity $> 10$ mm/hr}
-    \label{fig:threshold2}
-  \end{minipage}
-  \caption{Quantile regression fits with $\tau = 25, 50, 75$ \% on counts of wet hours a year, with intensity 5-10 (a) and $>$ 10 mm/hr (b), for all stations.}
-  \label{QR_thres_all}
-\end{figure}
-
-When the data of the different stations are combined quantile regression on (yearly resolution) frequency data is possible. This allows us to study extremes which can have significant moderate to high impact (hourly intensity of 10-20 mm/hr and >20 mm/hr).
-
- <<label=freqthreshold2,cache=TRUE>>=
-freq_15 <-  hrKNMI[(P > 15) & (P <20)][, ':='(f = .N),by = Year]
-freq_15 <-  freq_15[, list(Year=unique(Year)),by = f]
-setkey(freq_15,Year)
-#freq_15 <- QR_freqall(freq_15,STN=FALSE)
-
-freq_20 <-  hrKNMI[P > 20][, ':='(f = .N),by = Year]
-freq_20 <-  freq_20[, list(Year=unique(Year)),by = f]
-setkey(freq_20,Year)
-#freq_20 <- QR_freqall(freq_20,STN=FALSE)
-
-save(freq_15, file="./inst/tussenStap/freq_15.rda")
-save(freq_20, file="./inst/tussenStap/freq_20.rda")
-@
-
- <<label=loading14,cache=FALSE>>=
-load("./inst/tussenStap/freq_15.rda")
-load("./inst/tussenStap/freq_20.rda")
-@
-
-\begin{figure}[H]
-  \hspace{-1cm}
-  \centering
-  \textbf{Quantile regression on threshold based frequency data}\par\medskip
-  \begin{minipage}{0.48\textwidth}
-    \flushleft
-<<label=threshold3,cache=TRUE>>=
-ggplot(freq_15, aes(x = Year,y = f)) +        # data
-    geom_point(color="Gray")+
-    geom_smooth(aes(y=f),method=lm, color="black")+
-    geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
-    geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
-    geom_quantile(formula= y~x,quantiles=0.75, color="green")+
-    xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
-    theme_bw()
-@
-    \subcaption{Hours with intensity 10-20 mm/hr}
-    \label{fig:threshold3}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.48\textwidth}
-    \flushleft
-<<label=threshold4,cache=TRUE>>=
-ggplot(freq_20, aes(x = Year,y = f)) +        # data
-    geom_point(color="Gray")+
-    geom_smooth(aes(y=f),method=lm, color="black")+
-    geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
-    geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
-    geom_quantile(formula= y~x,quantiles=0.75, color="green")+
-    xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
-    theme_bw()
-@
-    \subcaption{Hours with intensity $<20$ mm/hr}
-    \label{fig:threshold4}
-  \end{minipage}
-  \caption{Quantile regression fits with $\tau = 25, 50, 75, 90$ \% on counts of wet hours a year, with intensity 5-10 (a) and $>$ 10 mm/hr (b). The data of the different staton are combined.}
-  \label{QR_thres_combined}
-\end{figure}
+EXCLUDED THIS SUBSECTION; see previous version I gave you, for if you see something interesting \\
+%' too few points to detect significant trends. Does not really add to this chapter
+%' Is therefore not elaborated.
 %'
-%' % Significance test
-%' <<p_5thres,cache=TRUE>>=
-%' p_thres <- p_test(data=freq_5,tau=0.50,freq=TRUE)
-%' setnames(p_thres,c("STN","Q50_5"))
-%' p_thres[, ":="(Q75_5 = p_test(data=freq_5,tau=0.75,freq=TRUE)$V1,
-%'          Q90_5 = p_test(data=freq_5,tau=0.90,freq=TRUE)$V1)]
-%' p_thres[, ":="(Q95_5 = p_test(data=freq_5,tau=0.95,freq=TRUE)$V1,
-%'          Q99_5 = p_test(data=freq_5,tau=0.99,freq=TRUE)$V1,
-%'          Q999_5 = p_test(data=freq_5,tau=0.999,freq=TRUE)$V1)]
+%' To investigate the frequency of extreme events with a high potential impact, we will investigate the frequency of wet hours with an intensity between 5-10, 10-15, 15-20 and >20 mm/hr. For more intense hourly values there is to little data. Intensities that can have catastrofic impacts are on the order of 20 mm/hr (sewage) and 30 mm/hr (traffic problems).
+%'
+%'
+%' \subsubsection{Yearly maximum}\par\medskip
+%'
+%' In contrast to sections \ref{subsec:allhours}, \ref{subsec:max2d} and \ref{subsec:S&W}, here we consider impacting extremes, occuring ones a year.
+%'
+%' <<AggregateByYear>>=
+%' yearlyMax <- hrKNMI[, list(Pmax = max(P),yr_mean = mean(P)), by = list(STN, Year)]
+%' #yearlyMax <- hrKNMI[, list(DD= unique(DD), T = unique(T), TD = unique(TD), Pmax = max(P)), by = list(STN, Year)]
+%' #yearlyMax[, list(Pmax=unique(Pmax)), by=list(Year,STN)]
 %' @
 %'
-%' <<p_10thres,cache=TRUE>>=
-%' p_thres[, ":="(Q50_10 = p_test(data=freq_10,tau=0.50,freq=TRUE)$V1,
-%'          Q75_10 = p_test(data=freq_10,tau=0.75,freq=TRUE)$V1,
-%'          Q90_10 = p_test(data=freq_10,tau=0.90,freq=TRUE)$V1)]
-%' p_thres[, ":="(Q95_10 = p_test(data=freq_10,tau=0.95,freq=TRUE)$V1,
-%'          Q99_10 = p_test(data=freq_10,tau=0.99,freq=TRUE)$V1,
-%'          Q999_10 = p_test(data=freq_10,tau=0.999,freq=TRUE)$V1)]
+%' \begin{figure}[H]
+%'   \centering
+%'   \textbf{Trends in quantiles of yearly maxima per station}\par\medskip
+%'   \begin{minipage}{0.48\linewidth}
+%' <<Density_yrmax>>=
+%' ggplot(yearlyMax, aes(x = Pmax)) + geom_histogram(bins=100) + theme_bw()
+%' @
+%'   \end{minipage}
+%'   \hfill
+%'   \begin{minipage}{0.48\linewidth}
+%' <<Yearlymax>>=
+%' cols <- c("25%"="purple","50%"="blue","75%"="green")
+%' ggplot(yearlyMax, aes(x = Year, y = Pmax)) + geom_point() +
+%'   geom_smooth(colour='black',method=lm) +
+%'   geom_quantile(formula= y~x,quantiles=0.25, aes(colour="25%"))+
+%'   geom_quantile(formula= y~x,quantiles=0.50, aes(colour="50%"))+
+%'   geom_quantile(formula= y~x,quantiles=0.75, aes(colour="75%"))+
+%'   #geom_quantile(formula= y~x,quantiles=0.90, aes(colour="90%"))+
+%'   facet_wrap(~STN) +
+%'   scale_colour_manual(name = 'Quantiles', values=cols)+
+%'   xlab("Year") + ylab("Annual max mm/hr") + theme_bw()
+%' @
+%'   \end{minipage}
+%'   \caption{The 25, 50, 75 and 90 percentile of annual maximum hourly rainfall for every station}
+%'   \label{fig:Yearlymax}
+%' \end{figure}
+%'
+%' In the following figure the data of all stations are combined, as this can give a more robust signal.
+%'
+%' \begin{figure}[H]
+%'   \centering
+%'   \textbf{Trends in quantiles of yearly maxima}\par\medskip
+%' <<Yearlymax_allcombined>>=
+%' cols <- c("25%"="purple","50%"="blue","75%"="green","90%"="orange")
+%' ggplot(yearlyMax, aes(x = Year, y = Pmax)) + geom_point() +
+%'   #geom_smooth(aes(y=yr_mean, colour='black'),method=lm)+
+%'   geom_quantile(formula= y~x,quantiles=0.25, aes(colour="25%"))+
+%'   geom_quantile(formula= y~x,quantiles=0.50, aes(colour="50%"))+
+%'   geom_quantile(formula= y~x,quantiles=0.75, aes(colour="75%"))+
+%'   geom_quantile(formula= y~x,quantiles=0.90, aes(colour="90%"))+
+%'   scale_colour_manual(name = 'Quantiles', values=cols)+
+%'   xlab("Year") + ylab("Annual max mm/hr") + theme_bw()
+%' @
+%'   \caption{The 25, 50, 75 and 90 percentile of annual maximum hourly rainfall for all stations combined}
+%'   \label{fig:Yearlymax_all)}
+%' \end{figure}
+%'
+%' \subsubsection{Threshold extremes}\par\medskip
+%'
+%' <<Real_Intensity>>=
+%' # Frequency calculation
+%' freq_I10 <- hrKNMI[(I > 10) & (I <20)][, ':='(f = .N),by = Year]
+%' freq_I10 <-  freq_I10[, list(Year=unique(Year)),by = f]
+%' setkey(freq_I10,Year)
+%' freq_I10 <- QR_freqall(freq_I10,STN=FALSE)
+%' save(freq_I10, file="./inst/tussenStap/freq_I10.rda")
+%' @
+%'
+%' <<Plot_realint>>=
+%' YearlymaxI <- hrKNMI[, list(max_yrI = max(I)), by=Year]
+%' #ggplot(YearlymaxI,aes(x=max_yrI)) + geom_histogram(bins=50)
+%' #--> looks normal, use LM
+%' ggplot(YearlymaxI,aes(x=Year,y=max_yrI)) + geom_point() + geom_smooth(method=lm, color="black") + ylab("Yearly max I ")
+%' @
+%'
+%' <<F_I20>>=
+%' # Frequency calculation
+%' freq_I20 <- hrKNMI[(I >20)][, ':='(f = .N),by = Year]
+%' freq_I20 <-  freq_I20[, list(Year=unique(Year)),by = f]
+%' setkey(freq_I20,Year)
+%' freq_I20 <- QR_freqall(freq_I20,STN=FALSE)
+%' save(freq_I20, file="./inst/tussenStap/freq_I20.rda")
+%'
+%' @
+%'
+%' <<Load_FI>>=
+%' load("./inst/tussenStap/freq_I10.rda")
+%' load("./inst/tussenStap/freq_I20.rda")
+%' @
+%'
+%' <<I10>>=
+%' # ggplot(freq_I10, aes(x = f)) +        # data
+%' #     geom_histogram(bins=100)
+%' # quite normal distribution --> use LM
+%' ggplot(freq_I10, aes(x = Year,y = f)) +        # data
+%'     geom_point(color="Gray")+
+%'     geom_smooth(method=lm, color="black")+
+%'     #geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
+%'     # geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
+%'     #geom_quantile(formula= y~x,quantiles=0.75, color="green")+
+%'     xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
+%'     theme_bw()
+%' @
+%'
+%' <<I20>>=
+%' # ggplot(freq_I20, aes(x = f)) +        # data
+%' #     geom_histogram(bins=100)
+%' # quite normal distribution --> use LM
+%' ggplot(freq_I20, aes(x = Year,y = f)) +        # data
+%'     geom_point(color="Gray")+
+%'     geom_smooth(aes(y=f),method=lm, color="black")+
+%'     #geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
+%'     #geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
+%'     #geom_quantile(formula= y~x,quantiles=0.75, color="green")+
+%'     xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
+%'     theme_bw()
+%' @
+%'
+%'  <<label=freqthreshold,cache=TRUE>>=
+%' # freq_5 <- hrKNMI[(P > 5) & (P <10)][, ':='(f = .N),by = Year]
+%' # freq_5 <-  freq_5[, list(Year=unique(Year)),by = f]
+%' # setkey(freq_5,Year)
+%' # #freq_5 <- QR_freqall(freq_5,STN=FALSE)
+%' #
+%' # freq_10 <-  hrKNMI[(P > 10) & (P <15)][, ':='(f = .N),by = Year]
+%' # freq_10 <-  freq_10[, list(Year=unique(Year)),by = f]
+%' # setkey(freq_10,Year)
+%' #freq_10 <- QR_freqall(freq_10,STN=FALSE)
+%'
+%' # Percentage of wet hours a month, with P > 10 and <20,
+%'
+%' #freq_10 <- QR_freqall(freq_10,STN=FALSE)
+%' # save(freq_5, file="./inst/tussenStap/freq_5.rda")
+%' # save(freq_10, file="./inst/tussenStap/freq_10.rda")
+%' #save(freq_10m, file="./inst/tussenStap/freq_10m.rda")
+%' @
+%'
+%'  <<label=loading13,cache=FALSE>>=
+%' load("./inst/tussenStap/freq_5.rda")
+%' load("./inst/tussenStap/freq_10.rda")
 %' @
 %'
 %'
-%' <<p_15thres,cache=TRUE>>=
-%' p_thres[, ":="(Q50_15 = p_test(data=freq_15,tau=0.50,freq=TRUE, STN=FALSE)$V1,
-%'           Q75_15 = p_test(data=freq_15,tau=0.75,freq=TRUE, STN=FALSE)$V1,
-%'           Q90_15 = p_test(data=freq_15,tau=0.90,freq=TRUE, STN=FALSE)$V1)]
-%' p_thres[, ":="(Q95_15 = p_test(data=freq_15,tau=0.95,freq=TRUE, STN=FALSE)$V1,
-%'           Q99_15 = p_test(data=freq_15,tau=0.99,freq=TRUE, STN=FALSE)$V1,
-%'           Q999_15 = p_test(data=freq_15,tau=0.999,freq=TRUE, STN=FALSE)$V1)]
+%' \begin{figure}[H]
+%'   \hspace{-1cm}
+%'   \centering
+%'   \textbf{Quantile regression on threshold based frequency data}\par\medskip
+%'   \begin{minipage}{0.48\textwidth}
+%'     \flushleft
+%' <<label=threshold1,cache=FALSE>>=
+%' ggplot(freq_5, aes(x = Year,y = f)) +        # data
+%'     geom_point(color="Gray")+
+%'     geom_curve(aes(x=1958,xend= 1958+10,y=50, yend=50), curvature=-0.5, color="red",linetype=2)+
+%'     geom_curve(aes(x=1968,xend= 1968+35,y=50, yend=50), curvature=0.5, color="red",linetype=2)+
+%'     geom_curve(aes(x=2003,xend= 1998+17,y=50, yend=50), curvature=-0.5, color="red",linetype=2)+
+%'     geom_smooth(aes(y=f),method=lm, color="black")+
+%'     geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
+%'     geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
+%'     geom_quantile(formula= y~x,quantiles=0.75, color="green")+
+%'     xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
+%'     theme_bw()
+%' @
+%'     \subcaption{Hours with intensity 5-10 mm/hr}
+%'     \label{fig:threshold1}
+%'   \end{minipage}
+%'   \hfill
+%'   \begin{minipage}{0.48\textwidth}
+%'     \flushleft
+%' <<label=threshold2,cache=FALSE>>=
+%' ggplot(freq_10, aes(x = Year,y = f)) +        # data
+%'     geom_point(color="Gray")+
+%'     #geom_curve(aes(x=1958,xend=1978,y=3.7, yend=4), curvature=-0.45, color="red",linetype=2)+
+%'     #geom_curve(aes(x=1978,xend=1992,y=4, yend=4.4), curvature=0.35, color="red",linetype=2)+
+%'     #geom_curve(aes(x=1992,xend=2015,y=4.4, yend=7), curvature=-0.45, color="red",linetype=2)+
+%'     geom_smooth(aes(y=f),method=lm, color="black")+
+%'     geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
+%'     geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
+%'     geom_quantile(formula= y~x,quantiles=0.75, color="green")+
+%'     xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
+%'     theme_bw()
+%' @
+%'     \subcaption{Hours with intensity $> 10$ mm/hr}
+%'     \label{fig:threshold2}
+%'   \end{minipage}
+%'   \caption{Quantile regression fits with $\tau = 25, 50, 75$ \% on counts of wet hours a year, with intensity 5-10 (a) and $>$ 10 mm/hr (b), for all stations.}
+%'   \label{QR_thres_all}
+%' \end{figure}
+%'
+%' When the data of the different stations are combined quantile regression on (yearly resolution) frequency data is possible. This allows us to study extremes which can have significant moderate to high impact (hourly intensity of 10-20 mm/hr and >20 mm/hr).
+%'
+%'  <<label=freqthreshold2,cache=TRUE>>=
+%' freq_15 <-  hrKNMI[(P > 15) & (P <20)][, ':='(f = .N),by = Year]
+%' freq_15 <-  freq_15[, list(Year=unique(Year)),by = f]
+%' setkey(freq_15,Year)
+%' #freq_15 <- QR_freqall(freq_15,STN=FALSE)
+%'
+%' freq_20 <-  hrKNMI[P > 20][, ':='(f = .N),by = Year]
+%' freq_20 <-  freq_20[, list(Year=unique(Year)),by = f]
+%' setkey(freq_20,Year)
+%' #freq_20 <- QR_freqall(freq_20,STN=FALSE)
+%'
+%' save(freq_15, file="./inst/tussenStap/freq_15.rda")
+%' save(freq_20, file="./inst/tussenStap/freq_20.rda")
 %' @
 %'
-%'
-%' <<p_20thres,cache=TRUE>>=
-%' p_thres[, ":="(Q50_20 = p_test(data=freq_20,tau=0.50,freq=TRUE, STN=FALSE)$V1,
-%'           Q75_20 = p_test(data=freq_20,tau=0.75,freq=TRUE, STN=FALSE)$V1,
-%'           Q90_20 = p_test(data=freq_20,tau=0.90,freq=TRUE, STN=FALSE)$V1)]
-%' p_thres[, ":="(Q95_20 = p_test(data=freq_20,tau=0.95,freq=TRUE, STN=FALSE)$V1,
-%'           Q99_20 = p_test(data=freq_20,tau=0.99,freq=TRUE, STN=FALSE)$V1,
-%'           Q999_20 = p_test(data=freq_20,tau=0.999,freq=TRUE, STN=FALSE)$V1)]
+%'  <<label=loading14,cache=FALSE>>=
+%' load("./inst/tussenStap/freq_15.rda")
+%' load("./inst/tussenStap/freq_20.rda")
 %' @
 %'
-%' <<save_pthres>>=
-%' save(p_thres, file="./inst/tussenStap/p_thres.rda")
+%' \begin{figure}[H]
+%'   \hspace{-1cm}
+%'   \centering
+%'   \textbf{Quantile regression on threshold based frequency data}\par\medskip
+%'   \begin{minipage}{0.48\textwidth}
+%'     \flushleft
+%' <<label=threshold3,cache=TRUE>>=
+%' ggplot(freq_15, aes(x = Year,y = f)) +        # data
+%'     geom_point(color="Gray")+
+%'     geom_smooth(aes(y=f),method=lm, color="black")+
+%'     geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
+%'     geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
+%'     geom_quantile(formula= y~x,quantiles=0.75, color="green")+
+%'     xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
+%'     theme_bw()
 %' @
-
-<<p_threstbl>>=
-#setnames(p_thres, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
-#tbl <- xtable(p_thres)
-@
-
-% \begin{table}[ht]
-%   \centering
-%   \caption{Significance table for all fits on yearly frequency data of wet hours}
-%   \begin{tabular}{l|r|r|r|r|r|r}
-%   \hline\hline
-%   \multicolumn{19}{c}{Quantiles of fit}\\
-%   \multicolumn{1}{c}{Station}
-%   & \multicolumn{3}{c}{All wet hours}
-%   & \multicolumn{3}{c}{Summer}
-%   & \multicolumn{3}{c}{Winter}\\
-%   \hline
-%   \input{p_freqtbl}
-%   \hline
-%   \end{tabular}
-%   \label{tab:p_freqtbl}
-% \end{table}
-
-
-% All stations; from 1 day max,  count events higher > 10  and > 20 mm/hr
-% As winter maxima do not exceed 10 mm/hr, we can take max a day as independent variable.
-% Summer events are more local (do no last longer than a couple of hours).
-%
-% Count > 10 mm/hr
-% Count > 20 mm/hr
-
-<<frac_10mm>>=
-#Fraction extreme hours a month
-ggplotRegression <- function (fit) {
-ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) +
-  geom_point() +
-  stat_smooth(method = "lm", col = "red") +
-  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
-                     "Intercept =",signif(fit$coef[[1]],5 ),
-                     " Slope =",signif(fit$coef[[2]], 5),
-                     " P =",signif(summary(fit)$coef[2,4], 5)))
-}
-
-hrKNMI$YM <- format(hrKNMI$Date,format="%Y-%m")
-hrKNMI$YM <- as.yearmon(hrKNMI$YM)
-hrKNMI[, ":="(montotal=.N),by = YM]
-all <- hrKNMI[, list(YM=unique(YM)),by = montotal]
-setorder(all, by=YM)
-count10 <- count(hrKNMI[(P>10)&(P<20)],vars="YM")
-
-
-fraction_10_allhr <- merge(all,count10,by="YM")
-fraction_10_allhr[, ":="(fraction = freq/montotal),by=YM]
-# ggplot(fraction_10_wethr,aes(x=YM,y=fraction)) + geom_point() + geom_quantile(formula= y~x) +
-#   geom_smooth(method=lm, color="red") + theme_bw()
-@
-
-\begin{figure}[H]
-  \centering
-  \textbf{Linear regression on fraction extreme events (10-20 mm/hr) a month}\par\medskip
-<<plot_frac10>>=
-fit10 <- lm(fraction ~ YM, data = fraction_10_allhr)
-ggplotRegression(fit10)
-@
-  \caption{Ordinary least-square regression on monthly fraction of wet events (intensity of 10-20 mm/hr). R2, Intercept and slope are given, as well as the p-value giving the significance level.}
-  \label{fig:LM_10-20}
-\end{figure}
+%'     \subcaption{Hours with intensity 10-20 mm/hr}
+%'     \label{fig:threshold3}
+%'   \end{minipage}
+%'   \hfill
+%'   \begin{minipage}{0.48\textwidth}
+%'     \flushleft
+%' <<label=threshold4,cache=TRUE>>=
+%' ggplot(freq_20, aes(x = Year,y = f)) +        # data
+%'     geom_point(color="Gray")+
+%'     geom_smooth(aes(y=f),method=lm, color="black")+
+%'     geom_quantile(formula= y~x,quantiles=0.25, color="purple")+
+%'     geom_quantile(formula= y~x,quantiles=0.50, color="blue")+
+%'     geom_quantile(formula= y~x,quantiles=0.75, color="green")+
+%'     xlab("Time") + ylab("F (counts/yr)")+ # x and y-axis label
+%'     theme_bw()
+%' @
+%'     \subcaption{Hours with intensity $<20$ mm/hr}
+%'     \label{fig:threshold4}
+%'   \end{minipage}
+%'   \caption{Quantile regression fits with $\tau = 25, 50, 75, 90$ \% on counts of wet hours a year, with intensity 5-10 (a) and $>$ 10 mm/hr (b). The data of the different staton are combined.}
+%'   \label{QR_thres_combined}
+%' \end{figure}
+%' %'
+%' %' % Significance test
+%' %' <<p_5thres,cache=TRUE>>=
+%' %' p_thres <- p_test(data=freq_5,tau=0.50,freq=TRUE)
+%' %' setnames(p_thres,c("STN","Q50_5"))
+%' %' p_thres[, ":="(Q75_5 = p_test(data=freq_5,tau=0.75,freq=TRUE)$V1,
+%' %'          Q90_5 = p_test(data=freq_5,tau=0.90,freq=TRUE)$V1)]
+%' %' p_thres[, ":="(Q95_5 = p_test(data=freq_5,tau=0.95,freq=TRUE)$V1,
+%' %'          Q99_5 = p_test(data=freq_5,tau=0.99,freq=TRUE)$V1,
+%' %'          Q999_5 = p_test(data=freq_5,tau=0.999,freq=TRUE)$V1)]
+%' %' @
+%' %'
+%' %' <<p_10thres,cache=TRUE>>=
+%' %' p_thres[, ":="(Q50_10 = p_test(data=freq_10,tau=0.50,freq=TRUE)$V1,
+%' %'          Q75_10 = p_test(data=freq_10,tau=0.75,freq=TRUE)$V1,
+%' %'          Q90_10 = p_test(data=freq_10,tau=0.90,freq=TRUE)$V1)]
+%' %' p_thres[, ":="(Q95_10 = p_test(data=freq_10,tau=0.95,freq=TRUE)$V1,
+%' %'          Q99_10 = p_test(data=freq_10,tau=0.99,freq=TRUE)$V1,
+%' %'          Q999_10 = p_test(data=freq_10,tau=0.999,freq=TRUE)$V1)]
+%' %' @
+%' %'
+%' %'
+%' %' <<p_15thres,cache=TRUE>>=
+%' %' p_thres[, ":="(Q50_15 = p_test(data=freq_15,tau=0.50,freq=TRUE, STN=FALSE)$V1,
+%' %'           Q75_15 = p_test(data=freq_15,tau=0.75,freq=TRUE, STN=FALSE)$V1,
+%' %'           Q90_15 = p_test(data=freq_15,tau=0.90,freq=TRUE, STN=FALSE)$V1)]
+%' %' p_thres[, ":="(Q95_15 = p_test(data=freq_15,tau=0.95,freq=TRUE, STN=FALSE)$V1,
+%' %'           Q99_15 = p_test(data=freq_15,tau=0.99,freq=TRUE, STN=FALSE)$V1,
+%' %'           Q999_15 = p_test(data=freq_15,tau=0.999,freq=TRUE, STN=FALSE)$V1)]
+%' %' @
+%' %'
+%' %'
+%' %' <<p_20thres,cache=TRUE>>=
+%' %' p_thres[, ":="(Q50_20 = p_test(data=freq_20,tau=0.50,freq=TRUE, STN=FALSE)$V1,
+%' %'           Q75_20 = p_test(data=freq_20,tau=0.75,freq=TRUE, STN=FALSE)$V1,
+%' %'           Q90_20 = p_test(data=freq_20,tau=0.90,freq=TRUE, STN=FALSE)$V1)]
+%' %' p_thres[, ":="(Q95_20 = p_test(data=freq_20,tau=0.95,freq=TRUE, STN=FALSE)$V1,
+%' %'           Q99_20 = p_test(data=freq_20,tau=0.99,freq=TRUE, STN=FALSE)$V1,
+%' %'           Q999_20 = p_test(data=freq_20,tau=0.999,freq=TRUE, STN=FALSE)$V1)]
+%' %' @
+%' %'
+%' %' <<save_pthres>>=
+%' %' save(p_thres, file="./inst/tussenStap/p_thres.rda")
+%' %' @
+%'
+%' <<p_threstbl>>=
+%' #setnames(p_thres, c("Station","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%","50%","75%","90%","95","99%","99.9%"))
+%' #tbl <- xtable(p_thres)
+%' @
+%'
+%' % \begin{table}[ht]
+%' %   \centering
+%' %   \caption{Significance table for all fits on yearly frequency data of wet hours}
+%' %   \begin{tabular}{l|r|r|r|r|r|r}
+%' %   \hline\hline
+%' %   \multicolumn{19}{c}{Quantiles of fit}\\
+%' %   \multicolumn{1}{c}{Station}
+%' %   & \multicolumn{3}{c}{All wet hours}
+%' %   & \multicolumn{3}{c}{Summer}
+%' %   & \multicolumn{3}{c}{Winter}\\
+%' %   \hline
+%' %   \input{p_freqtbl}
+%' %   \hline
+%' %   \end{tabular}
+%' %   \label{tab:p_freqtbl}
+%' % \end{table}
+%'
+%'
+%' % All stations; from 1 day max,  count events higher > 10  and > 20 mm/hr
+%' % As winter maxima do not exceed 10 mm/hr, we can take max a day as independent variable.
+%' % Summer events are more local (do no last longer than a couple of hours).
+%' %
+%' % Count > 10 mm/hr
+%' % Count > 20 mm/hr
+%'
+%' <<frac_10mm>>=
+%' #Fraction extreme hours a month
+%' ggplotRegression <- function (fit) {
+%' ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) +
+%'   geom_point() +
+%'   stat_smooth(method = "lm", col = "red") +
+%'   labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+%'                      "Intercept =",signif(fit$coef[[1]],5 ),
+%'                      " Slope =",signif(fit$coef[[2]], 5),
+%'                      " P =",signif(summary(fit)$coef[2,4], 5)))
+%' }
+%'
+%' hrKNMI$YM <- format(hrKNMI$Date,format="%Y-%m")
+%' hrKNMI$YM <- as.yearmon(hrKNMI$YM)
+%' hrKNMI[, ":="(montotal=.N),by = YM]
+%' all <- hrKNMI[, list(YM=unique(YM)),by = montotal]
+%' setorder(all, by=YM)
+%' count10 <- count(hrKNMI[(P>10)&(P<20)],vars="YM")
+%'
+%'
+%' fraction_10_allhr <- merge(all,count10,by="YM")
+%' fraction_10_allhr[, ":="(fraction = freq/montotal),by=YM]
+%' # ggplot(fraction_10_wethr,aes(x=YM,y=fraction)) + geom_point() + geom_quantile(formula= y~x) +
+%' #   geom_smooth(method=lm, color="red") + theme_bw()
+%' @
+%'
+%' \begin{figure}[H]
+%'   \centering
+%'   \textbf{Linear regression on fraction extreme events (10-20 mm/hr) a month}\par\medskip
+%' <<plot_frac10>>=
+%' fit10 <- lm(fraction ~ YM, data = fraction_10_allhr)
+%' ggplotRegression(fit10)
+%' @
+%'   \caption{Ordinary least-square regression on monthly fraction of wet events (intensity of 10-20 mm/hr). R2, Intercept and slope are given, as well as the p-value giving the significance level.}
+%'   \label{fig:LM_10-20}
+%' \end{figure}
 
 
 \section{Amount of precipitation}
@@ -1798,7 +1801,7 @@ save(Psumyearly, file="./inst/tussenStap/Psumyearly.rda")
   \textbf{Probability density functions of 2-day and yearly precipitation sums}\par\medskip
   \begin{minipage}{0.48\textwidth}
 <<Distribution_Psum>>=
-plot(density(Psum$yr_mean), type='l', col='orange', lwd=3, main=NA,
+plot(density(Psum$yr_mean), type='l', col='orange', lwd=3, main=NA, ylim=c(0,0.65), xlim=c(-2,15),
               xlab="Psum (counts/2day)", ylab="Probability density")
 lines(density(Psum$Psum), type='l', col='blue', lwd=3, main=NA,
               xlab="Psum (mm/2day)", ylab="Probability density")
@@ -1940,7 +1943,7 @@ save(p_Psumyr, file="./inst/tussenStap/p_Psumyr.rda")
   \label{tab:p_table_Psum2d}
 \end{table}
 
-In Table \ref{tab:rates_Psum2day} we observe significant trends for the 2-day precipitation sums. The p-values point out significant positive trends for the 95\%-quantiles of De Kooy and De Bilt, for the 90\%-, and 95\%-quantiles of Eelde, and for the 99\%-quantile of Vlissingen and Maastricht. All these trends are significant at the 95\% confidence level, except for the 50\%-quantile of Eelde, which is significant at the 99\% confidence level. For the yearly precipitation sums, we do not find any significant trends. This might be due to  a too small sample size.
+In Table \ref{tab:rates_Psum2day} we observe significant trends for the 2-day precipitation sums. The p-values point out significant positive trends for the 95\%-quantiles of De Kooy and De Bilt, for the 90\%-, and 95\%-quantiles of Eelde, and for the 99\%-quantile of Vlissingen and Maastricht. All these trends are significant at the 95\% confidence level, except for the 90\%-quantile of Eelde, which is significant at the 99\% confidence level. What is striking is that the trends detected for the 95\%-quantile correspond to the more northern situated stations (De Kooy, De Bilt and Eelde) and those for the 99\%-quantile for the more southern situated stations (Vlissingen and Maastricht). This could be a temperature related difference, as mean temperature is higher for the northen part of the Netherlands, than of the southern part of the Netherlands. Moreover, we saw in Chapter 4 (REF) that higher intensities correspond to the summer months, in which the temperature is obviously higher compared to the winter months. In Chapter 6 (REF) we will investigate the precipitation intensity-temperature relationship in more detail. For the yearly precipitation sums, we do not find any significant trends. This might be due to a too small sample size.
 
 (maybe add p-values of linear regression fits of yearly mean 2-day and yearly precipitation sums?)
 
@@ -2128,7 +2131,7 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, Legendgrob6, ncol=2),
   \label{QR_PsumS&W}
 \end{figure}
 
-Not that much significant trends for 2-day summer or winter precipitation sums have been found. First of all, Figure \ref{QR_PsumS&W} demonstrates that all found significant trends are positive. De Kooy has the largest number of significant trends, which are all summer trends (for the 75\%-,90\%- and 95\% quantiles). De Bilt has one significant summer (for the 75\%-quantile) and one significant winter trend (for the 90\%-quantile). On the one hand Vlissingen only has one significant summer trend (for the 99.9\%-quantile), on the other hand Eelde and Maastricht only have significant winter trends (both for the 95\%-quantile). What is also interesting, is that three of the significant all-2-day trends, corresponding to the 95\%-quantile of De Bilt, the 95\%-quantile of Eelde, and the 99\%-quantile of Maastricht, are recognized as winter trends in Figure \ref{QR_PsumS&W}. The significant all-2-day trends of the 95\%-quantile of De Kooy and the 99\%-quantile of Vlissingen can be observed as summer trends. What is striking, is that the summer trends in precipitation sums are only present for coastal stations, while winter trends in precipitation sums are only present for non-coastal stations (with the position of De Bilt in between the two types, regarding its distance to the coast). If this not due to coincidence, it might be due to a different mechanism behind the positive summer and winter trends. Besides, we already observed that linear regression of the precipitation sums for De Kooy and Vlissinge are quite similar, but mind that this accounts for precipitation sums on yearly resolution. In Chapter 3 (REF) we hope to learn more about the reason for changes in precipitation sums and for the related spatial differences.
+Not that much significant trends for 2-day summer or winter precipitation sums have been found. First of all, Figure \ref{QR_PsumS&W} demonstrates that all found significant trends are positive. De Kooy has the largest number of significant trends, which are all summer trends (for the 75\%-,90\%- and 95\% quantiles). De Bilt has one significant summer (for the 75\%-quantile) and one significant winter trend (for the 90\%-quantile). On the one hand Vlissingen only has one significant summer trend (for the 99.9\%-quantile), on the other hand Eelde and Maastricht only have significant winter trends (both for the 95\%-quantile). What is also interesting, is that three of the significant all-2-day trends, corresponding to the 95\%-quantile of De Bilt, the 95\%-quantile of Eelde, and the 99\%-quantile of Maastricht, are recognized as winter trends in Figure \ref{QR_PsumS&W}. The significant all-2-day trends of the 95\%-quantile of De Kooy and the 99\%-quantile of Vlissingen can be observed as summer trends. What is striking, is that the summer trends in precipitation sums are only present for coastal stations, while winter trends in precipitation sums are only present for non-coastal stations (with the position of De Bilt in between the two types, regarding its distance to the coast). If this not due to coincidence, it might be due to a different mechanism behind the positive summer and winter trends. Besides, we already observed that linear regression of the precipitation sums for De Kooy and Vlissinge are quite similar, but mind that this accounts for precipitation sums on yearly resolution. In Chapter 3 (REF) we hope to learn more about the reason for changes in precipitation sums and for the related spatial differences. \\
 
 
 <<p_testPsumS&W,eval=FALSE>>=
@@ -2166,14 +2169,18 @@ save(p_Psum2dW, file="./inst/tussenStap/p_Psum2dW.rda")
 % 4: 310 0.8611 0.7401 0.5728 0.4310 0.9033 0.5189
 % 5: 380 0.6529 0.6302 0.5984 0.9654 0.8036 0.2465
 
-Overall, we detected several significant positive trends in precipitation sums. Although, we only consider maxima intensities in constrast to all-hour frequencies of wet hours, the trends in precipitation sums seems to be dominated more by the positive trends in intensity maxima compared to the negative trends in frequency of wet hours. In the last 58 years the 5\% highest 2-day precipitation sums have increased with 1.2-2.7 mm. When only studying summer and winter trends, we found that trends in all-2-day precipitation sums of coastal stations are in fact summer trends, while those of non-coastal stations are winter trends.
+Overall, we detected several significant positive trends in precipitation sums for the 90-99\%-quantile. For each station 1 significant trend is found, except for the station of Eelde (for which 2 trends are found). The detected trends correspond to the 95\%-quantile for the more northern situated stations (De Kooy, De Bilt and Eelde) and to the 99\%-quantile for the more southern situated stations (Vlissingen and Maastricht). This difference in quantile, which means a difference in the degree of extremeness of the intensity, could be related to temperature. The precipitation intensity-temperature relationship will be studied in Chapter 6 (REF). Although, we only consider maxima intensities in constrast to all-hour frequencies of wet hours, the trends in precipitation sums seems to be dominated more by the positive trends in intensity maxima compared to the negative trends in frequency of wet hours. In the last 58 years the 5\% highest 2-day precipitation sums have increased with 1.2-2.7 mm. When only studying summer and winter trends, we found that trends in all-2-day precipitation sums of coastal stations are in fact summer trends, while those of non-coastal stations are winter trends.
 
 % ADD relative rate (increase of 2-day Psum over 58 years/ 2-day Psum start  )
 % Compare summer and winter trends better with relative rates!
 
 ( Say more about disproportionality of trends in Psum ?, if I add significance of linear regression fits on yearly mean 2-day precipitation sums
 
-No clear spatial differences in trends.... is this research material for CH3???)
+
+Make short summary of this chapter?
+And make bridge to next chapter: No clear spatial differences in trends, so do not consider differentiation in mechanism behind precipitation changes in the next chapter)
+
+
 
 \printbibliography
 

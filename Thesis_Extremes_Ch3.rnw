@@ -94,7 +94,7 @@ which agrees with a simultaneous decreases in the occurence of wet hours. In ord
 \section{Detection of key variables}
 
 \subsection{Theory} \label{subsec:theory}
-In this section we describe the relation of multiple variables to (extreme) precipitation. These are temperature, relative humidity, dewpoint temperature, convective available potential energy, wind strenght and wind shear, cloud condensation nuclei, topography and weather code.
+In this section we describe the relation of multiple variables to (extreme) precipitation. These are temperature, relative humidity, dewpoint temperature, convective available potential energy, wind strenght, cloud condensation nuclei, topography and weather code.
 
 \subsubsection{Temperature}
 Temperature at the surface, as well as the background gradient of the temperature with height, influences precipitation intensity and occurence in many ways. It plays a role into the entire chain; the source of moisture, cloud formation and precipitation production up to and including the falling process \citep{Sumner1988}. First, in order to produce precipitation, atmopsheric moisture needs to be available. In general, the higher the temperature, the more evaporation can take place, and the more moisture is supplied to the atmosphere. Note, the surface temperature is then also cooled, as evaporation consumes latent heat. Secondly, the ability of air to hold water vapour increases with temperature according to the Clausius Clapeyron equation. However, air does not absorb water vapor, so this is correcly phrased as: a  a higher temperature results in a higher equilibrium vapor pressure \citep[p.80,81]{Wallace2006}. The effect of this relation, is that when temperature increases (in climate change) saturation will occur less often (saturation level is harder to reach), but under extreme conditions more moisture can precipitate out of an air column. Further elaboration on air's ability to hold moisture linked to (extreme) precipitation will follow in \ref{subsubsec:moist}. From Chapter TB (REF CH TB) we know that cloud droplet formation depends on the equilibrium vapor pressure, so indirectly on the internal temperature of the cloud. In short, not only the amount of available atmopheric moisture, but also cloud formation itself depends on the temperature. Thirdly, a strong temperature gradient with warm air at the surface and cold air aloft, leads to buoyant and vertical instable air. The strength of updrafts is determined by the strength of instability of the air. A measure of the vertical instability is the Convective Available Potential Energy (CAPE). As CAPE is also available in our metadata, we will further discuss it's relation to temperature in the following paragraph. Lastly, processes within a cloud regarding droplet growth depend on the internal temperature and temperature differences (REF TB). % WHAT EXACTLY EFFECT, more or stronger precipitation???
@@ -233,7 +233,7 @@ The definition of CAPE does not include the existence of liquid water loading, e
 % The estimates of maximum updraft strength (Wmax) based on CAPE are usually twice as high as in observed updrafts because of water loading and mixing effects. In well-organized convective storms, vertical velocity in updrafts are much closer to Wmax. \citep{SVRNOAA}))
 
 
-\subsubsection{Wind strenght and wind shear}
+\subsubsection{Wind strenght}
 
 Severe local storms are associated with pronounced shifts in wind speeds and/or direction with height: wind shear \citep{Browning1964,Wingo2010}. The four types of storms distinguished on the way of development are: supercell, multicell, a collection of numerous individual precipitation cells as f.e. squall-line storms and mesoscale convective complexes \citep[p. 156]{Sumner1988}. Some of these storms can develop into larger storms delivering an hour or two of very intense precipitation at a point. A storm can obtain a self-perpetuating character due to pronounced wind shear, as this permits the continual introduction of fresh and moist air into the system at the lowel-level developing edge and the venting of used air aloft, while the downdraught remains separated from the updraughts \citep[p. 156]{Sumner1988}. Wind shear is therefore related to the lifetime of a storm (up to several hours). (Side remark; here the use of the word storm, better in context?)
 Unfortunately we only have hourly observations of wind speed at higher levels for our time period of 58 years. Instead, we can study the horizontal wind speed at 10 m, and use this a partial indicator of wind shear. Higher wind speeds also lead to faster propagation of fronts and local showers over a station. Therefore, we would expect a higher intensity (precipitation sum over duration of precipitation within an hour), and to a lower extent a higher hourly mean intensity (precipitation sum over an hour. In other words, changes in wind speed could influence the intensity of precipitation in two ways; (i) via the organisation of a storm under restriction of strong wind shear, and (ii) via faster propagation of precipitation systems over a station.
@@ -257,12 +257,12 @@ However, we do not have enough stations with spatial differences in topography, 
 Third, human-made visual observations indicated by "present weather" (WW) codes are available in our metadata for every station. With help of this code, which is approved by the World Meteorological Organization, 100 different weather type are distinquised by two-digit numbers (0-99)(see \citet{Dai2001} for a complete list). Heavy precipitation is related to certain conditions in the cloud and at the surface. Two weather types, differentiated on WW, often occuring simultaneously with intense precipitation are (i) hail, and (ii)  thunderstorms. Firstly, the majority of severe local storms associated with self-perpetuating convectional systems, are characterized by significant hail production \citep{Sumner1988}.  For the production of hail, deep and strong convection is required. Convectional precipitation, which is often intense in nature, is mostly produced by the Bergeron-Findeisen process. This stems from the considerable vertical development of the clouds (therefore exceeding the $0^\cdot$C isotherm), so that very intense precipitation (sometimes in form of hail or ice pellets) is resultant. %The following criteria can be used as a guideline for hail prediction: (1) cumulonimbus tops are colder than $-20^{\circ}$C and (2) the temperature path curve of the parcel is $4^{\circ}$C warmer than the environment curve just in between the LFC and EL and this gives cloud tops of 4500 meter. Another method, based on parcel curve, is: (1) measure the temperature difference at the point where the curve reaches $-20^{\circ}$C with the environment temperature. (2) if this difference is $\ge 5^{\circ}$C forecast hail, between $5-2.5^{\circ}$C forecast soft hail or rain and $\le 2.5^{\circ}$C$ forecast rain \citep{Brown1963,Ludlam1980,MET1997}.
 Secondly, lightning occurs in vigorous convective clouds, in which ice particles and hail are thought be key players in charge generation. The majority of the lightning discharge originates from thunderstorms extending above the freezing level. However, for all-water clouds there are also well documented UK observations of lightning events \citep{Atkinson1989,Lee1986,Mason1972,MET1997}. Although, we have hourly measurements of weather codes, we do not use them in this study, because of two reasons. First, we want to find a reason for the changing intensity of heavy precipitation and frequency of wet hours. The weather codes indicates the weather types related to heavy precipitation, but not the causes of it. Therefore, we will not be able to explain the observed trends by trends in weather types. Nontheless, a large vertical extent is needed for hail production, but in fact we already have CAPE as a measurement for vertical velocity and potential strenght of convection. Second, in the course of time visual measurements of weather codes are automized, and therefore since then the WW's are computed from different variables, among which intensity. Differentiation between variables on basis of the automatic WW measurements, would not have a physical meaning when attempting to explain differences in intensity.
 
-
+(maybe add summarizing alinea with link to next section?)
 
 \subsection{Identification of relationships}
 
-In this part we try to identify relationships explaining the trends found in Chapter 2 (REF CH2). First, we start with a study of correlations. Next, we compare trends in the key variable(s) to the observed trends in hourly intensity. Lastly, the type of relationship (e.g. linear or non-linear) is studied, thereby we account for the influence of how the data is distributed. %Our analysis is followed by plotting and interpreting lags. To find the best model for precipitation data the most promising variables are combined in multiregression plots.
-(Side remark: misschien dubbelop? Ik heb in het begin van het hoofdstuk al de indeling verteld ) Note, in this chapter we include duration data to find the true precipitation intensity (PI). This allows us even to distinguish between hours with the same precipitation sum, of which one is very intense and short-lasting, and the other less intense and long-lasting. Here, P is the hourly precipitation sum.
+In this part we try to identify relationships explaining the trends found in hourly precipitation in Chapter 2 (REF CH2). First, we start with a study of correlations for the variables described as important to precipitation intensity in Section \ref{subsec:theory}. Next, we compare trends in the key variable(s) to the observed trends in hourly intensity. Lastly, the type of relationship (e.g. linear or non-linear) is studied, thereby we account for the influence of how the data is distributed. %Our analysis is followed by plotting and interpreting lags. To find the best model for precipitation data the most promising variables are combined in multiregression plots.
+(Side remark: misschien dubbelop? Ik heb in het begin van het hoofdstuk al de indeling verteld ) Note, in this chapter we include duration, defined as the hourly time fraction of precipitation, data to find the true precipitation intensity (PI). This allows us even to distinguish between hours with the same precipitation sum, of which one is very intense and short-lasting, and the other less intense and long-lasting. Here, P is the hourly precipitation sum.
 
 
 
@@ -646,6 +646,10 @@ load("./inst/tussenStap/FHmean.rda")
 #Check amount of 2days a year FHmean[,length(d2),by=Year] --> seems good
 # FHmean[duplicated(d2),] --> 0  , Empty data.table (0 rows) of 15 cols:
 
+# Legend
+Legendgrob5 <- legendGrob(c("LM","50%","75%","90%","95%","99%"), pch=15,
+                          gp=gpar(col=c("black","purple","blue","green","orange","red"),cex=1), ncol=3)
+
 QR_FHmax2d <- QR_alld2(FHmean)
 #Slopes FH
 qs <- c(0.25,0.50,0.75,0.90,0.95,0.99)
@@ -838,10 +842,6 @@ load("./inst/tussenStap/CAPEmax2d.rda")
 # check 4200 d2 from 1993 - 2015 ; 23*365/2 = [1] 4197.5
 # The first 23 2-days (46 days) have missing values, so we start at d2=24
 QR_CAPEmax2d <- QR_alld2(CAPEmax2d[d2>23])
-
-# Legend
-Legendgrob5 <- legendGrob(c("LM","50%","75%","90%","95%","99%"), pch=15,
-                          gp=gpar(col=c("black","purple","blue","green","orange","red"),cex=1), ncol=3)
 
 # To see differences in slope per quantile , from: http://data.library.virginia.edu/getting-started-with-quantile-regression/
 #plot(summary(qr3), parm="x")
@@ -1230,15 +1230,30 @@ Therefore, we expect that the changes in precipitation are mainly due to changes
 \newpage
 
 
+%
+% Explain differences in extremes in and occurence of rain events.
+%
+%
+% Exponential increase in I with T / TD,
+% exponential decrease after 20 C ?? No only statistical effect;
+% The fewer the data points the lower the chance for very high extremes.
+%
 
-Explain differences in extremes in and occurence of rain events.
+Maybe link more to findings in other chapters:
+f.e. from Ch2:
+- contrast in trends between northern and southern stations in quantile of precipitation intensity for all 2-day precipitation sums
+--> relate to P-T relationship, suggest n.a.v. Figure \ref{fig:PvsT}
 
 
-Exponential increase in I with T / TD,
-exponential decrease after 20 C ?? No only statistical effect;
-The fewer the data points the lower the chance for very high extremes.
+- contrast in trends between coastal and non-coastal stations in presence of only summer and  only winter trends respectively. If this not due to coincidence, it might be due to a different mechanism behind the positive summer and winter trends. Besides, we already observed that linear regression of the precipitation sums for De Kooy and Vlissinge are quite similar, but mind that this accounts for precipitation sums on yearly resolution.
 
+Explanation ? ;
+Coastal influence in summer   Psum increases (intensity increases more, than frequency decreases)
+stronger land-sea temperature difference??  precipitation from cold front, (precipitation from warm air, containing more moisture, air above sea still cold due to cold sea)
+or rel cold air above sea, warms significantly (larger moisture availibility), (vs in winter air above sea is already relatively warm compared to land)
 
+Non-coastal/ land-climate related in winter ; Psum increases (intensity increases, frequency does not decrease that much ? )
+winter air above land slightly warmer, more convective precipitations or air contains more moisture, cold front from east?
 
 
 \printbibliography
