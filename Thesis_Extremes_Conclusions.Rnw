@@ -32,34 +32,143 @@
 
 \section{Introduction}
 
-In this chapter is divided in two parts, the discussion and the conclusion. In the first part, the main findings with regard to the research questions are summarized and put into context of the current knowledge of the research field. Futhermore, the strenghts, weaknesses and implications of the results and futher recommendations are provided. The second part gives a brief overview of the main conclusions and their implications.
+In this chapter is divided in two parts, the discussion and the conclusion. In the first part the main findings with regard to the research questions are summarized and put into context of the current knowledge of the research field. Furthermore, the strengths, weaknesses and implications of the results and further recommendations are provided. The second part gives a brief overview of the main conclusions and their implications.
 
 \section{Discussion}
 
-In the present work we attempted to find out how extreme hourly precipitation in the Netherlands changes in time and what the mechanism is behind observed changes. Our main results are listed here in a compact way, ordered by chapter.
+\subsection{Summary of results}
+In the present work we attempted to find out how extreme hourly precipitation in the Netherlands changes in time and what the causes are behind observed changes. Our main results are listed here in a compact way, ordered by chapter.
 
 First, we learned about the processes behind cloud formation, precipitation production, and more specifically about the conditions favorable for extreme precipitation in Chapter 3 (REF TB). Factors of importance for precipitation to occur, is the cooling of air rich in moisture and CCNs by an external event and the potential for droplets to develop to a heavy enough size for precipitation. Factors of importance for the production of extreme precipitation, which we can study with help of the station data, are vertical instability (by CAPE and temperature), moisture (by dewpoint temperature) and wind shear (partially by wind speed). Furthermore, the two main types, cumuliform and stratiform clouds, are characterized by precipitation intensity.
 
-Second, we attempted to distinguish less intense precipitation (dominantly of the stratiform type) from the more intense precipitation (dominantly of the convective type) by season in Chapter 4 (REF). Confirming theory.... (REF sec intro / Tb) our results show that summer precipitation is more short-lasting and intense, than winter precipitation. Compared to the mean intensity, seasonal differences are the highest for extremes. On basis of the highest seasonal difference in extreme intensity, we defined a summer (consisting of the months June, July and August) and a winter season (consisting of the months December, January and February). In Chapter 4 we also investigated whether we observe spatial differences in (extreme) hourly precipitation for the 5 stations in the Netherlands. We are led to the conclusion that great spatial differences exist for extreme intensities.
+Second, we attempted to distinguish less intense precipitation (dominantly of the stratiform type) from the more intense precipitation (dominantly of the convective type) by season in Chapter 4 (REF). Confirming theory.... (REF sec intro / Tb) our results show that summer precipitation is more short-lasting and intense, than winter precipitation. Compared to the mean intensity, seasonal differences are the highest for extremes. On basis of the highest seasonal difference in extreme intensity, we defined a summer (consisting of the months June, July and August) and a winter season (consisting of the months December, January and February). In Chapter 4 we also investigated whether we observe spatial differences in (extreme) hourly precipitation for the 5 stations in the Netherlands. We are led to the conclusion that large spatial differences exist for extreme intensities.
 
-Third, on account of these spatial and seasonal differences we analysed trends in 2-day precipitation intensity, frequency and sum for each station, differentiated on summer and winter season. The 9999 Monte Carlo test applied in this thesis, provides robust evidence of significant increases in the 25-5\% highest 2-day maxima in precipitation intensity. Besides, for summer and winter season significant positive trends are detected for respectively the 50-5\% and 25-5\% highest 2-day maxima. Our study confirms previous findings (name example? ; IPCC etc) that the \enquote{high} exremes increase in a disproportional way, compared to the yearly mean and the \enquote{low} and \enquote{moderate} extremes. In line with the findings of \citet{Malik2016} we have seen a spatial dissimilarity in the significance and rate of the trend regarding the corresponding quantile. Next to positive trends in hourly precipitation intensity, our findings provide unique evidence of negative trends in precipitation frequency. Several significant trends, of which most on the 99\% confidence level, were found for 2-day and yearly frequencies. This negative signal in frequency is, however, less robust than the positive signal in intensity. It is worth noting that in contrast to intensity trends, frequencies trends are not computed from maxima data, which could explain the lower robustness. Moreover, for each station we detected a significant positive trend in 2-day precipitation sums. Differences between northern and southern stations in the corresponding quantile could be temperature related, as the findings in Chapter 6 (REF) confirm theory that precipitation intensity is strongly temperature dependent. Futhermore, another striking difference %between summer and winter trends in precipitation sums is observed,
-is that significant summer trends belong to coastal stations, whereas significant winter trends belong to non-coastal stations. The reason therof is uncertain. However, considering the results reported in Chapter 6 (REF), this might be related to seasonal dependent changes in moisture availibility.
+Third, on account of these spatial and seasonal differences we analysed trends in 2-day precipitation intensity, frequency and sum for each station, differentiated on summer and winter season. The 9999 Monte Carlo test applied in this thesis, provides robust evidence of significant increases in the 25-5\% highest 2-day maxima in precipitation intensity. Besides, for summer and winter season significant positive trends are detected for respectively the 50-5\% and 25-5\% highest 2-day maxima. Our study confirms previous findings (name example? ; IPCC etc) that the \enquote{high} extremes increase in a disproportional way, compared to the yearly mean and the \enquote{low} and \enquote{moderate} extremes. In line with the findings of \citet{Malik2016} we have seen a spatial dissimilarity in the significance and rate of the trend regarding the corresponding quantile. Next to positive trends in hourly precipitation intensity, our findings provide unique evidence of negative trends in precipitation frequency. Several significant trends, of which most on the 99\% confidence level, were found for 2-day and yearly frequencies. This negative signal in frequency is, however, less robust than the positive signal in intensity. It is worth noting that in contrast to intensity trends, frequencies trends are not computed from maxima data, which could explain the lower robustness. Moreover, for each station we detected a significant positive trend in 2-day precipitation sums. Differences between northern and southern stations in the corresponding quantile could be temperature related, as the amount of precipitation accumulating is dominated by intensity over frequency (REF Chapter S&Sfindings) and thus temperature dependent (via intensity as found in Chapter 6 REF). Furthermore, another striking difference %between summer and winter trends in precipitation sums is observed,
+is that significant summer trends in precipitation sums belong to coastal stations, whereas significant winter trends belong to non-coastal stations. The reason thereof is uncertain. However, considering the results reported in Chapter 6 (REF), this might be related to seasonal dependent changes in moisture availability.
 
-Fourth, in our investigation of the mechanism behind precipitation changes in Chapter 6 (REF), we uncovered four important factors for extreme precipitation, (i) temperature, (ii) dewpoint temperature, (iii) CAPE and (iv) wind speed. From theory we deduced how these factors relate to extreme precipitation. temperature ....
-Dewpoint temperature ...
-CAPE like ...
-Wind speed as a component of wind shear, of which the degree influences the stability of convective storm associated with heavy precipitation, and as a measure for the
+Fourth, in our investigation of the causes behind precipitation changes in Chapter 6 (REF), we uncovered four important factors for extreme precipitation, (i) temperature, (ii) dewpoint temperature, (iii) CAPE and (iv) wind speed. From theory we deduced how these factors relate to extreme precipitation.
+(i) Increasing temperature can potentially influence extreme precipitation via more atmosphere moisture via evaporation, a higher ability of the air to hold moisture, and stronger updrafts. (ii) Dewpoint temperature is a measure of the air's humidity and will increase under constraint of constant relative humidity in case of temperature rise (the second temperature-effect on precipitation) according to the Clausius Clapeyron equation. A larger atmospheric potential to hold moisture means that air is less easily saturated, but more can precipitate out in extreme events. This relation can thus be recognized by a decrease in the amount of wet hours and a concentration of precipitation into more intensive wet hours. (iii) An increasing atmospheric temperature gradient (surface air increasing more in temperature than higher level air) goes hand in hand with increasing CAPE, and ....
+(iv) Strong horizontal wind speed can be related to extreme precipitation via (ii) strong wind shear which enhances the stability of convective storms associated with heavy precipitation, and (ii) via horizontal advection of frontal systems.
 
-confirms theory in the finding of an equal to higher Clausius-Clapeyron scaling of precipitation intensity with temperature.
+Furthermore, for these key variables we presented the type and strength of correlations with precipitation intensity using a bundled data set (combining all five stations). Considering the maxima of the key variables provided relatively strong correlations of the (semi-)exponential type. For maxima of the same resolution (2 days) as for the trend analysis, we found Spearman correlation's of 0.4 (wind speed), 0.3 (temperature), 0.2 (dewpoint temperature) and 0.07 (CAPE). Moreover, we investigated whether similar trends can be detected for the four key variables as for trends in intensification of precipitation. We found potential explaining positive trends in temperature and dewpoint temperature significant at the 99\% confidence level for the ordinary least squares regression fits and almost all quantiles fits. However, the significant negative trends detected in wind speed, for the period 1958-2015, and in CAPE, for the period 1993-2015, do not match an intensification of precipitation.
+
+In the last part of Chapter 6 we studied time related changes for summer and winter in distributions of the key variables and in the point clouds and quantile regression fits whereby precipitation intensity is plotted over the key variable. Strong seasonal differences were found in the point clouds and distributions. Although, maxima in intensity are correlated stronger to maxima in wind speed than all intensity values correlate with all wind speed values, we observe that in summer we have relatively low daily maxima in wind speed (2-12 m/s), compared to winter daily maxima (2-18 m/s). As summer precipitation intensities are higher than winter precipitation intensities, the trends in FH maxima probably do not necessarily match to trends in the most extreme (summer) precipitation. Besides, the explanation of intensification of precipitation by decreasing wind speeds is not understood from theory. For temperature, dewpoint temperature and CAPE we did observe relatively high maxima for summer compared to winter. The comparison of the first period with the second period clearly shows a shift of the temperature and dewpoint temperature distributions towards higher value. For wind speeds the winter maxima decreases in frequency, while the summer maxima did not change visibly in frequency. Between precipitation and temperature or dewpoint temperature we find positive exponential relationships comparable with CC- and super CC-scaling for binned winter and summer quantiles. For both key variables the timewise shift in distribution from higher summer and winter T and TD maxima and lower winter FH maxima is stronger than changes in their relationships with P. Due to the limited period of CAPE measurements, we have not analysed the same time related changes for this variable. However, the potential of CAPE trends to explain the trends in intensification of precipitation is thought to be small, as the correlation for CAPE maxima with precipitation maxima is the lowest from the four key variables and the sign of significant trends in CAPE does not match theory in explaining trends in precipitation intensity.
+
+All in all, the detected trends in precipitation intensity are likely caused by the product of shifting (dewpoint) temperature distributions towards higher values, thereby implying a non-linear (CC- to super CC-scaling) increase of precipitation maxima as the result of an temperature-induced increase (more indirectly via T and more directly via Td) of the atmospheric moisture holding capacity. This finding matches well with our observed negative trends in the frequency of wet hours. As we know from theory that warmer air is less quickly saturated (REF CH TB), consequently there are less (2-day) hours in which saturation is reached in a warmer atmosphere. Compared to the past, currently more can precipitate out of the warmer air column with the higher moisture holding capacity.
+
+% interpretation
+%  -and to which extent this is answered
+%  - do data support hypothesis
+%  - differences with expectations
 
 
-deriving key variables for changes in extreme precipitation from theory and strength of correlation and thoroughly investigating time related changes for the maxima of the key variables themselves and for their relationships with precipitation maxima. The present work concentrates on 5 Dutch stations; De Kooy, De Bilt, Eelde, Vlissingen and Maastricht.
+\subsection{Strengths and relevance of results}
+%show how results fit in bigger picture , compare to other studies. Consistent?
+
+In this part we describe the strengths of this study and how the results attribute to the current knowledge base (add?: of this field).
+Complementing research of Buishand...., in which analysis of daily precipitation showed spatial differences, this study provides evidence that precipitation extremes also/more spatial dependent on the hourly level. Moreover, this study has uncovered multiple significant trends in precipitation characteristics. The detected positive trend in precipitation intensity and negative trend in frequency of wet hours confirms theory of IPCC, and ... . As the trend analysis consist of 5 Dutch stations representative for all parts of the Netherlands, the robustness of the observed trends is large. Besides, due to the use of quantile regression we could compare the different stations very well. As then the extreme part of the distribution is analyzed, which is the same for every station and therefore the trend analysis is independent of spatial differences in probability density functions of precipitation data. Furthermore, the instrument type, setting and associated historical changes of precipitation measurements are precisely documented. Additionally, this study allows to verify whether the scaling beyond Clausius-Clapeyron found by \citet{Lenderink2008,Lenderink2009,Lenderink2011} may be assigned to mixing of winter and summer dominated processes or to climate change. The importance of studying winter and summer extremes separately is revealed in this thesis and by analyzing summer and winter extremes on hourly resolution more detail is given on the type of precipitation (local summer precipitation) for which increasing trends are found and on the related causes. %Additionally this thesis reveals the importance of studying winter and summer extremes separately, thereby contributing to a greater understanding about the precipitation intensity-(dewpoint)temperature relationship found by Lenderink ...
+More insight into the mechanisms behind the trends is gained by thoroughly investigating multiple potential causes from theory, strength of correlations, trend analysis and timewise comparison of distribution and relationship changes. Several important key variables for changes in precipitation are discovered and classified on type of relationship and strength.
+
+\subsection{Weaknesses}
+
+The major limitations of this research are discussed in this section. Station data is used for this thesis, which gives spatial limited information. Due to temporal limition in hourly data, only one station per part of the country (e.g. northwest,central,southwest, southeast and northeast) is analyzed. Next to the horizontal point of view, station data is also limited regarding the precipitation processes. As solely surface conditions are available, mostly processes regarding precipitation accumulation are captured. therefore, we do not posess information about the conditions for precipitation production, which restricts our investigation of the causes behind trends in precipitation characterstics. Futhermore, we did not homogeneize our data set due to multiple reasons described in Chapter (REFMETHOD), which can give an bias in the detection of trends. Note, that this bias is assumed to be neglible, as we did not find jumps in our data related to historical changes (Chapter REF METHOD). The independent (2-day) period we chose can still involve some autocorrelation, although in magnitude and from physical objective this is expected to be relatively small. However, we did not investigate the autocorrelation and partial autocorrelation of 2-day precipitation sums, which might have relatively more autocorrelation as it considers precipitation at a larger temporal scale. Regarding our method of testing significance, we could doubt whether a random resampling of 9999 times is big enough to represent well all possible outcomes in slopes. A bigger number would, however, require undesirable amounts of computation power. Moreover, we could question for which confidence level, a trend is significant. Is a trend significant at the 95\% confidence level thrustworthy enough? In this study we do not classify the significance of a trend to the type of confidence level used. Regarding the analysis of causes behind the observed trends, we did not disentangle the different key variables in their relationship with precipitation. Temperature namely influences dewpoint temperature and CAPE. Besides, wind speed is the result of a horizontal temperature-related pressure gradient and CAPE-associated convergence of air. Finally, with respect to our investigation of the causes behind the detected trends we could ask ourselves to what degree we can actually determine causility. However, we do state our found relationships with a likelyhood (i.e being potentially causing or explanatory), which is on the contrary not quantified, but also harsh to do.
+
+\subsection{Recommendations}
+
+In this section recommendations for future research are briefly listed in order from data quality, to type of data, ... to ....
+
+First, an extension of the data quality study, which includes investigation of homogenization techniques for hourly data, is recommendated. Moreover, a clear overview of the instrument types, settings and associated historical changes for all measured variables, similar as has been reported here for precipitation (REF CH Method), would help by analyzing the data quality more intensively.
+
+Second, by integrating this research with satellite and/or radar observations the influence of the large-scale settings (i.e. the presence of a meso-scale mid-tropospheric trough or extratropical cyclone or the presence of large-scale wind shear) on precipitation extremes can be studied. Data corresponding to the exact (horizontal and vertical) location and time of precipitation production would complement the data corresponding to the location of precipitation accumulation regarding. So combining hourly rain gauge data with high-resolution spatial and temporal data can improve our understanding about the observed changes in precipitation characterstics in time. Futhermore, we could then test the effect of the resolution of these type of observations (f.e. radar observations are on the order of km's) on the ability to capture local extreme precipitation events. Other opportunities for data with a high spatial resolution are the monitoring of the concentration (and type) of CCNs and including more spatial-dependent variables (e.g. soil and altitude) into the analysis of the causes of the detected trends.
+
+Third, a best fit of predictors could be found with a multiple regression technique that is adjusted for multicollinearity. The found statistics associated with extreme precipitation could be compared to models to validate whether they are able to model extremes in precipitation. Besides, this kind of results could also help to improve the physics within the models. When models are able to simulate the microphysical processes in clouds, this could help to understand the observed seasonal and spatial trends.
+
+A fourth recommendation for future research is to investigate the spatial dependancy of the precipitation trends in more detail for the latest 10-25 years, by adding more stations, as well as satellite/radar observations.
+
+Fifth, in stead of differentiating trends based on season, we could argue to differentiate trends based on type of precipitation systems (e.g. convective versus stratiform). This would give more detailed information about the mechanism behind the observed trends.%The Weather Code is used by . Zuzana, to apply this differentiation. However, since the weather code is automatized in .. , it is based on intensity and ....   --> Not distinguishable on temperature and we want to study the relation of P with T for the different types
+Including high resolution, synoptic data would allow for disentangling convective from stratiform precipitation.
+
+Another possibility to complement on the present work is to classify the significance of a certain trend to the type of confidence level used. This would allow for specification into likelyhood classes, similar as is carried out in the IPCC reports. .. !
+
+
+Seventh, it would be very interesting to study whether the observed negative trends in frequency of wet hours represents a negative trend in the amount of wet events in time or whether the events have become shorter. This could be studied when the data is classed into wet events, which can be deduced from the hourly duration and the sequencing of wet hours in time. It is likely that the amount of wet events decreases, as this would match a Clausius-Clapeyron scaling with higher pressures needed for saturation to occur at higher temperatures, resulting in a decreasing possibility of saturation (and thus of wet events).
+
+Eight, to enlarge the relevancy of the results, we could consider trend analysis on impacting events. These events would be chosen on basis of thresholds, possibly differentiating between \enquote{threshold} classes of extreme events on the type of damage (e.g. sewage overflow, traffic delay and agriculture) associated with a certain event. For trends in hourly intensities $>$ 10 mm/hr to be detected as significant, more data is needed. However, the sign and magnitude of this class of trends can give relevant information, without the need for significance (Radam... EMS). As trends can be present, even when the are not detected as being significance. Especially in this case, where a lack a wet hours corresponding to the high threshold is likely to be the cause of the insignificance.
+
+Another recommendation for future research is linked to the analysis of CAPE data. A study into the effect of the resolution decrease in CAPE data (e.g. from a mean of 4 times a day to 1 a day) in the course of time, would give more information about the validity of the detected negative trends in CAPE for the period 1993-2015. Futhermore, analyzing trends in precipitation for the same period as trends in CAPE allows for a more correct way of comparison between the two type of data. Additionally, including data of Convective Inhibition (CIN) and implementing the restriction that CAPE $>$ CIN for CAPE to be larger than 0, would help to truely ....
+
+Last but not least, applying similar trend analysis on hourly precipitation data for other European countries enables validation of the robustness of the detected trends. Besides, spatial differences in trends could be investigated on a larger scale. As increases in the precipitation extremes following the Clausius-Clapeyron relationship are limited by moisture, we expect to find a North-South gradient in the trends for Europe.
+
+%- Next to temperature, dewpoint temperature, CAPE and wind speed other variables influence precipitation production (REF TB) and could be taken into account.
 
 
 
-refer to purpose of research:
-1) Do we observe spatial differences in (extreme) hourly precipitation for the Netherlands?
-2) What is the seasonal dependance of (extreme) precipitation
+
+
+\section{Conclusions}
+
+The main conclusions of this study and their implications for current and future research are listed in this section. This research has revealed large spatial and seasonal differences for hourly precipitation extremes in the Netherlands.
+
+
+% Multiple robust significant trends are detected showing an 0.01-0.04 mm/hr/yr (all to summer-only) increase in the intensity of the 25-5\% highest 2-day maxima, a decrease in the 2-day frequency of wet hours and constant to increasing (2-day) precipitation sums.
+Multiple significant trends (p $> 95 $\%) for independent 2-day periods are showing a robust increase of the 25-5\% highest intensity maxima (on the order of 0.6-2.3 mm/hr in 58 years for all to summer-only maxima), %0.01-0.04 mm/hr/yr
+a decrease in the mean frequency of wet hours and in the frequency of wet hours of the 25-5\% wettest 2-days (on the order of 0.5-3 hours in which precipitation occurs less a day in 58 years)
+and a constant to increasing signal in precipitation sums (on the order of 1.2-2.7 mm/hr/2 days for 58 years). Considering the seasonal dependence of precipitation intensity and the comparison between all and season-only trends in maxima, we are led to the conclusion that the trends in the \enquote{high} extremes are likely to be summer trends. Spatial differences exist in the magnitude and number of significant trends, which is striking for a small country as the Netherlands. \\
+
+Our study confirms previous findings (IPCC, 2013) that the \enquote{high} extremes increase in a disproportional way, compared to the yearly mean and \enquote{low} extremes. Next to a disproportional feature, the trends show dissimilarity in the significance of quantiles fits per station and per season. The latter more likely to be the result of the way quantile regression works (e.g. the quantile fits for one station are independent from each other), than the result of changes in physical procceses .
+
+
+ADD CH3 results
+
+
+
+CHECK BELOW (if represented in text above)
+
+In short, in this section we found multiple indications of decreasing trends in the number of wet hours for all station. Next to visible negative slopes in the quantile and linear ordinary least squares regression, several negative trends in frequency of wet hours were detected being significant for frequency data on a 2-day and on a yearly resolution. However, the negative signal in frequency of wet hours is less robust than the positive signal in intensity maxima, as for the former larger spatial differences in the number of significant trends exist than for the latter. However, unlike the analysis of intensities we do not use maxima data in frequencies, as we consider 2-day number of all wet hours. On the contrary, most of the trends detected were significant at the 99\% confidence level and the magnitude of the rates is in a similar way disproportional as for the rates in intensity, with larger rates for the higher quantiles. We can thus say that the frequency of the wetter year (defined here as the year with the most wet hours) decreases more than for the drier year. The lack of significant trends in frequency based on data of a yearly resolution for the quantile regression approach, as well as for the ordinary least squares regression approach, is likely due to the limited sample size.
+
+We are to the conclusion that
+
+
+Rephrase concl CH3 : Although the trends are characterized by spatial inhomogeneity and dissimilarity with respect to the quantiles, it should be stressed that all significant trends detected are positive. In general, we can conclude that through a time period of 58 years the precipitation intensity of extreme events increases.
+
+Second, we attempted to distinguish less intense precipitation (dominantly of the stratiform type) from the more intense precipitation (dominantly of the convective type) by season in Chapter 4 (REF). Confirming theory.... (REF sec intro / Tb) our results show that summer precipitation is more short-lasting and intense, than winter precipitation. Compared to the mean intensity, seasonal differences are the highest for extremes. On basis of the highest seasonal difference in extreme intensity, we defined a summer (consisting of the months June, July and August) and a winter season (consisting of the months December, January and February). In Chapter 4 we also investigated whether we observe spatial differences in (extreme) hourly precipitation for the 5 stations in the Netherlands. We are led to the conclusion that large spatial differences exist for extreme intensities.
+
+
+
+All in all, the detected trends in precipitation intensity are likely caused by the product of shifting (dewpoint) temperature distributions towards higher values, thereby implying a non-linear (CC- to super CC-scaling) increase of precipitation maxima as the result of an temperature-induced increase (more indirectly via T and more directly via Td) of the atmospheric moisture holding capacity. This finding matches well with our observed negative trends in the frequency of wet hours. As we know from theory that warmer air is less quickly saturated (REF CH TB), consequently there are less (2-day) hours in which saturation is reached in a warmer atmosphere. Compared to the past, currently more can precipitate out of the warmer air column with the higher moisture holding capacity.
+
+
+CH4
+From Chapter 4 we can deduce that trends in precipitation intensity are more likely to be caused by timewise shifting of temperature and dewpoint temperature distributions to higher values, than to a changes in the P-T and P-TD relationships. Our results confirm to the Clausius Clapeyron equation, explaining intensification of heavy hourly precipitation due to enhanced moisture availability by increasing temperature. The super CC-scaling found by Lenderink is also partially observed. Complementing on the work of Lenderink ... and... we not only considered regression of precipitation intensity over temperature, but studied the true trends from 1958-2015.
+
+From CH4:
+
+%  Nevertheless, changes in the distribution seem to be more clearly visible for this time period comparison, than changes in the P-T relationship.sbal
+
+MAin RECOM
+
+
+By integrating of hourly rain gauge data with satellite and/or radar observations convective and stratiform precipitation can be disentangled and other synoptic information will be provided about the (spatial-dependent) processes behind precipitation and the observed changes. Both satellite or radar observations, and model data can be tested (by comparing to the observed statistics of the in-situ data) on their ability to capture local extreme precipitation. To find a more regional to continental (European) signal, the same kind of trend analysis can be applied on hourly data of other European stations. Besides, we could investigate whether a North-South gradient can be distinquished in precipitation trends.
+
+
+
+
+
+
+
+
+
+
+CHECK needs conclusions
+
+What does the paper add to the body of knowledge in my research field and what does it imply for future research or professional practice?
+
+- main implications
+- recommendations for future research
+
+We are led to the conclusion that ... ( in 3 sentences combine answers on)
+
+2) What is the seasonal dependence of (extreme) precipitation
 3) Can we detect trends in extreme precipitation intensities???
 4) Only intensity, what about the precipitation frequency?
 5) How does precipitation sum changes , product of intensity and frequency changes???
@@ -68,98 +177,18 @@ refer to purpose of research:
 % 8) Are these trends in hourly precipitation a westEuropean-wide feature? Or contrasting between northern and southern Europe?
 
 
-summarize answer to research questions
-
-This study has uncovered several important factors that are ..
-interpretation
- -and to which extent this is answered
- - do data support hypothesis
- - differences with expectations
-
-show how results fit in bigger picture , compare to other studies. Consistent?
-
-This study provides additional evidence that ...
-Our study confirms previous findings that .... and contributes to a greater understanding of...
-
-
-
-strengths
-weaknesses
-implications of results
-recommendations
-
-SWOT
-
-Strengths:
-- significant trends in intensity, as well as wet fraction
--Next to a higher spatial resolution, analyzing multiple data sets may contribute to the robustness of an observed trend.
-- Seasonal differentiating
-
-
-Different type of precipitation production regarding season.
- Therefore, studying precipitation both intensity and duration seperatly for the winter and the summer season, gives more detailled information about the type of precipitation and subyearly trends.
-
-This study allows to verify whether the scaling beyond Clausius-Clapeyron found by \citet{Lenderink2008,Lenderink2009,Lenderink2011} may be assigned to mixing of winter and summer dominated processes or to climate change.
-
-
-
-Weaknesses:
-winter , summer, is limited in saying something about the mechanism ; not about convective, stratiform.
-some autocorrelation present in 2 day maxima
-what is autocorrelation for wetness (frequency)  and for psum??
-
-Monte Carlo 9999 --> is 9999 a big enough sample??
-Duplicates?? maybe better ...  Chance on duplicate is ...
-
-How strong is the significance at 95\% confidence level?
-
-Futher recommendations:
-- CH3 frequency of wet hours -->  decreases? does then the amount of wet events decrease or do the events become shorter??
-- impacting events --> on basis of thresholds, for significance more data is needed, and duration has to be taken into account.
-
-- CH4  CAPE > CIN condition, use CIN. p. 245 of Lin2007
-- Compare CAPE trends to trends in precipitation intensity, frequency and sum for the same period (1993-2015).
-
-From TB:
-- In order to study the effect of the large-scale setting on precipitation extremes (i.e. the presence of a meso-scale mid-tropospheric trough or extratropical cyclone or the presence of large-scale wind shear), other type of data %, such as satellite or radar observations, with a higher spatial resolution is required.
-- monitoring of CCNs
-
-From CH S\&S
-- winter and summer,  --> convective and stratiform, but hard to disentangle without radar/synnoptic observations
-Weather code  --> ,but since ... automatic ; also based on intesity . Not distinquisable on temperature as we want to study the relation of P with T for the different types
-
-
-
-\section{Conclusions}
-
-What does the paper add to the body of knowledge in my research field and what does it imply for future research or professional practice?
-
-- main implications
-- recommendations for future research
-
-CH3
-Multiple significant trends are shown on a spatial and seasonal level. Dissimilarity in quantiles, station, seasons are addresses. Nontheless, we found robust signals of increasing intensity of heavy hourly precipitation (2-day maxima), decreasing frequency of (2-day) wet hours and constant to increasing (2-day) precipitation sums.
-
-
-Rephrase concl CH3 : Although the trends are characterized by spatial inhomogeneity and dissimilarity with respect to the quantiles, it should be stressed that all significant trends detected are positive. In general, we can conclude that through a time period of 58 years the precipitation intensity of extreme events increases.
 
 
 
 
-CH4
-From Chapter 4 we can deduce that trends in precipitation intensity are more likely to be caused by timewise shifting of temperature and dewpoint temperature distributions to higher values, than to a changes in the P-T and P-TD relationships. Our results confirm to the Clausius Clapeyron equation, explaining intensification of heavy hourly precipitation due to enhanced moisture availibity by increasing temperature. The super CC-scaling found by Lenderink is also partially observed. Complementing on the work of Lenderink ... and... we not only considered regression of precipitation intensity over temperature, but studied the true trends from 1958-2015.
-
-From CH4:
-
-%  Nevertheless, changes in the distribution seem to be more clearly visible for this time period comparison, than changes in the P-T relationships.
 
 
-% the super CC-scaling  found by Lenderink is also observed here for the summer mean and the quantiles. Note, that the mean here is a mean of maxima precipitation sum a day, with only wet hours considered. For the winter data the colder part scales with Clausius Clapeyron, while for temperatures higher than 7$^{\circ}$C the mean shows a rate which is slightly weaker than the double CC-scaling. The reason for the off-set between summer and winter data in mean and quantiles can be explained by .. ? (data number difference)
-% The increase of precipitation maxima with temperature maxima might be induced from a shift between stratiform-dominated to convection-dominated precipitation as suggested by \citep{Berg2013}. As no data about synoptic conditions is included, this relationship seems hard to verify. However, stratiform and convective precipitation might be seperated on values of CAPE. (BRON!)
 
-% To summarize, we found strong seasonal differences in relationships between precipitation and T, Td, FH en CAPE maxima and in the distributions for each variable. In general, in summer we have relatively high daily maxima in temperature (mainly between 12-24$^{\circ}$), dewpoint temperature (most values between 9-20$^{\circ}$), and CAPE values (mainly between 0-2500 J kg$^{-1}$) and relatively low daily maxima in wind speed (2-12 m/s), compared to winter daily maxima (respectively 0-14$^{\circ}$,-2-12$^{\circ}$, 0-500 J/kg, 2-18 m/s). Exponential relationships, comparable with CC- and super CC-scaling, are found for summer and winter precipitation intensity maxima with temperature and dewpoint temperature maxima and for winter precipitation intensity maxima with wind speed maxima. When comparing the second half of the time period to the first half, the P-T and P-TD relationships ar slightly less deviating from the CC-scaling, while the P-FH quantile lines deviate more from the CC-scaling. Moreover, the P-T and P-TD are as strong or stronger for the more extreme P maxima (95\%- and 99\%-quantiles), compared to the mean P maxima. This is vice versa for the P-FH relationship. However, for all three variables the timewise shift in distribution from higher summer and winter T and TD maxima and lower summer and winter FH maxima is more visible than changes in their relationships with P. Furthermore, as we detected negative trends in 2-day FH maxima (Section \ref{subsec:trends}), we do not expect an increase in wind shear as a possible explanation for the increasing precipitation intensity. Besides, the strong relationship between P and FH maxima seems to be more a winter relationship (Figure \ref{fig:PvsFH}), while we observed the highest changes for the highest quantiles, corresponding to summer precipitation data.
-% % Relative rates ?? winter vs summer
-% Therefore, we expect that the changes in precipitation are mainly due to changes in the distribution of temperature and dewpoint temperature. A shift to higher temperature and dewpoint temperature is then linked in an exponential way to higher precipitation intensities, as deduced from subfigures C from \ref{fig:PvsT} and \ref{fig:PvsTD}. The observed trend in precipitation intensity can then be seen as the product of shifting temperature distributions (for both seasons) and the CC- to super CC-scaling of maxima in P more indirectly with T  and more direct with Td. Increasing temperatures lead to an increase of the moisture holding capacity (expressed in Td), which leads to an intensification of what precipitates out in conditions of precipitation production. This also holds with the detected trend of a decrease in the amount of wet hours. Air is less quickly saturated at higher temperatures, consequently there are less (2-day) hours in which saturation is reached. Therefore, the 2-day sum of precipitation stays more or less constant or increases, depending on the exact changes for a certain station and the season.
+
+
+
+
+
 
 
 
