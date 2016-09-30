@@ -30,31 +30,31 @@
 
 \abstract{
 
-The occurrence and intensity of (extreme) precipitation are likely affected by climate change.
+The intensity and frequency of (extreme) precipitation are likely affected by climate change.
 %Climate change likely affects the probability of occurrence and intensity of extreme precipitation, due to, e.g., changes in moisture holding capacity, vertical stability and wind patterns.
-While many studies have focused on trends in daily extremes, intense precipitation often occurs on shorter timescales. The present work aims on assessing and understanding trends in intensity and frequency of hourly extreme precipitation for 5 stations in the Netherlands (De Bilt, de Kooy, Vlissingen, Maastricht and Eelde) for the period 1958 until 2015. \\ %Quantile regression is applied to fit linear trends on independent 2-day maxima in hourly precipitation, of which maxima occurring $\leq$ 25-5\% of the time are defined as \enquote{moderate} to \enquote{high} extremes. Significance of the trends is tested with a 9999 Monte Carlo permutation test. \\
+While many studies have focused on trends in extreme daily sums, extreme precipitation often occurs on shorter timescales. The present work aims to assess and understand trends in intensity and frequency of hourly extreme precipitation for 5 stations in the Netherlands (De Bilt, De Kooy, Vlissingen, Maastricht and Eelde) for the period 1958 until 2015. \\ %Quantile regression is applied to fit linear trends on independent 2-day maxima in hourly precipitation, of which maxima occurring $\leq$ 25-5\% of the time are defined as \enquote{moderate} to \enquote{high} extremes. Significance of the trends is tested with a 9999 Monte Carlo permutation test. \\
 
-For the Netherlands robust signals are found in hourly precipitation data with spatial and seasonal variation in the magnitude and number of significant trends. Multiple significant trends (p $> 95 $\%) for independent 2-day periods are showing a rapid increase of the ((25-5\%)) highest intensity maxima, %(on the order of 0.6-2.3 mm/hr in 58 years for all to summer-only maxima)%0.01-0.04 mm/hr/yr
-a decrease in the frequency of wet hours ((of 50-0.1\% wettest 2-days)),
+Robust signals are found in hourly precipitation data with spatial and seasonal variation in magnitude and number of significant trends. Multiple significant trends (p $> 95 $\%) for independent 2-day periods show a rapid increase of the (25-5\%) highest intensities, %(on the order of 0.6-2.3 mm/hr in 58 years for all to summer-only maxima)%0.01-0.04 mm/hr/yr
+a decrease in the frequency of wet hours (of the mean and 50-0.1\% wettest 2-days),
 %the mean frequency and in the frequency of the 25-5\% wettest 2-days (on the order of 0.5-3 hours in which precipitation occurs less a day in 58 years)
-and a constant to increasing signal in ((10-1\% highest)) precipitation sums. %(on the order of 1.2-2.7 mm/hr/2 days for 58 years). %Considering the seasonal dependence of precipitation intensity and the comparison between all and season-only trends in maxima,
+and a constant to increasing signal in the mean and (10-1\% highest) precipitation sums. %(on the order of 1.2-2.7 mm/hr/2 days for 58 years). %Considering the seasonal dependence of precipitation intensity and the comparison between all and season-only trends in maxima,
 %We are led to the conclusion that the trends in the \enquote{high} extremes are likely to be summer trends.
 Our study confirms previous findings (IPCC, 2013) that the \enquote{high} extremes increase in a disproportional way, compared to the yearly mean and \enquote{low} extremes. \\ %Next to this disproportional feature, the trends show dissimilarity in the significance of quantile fits per station and per season. \\ %(It is striking that even for a small country as the Netherlands there are large spatial differences.) \\
 
-%Multiple significant trends (p $> 95 $\%) are detected for precipitation characteristics fro all stations.
+
 
  %However, even for a small country as the Netherlands there are large spatial differences.
 
 To explain the observed trends, we studied from theory and by statistical analysis %, we uncovered from theory and based on correlation strengths
-four important factors for extreme precipitation, (i) temperature, (ii) dewpoint temperature, (iii) CAPE and (iv) wind speed. Trend analysis revealed significant positive trends in temperature and dewpoint temperature. %Furthermore, we investigated whether changes in precipitation are influenced by changes in the distribution of hourly values of the key variables or by changing relationships between the key variables and precipitation in time.
-From further analysis we concluded that the observed trends in precipitation intensity are likely caused by shifting (dewpoint) temperature distributions towards higher values, thereby implying a non-linear (Clausius-Clapeyron scaling) increase of precipitation maxima as the result of an %temperature-induced
-increase of the atmospheric \enquote{moisture-holding capacity}. This finding matches well with our observed negative trends in the frequency of wet hours, as warmer air is less easily saturated.\\
+four important factors for extreme precipitation, (i) temperature, (ii) dewpoint temperature, (iii) CAPE and (iv) wind speed. %Trend analysis revealed significant positive trends in temperature and dewpoint temperature. %Furthermore, we investigated whether changes in precipitation are influenced by changes in the distribution of hourly values of the key variables or by changing relationships between the key variables and precipitation in time.
+The observed trends in precipitation intensity are likely caused by the increase in temperature, via Clausius-Clapeyron related
+increase of the atmospheric \enquote{moisture-holding capacity}. This finding matches well with our observed negative trends in the frequency of wet hours, as warmer air becomes less easily saturated.\\
 %\vspace{6em}
 
 %  Compared to the past, currently more can precipitate out of the warmer air column under extreme conditions due to the higher moisture-holding capacity.
 }
 
-Promising for future research is the integration with high-resolution (e.g. satellite and radar) data, testing of models' capability to capture extreme precipitation and scaling up the research to reveal an European signal in hourly precipitation.\\
+Promising for future research is the integration with high-resolution (e.g. satellite and radar) observational data, testing of models' capability to capture extreme precipitation and scaling up the research to larger regions such as Europe.\\
 
 
 

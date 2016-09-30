@@ -401,10 +401,52 @@ plot(density(max2d[Year>2010]$max2d), type='l', col='blue', lwd=3, main=NA,xlim=
 In Chapter 3 (REF CH3) we hope to find an explanation for spatial differences in intensity. Although the trends are characterized by spatial inhomogeneity and dissimilarity with respect to the quantiles, it should be stressed that almost all significant trends detected are positive. For the two non-increasing 50\%-quantile lines, we still have to determine whether these are significant constant or decreasing lines. In general, we can conclude that through a time period of 58 years the precipitation intensity of extreme events increases.\\
 
 <<Rates_peryear>>=
+load("./inst/tussenStap/max2d.rda")
 #OLS
 OLSfit <- lm(yr_mean ~ Year, data = max2d)
 # Coefficient of 0.001882 yearly mean 2-day max mm/hr /yr
 
+OLS_fit <- max2d[, as.numeric(fitted.values(lm(max2d ~ d2))),by=STN]
+
+# Function to calculate the change/58, so absolute rate
+multi.r <- function(x,n,y) {
+      (tail(x,n=n) - head(x,n=n))/58
+}
+# Function to calculate the change/start_value*100/58, so relative rate
+multi.rr <- function(x,n,y) {
+      ((tail(x,n=n) - head(x,n=n))/head(x,n=n))*100/58
+}
+# Apply functions on DT
+# Absolute rates
+OLS_fit[,lapply(.SD,multi.r,n=1,y=58),by=STN]
+# Relative rates
+OLS_fit[,lapply(.SD,multi.rr,n=1,y=58),by=STN]
+
+# QR fits
+load("./inst/tussenStap/QR_max2d.rda")
+QR_fit <- subset(QR_max2d, select= c(STN,f50,f75,f90,f95,f99,f999))
+
+# Apply functions on DT
+# Absolute rates
+QR_fit[,lapply(.SD,multi.r,n=1,y=58),by=STN]
+
+#    STN           f50           f75          f90         f95          f99        f999
+# 1: 235 -6.923580e-15 -1.531342e-17 5.440023e-03 0.016303879  0.034376826 -0.14632920
+# 2: 260  2.328789e-14  4.154800e-03 8.499773e-03 0.009036792  0.063539744  0.13939195
+# 3: 280 -5.512832e-16  2.774707e-03 4.668971e-03 0.009219293  0.017977836 -0.07184502
+# 4: 310  2.051955e-03  3.675221e-16 1.561969e-15 0.008854216  0.019869799 -0.01317848
+# 5: 380 -1.945280e-03 -8.985150e-15 7.803566e-03 0.009116498 -0.005855325  0.07470794
+
+# Relative rates
+QR_fit[,lapply(.SD,multi.rr,n=1,y=58),by=STN]
+#    STN           f50           f75          f90       f95         f99        f999
+# 1: 235 -1.153930e-12 -8.507456e-16 1.705230e-01 0.3770461  0.39469569 -0.56174577
+# 2: 260  3.881314e-12  2.328918e-01 2.473665e-01 0.1898211  0.72886412  0.69563219
+# 3: 280 -9.188053e-14  1.583189e-01 1.439114e-01 0.1993741  0.20222634 -0.30608036
+# 4: 310  4.172649e-01  2.041789e-14 4.462768e-14 0.1889490  0.22097592 -0.06737494
+# 5: 380 -3.212022e-01 -4.991750e-13 2.401445e-01 0.1938095 -0.03100988  0.37543133
+
+#
 #K_90
 K90s <- QR_max2d[STN == 235]$f90[1]
 K90 <- (QR_max2d[STN == 235]$f90[10592] - K90s)
@@ -563,7 +605,7 @@ As all the trends for the 99\%- and 99.9\%-quantile fits are insignificant, thei
 
 The four highest rates in 2-day intensity maxima, on the order of 0.01 mm/hr/yr, are those of the highest quantile (95\%) for all stations except Eelde. For the entire period of 58 years this translates to an increase of the intensity of extreme hourly precipitation (for the 5-10\% highest 2-day maxima) of 0.5-1 mm/hr. In magnitude this change equals the difference in mean intensity between summer and winter (Section REF CHSenS). All the other significant increasing trends have rates on the order of 0.001-0.01 mm/hr/yr. In general, the higher the quantile per station, the higher the magnitude of the detected trend. The yearly mean of the maxima increases on the order of 0.001 mm/hr/yr.\\ %0.001882 yearly mean 2-day max mm/hr /yr
 
-This disproportional increase of the intensity of \enquote{high} extremes (P$>$90\% or 95\%) compared to the mean and \enquote{low} extremes(P$>$50\% or 75\%), is consistent with the observations of the IPCC (stated in Chapter 1, REF CH1). Our findings can thus be explained by the theory that low and moderate intensities correspond more to large-scale precipitation, which is more constrained by the energy budget of the atmosphere, while the extreme precipitation (and related intensity) has a non-linear dependency on moisture availability. To investigate what explains the spatial differences in the detection of significant trends and why intensity maxima in general increase in time, we will dive deeper into the causes behind these trends in Chapter 3 (REF CH3)
+This disproportional increase of the intensity of \enquote{high} extremes (P$>$90\% or 95\%) compared to the mean and \enquote{low} extremes(P$>$50\% or 75\%), is consistent with the observations of the IPCC (stated in Chapter 1, REF CH1). Our findings can thus be explained by the theory that low and moderate intensities correspond more to large-scale precipitation, which is more constrained by the energy budget of the atmosphere, while the extreme precipitation (and related intensity) has a non-linear dependency on moisture availability. To investigate what explains the spatial differences in the detection of significant trends and why intensity maxima in general increase in time, we will dive deeper into the causes behind these trends in Chapter 3 (REF CH3).\\
 
 \begin{table}[ht]
   \centering
@@ -587,7 +629,7 @@ This disproportional increase of the intensity of \enquote{high} extremes (P$>$9
   \label{tab:relrates_2daymax}
 \end{table}
 
-In Table \ref{tab:relrates_2daymax} we provided the relative rates of al significant trends of \enquote{moderate}-\enquote{high} extreme intensities, which demonstrates that the disproportionality is less robust. The rates of 95\%-quantiles of De Bilt and Maastricht are lower than expected.
+In Table \ref{tab:relrates_2daymax} we provided the relative rates of al significant trends of \enquote{low}-\enquote{high} extreme intensities. The rates of trends in \enquote{low} extremes (50\%-quantiles) are neglible, but the rates of trends in \enquote{moderate}-\enquote{high} extremes vary are approximately 0.2-0.4\%/yr, which demonstrates that the disproportionality is less robust. The rates of 95\%-quantiles of De Bilt and Maastricht are lower than expected.
 
 
 %-------------------------
@@ -792,7 +834,8 @@ In Chapter 3 (REF 3) we hope to discover why the intensity maxima increase for b
 
 <<Rates_peryear_S&W>>=
 # Calculate in an automatic way the absolute and relative rates
-
+load("./inst/tussenStap/QRS_max2d.rda")
+load("./inst/tussenStap/QRW_max2d.rda")
 # Create new DT's by selecting only the values needed
 QRS <- subset(QRS_max2d, select=c(STN,f50,f75,f90,f95,f99,f999))
 QRW <- subset(QRW_max2d, select=c(STN,f50,f75,f90,f95,f99,f999))
@@ -819,12 +862,13 @@ QRW[,lapply(.SD,multi.rr,n=1,y=58),by=STN]
 
 Significant summer trends have positive rates ranging between 0.01-0.04 mm/hr in 2-day maxima per year and winter trends have positive rates ranging between 0.003-0.01 mm/hr in 2-day maximum per year. Comparing absolute summer and winter rates, we can conclude that summer trends resemble better the trends in the highest all-2-day maxima, which confirms our observation of higher summer intensities compared to winter intensities (Figure \ref{fig:QR_int_WvsS}). Over a period of 58 years the highest 5-10\% 2-day intensity maxima have increased with 1.1-2.3 mm/hr for summer data only, and with 0.35-0.6 mm/hr for winter data only. Both seasons show a disproportionality in the growth, with larger rates corresponding to higher quantiles of intensities. The largest summer rates are those corresponding to the 90\%-quantile of De Kooy and the 95\%-quantile of Vlissingen. The largest winter rates correspond to the 95\%-quantiles of De Kooy and Maastricht. \\
 
-When considering the relative rates of significant trends in \enquote{high} intensities, rates of 0.1-0.6\%/yr are found for summer and rates of 0.1-0.3\%/yr for winter. What is more striking, is that for winter we observe inversed disproptionality. % Summer: only Eelde 75-> 90 is deviating
-The highest relative rates, on the order of 0.5-0.7\%yr, namely correspond to the lowest (50\%) significant quantile trends. For the other quantiles the summer trends are relatively stronger than the winter trends.  \\
+When considering the relative rates of significant trends in \enquote{high} intensities, rates of 0.1-0.6\%/yr are found for summer, which are stronger than the winter rates (0.1-0.3\%/yr) in \enquote{high} intensities. For the lowest quantiles only significant and strong winter trends are found. What is more striking, is that for winter we observe inversed disproptionality. % Summer: only Eelde 75-> 90 is deviating
+The highest relative rates, on the order of 0.5-0.7\%yr, namely correspond to the lowest (50\%) significant quantile trends.  \\
 
+\subsection{Summary}
 
-To summarize, we found increasing trends in the intensity of the 25-5\% highest 2-day maxima. Besides, similar as to other studies we observed that the \enquote{high} extremes increase in a disproportional way, compared to % to the yearly mean?????
-the mean, \enquote{low} and \enquote{moderate} extremes. Moreover, positive trends were present in both winter as summer data for respectively the 50-5\% and 25-5\% highest 2-day season maxima. However, the trends in \enquote{high} extremes are likely to be summer trends. The summer 2-day intensity maxima are one order stronger (in absolute way) than the winter trends, but keep into mind that summer intensity maxima are generally one order higher than winter intensity maxima. Considering relative trends, summer trends in intensity are stronger for the \enquote{moderate}-\enquote{high} extremes, while winter trends are stronger for \enquote{low} extremes. For all trends we observe a spatial dissimilarity in the significance and rate of a trend regarding the type of quantile considered.\\
+To summarize, we found significant increasing trends in the intensity of the 25-5\% highest 2-day maxima (0.2-0.4\%/yr). In 58 years the highest maxima have increased with 0.5 mm/hr. This can be compared to the total difference in mean intensity between summer and winter. Besides, similar as to other studies we observed that the \enquote{high} extremes increase in a disproportional way, compared to % to the yearly mean?????
+the mean, \enquote{low} and \enquote{moderate} extremes. Moreover, positive trends were present in both winter as summer data for respectively the 50-5\% and 25-5\% highest 2-day season maxima. However, the trends in \enquote{high} extremes are likely to be summer trends. The summer 2-day intensity maxima are one order stronger (in absolute way) than the winter trends, but keep into mind that summer intensity maxima are generally one order higher than winter intensity maxima. Considering relative trends, summer trends in intensity are stronger (0.1-0.6\%/yr) for the \enquote{moderate}-\enquote{high} extremes than winter trends (0.1-0.3\%/yr), while only significant winter trends are found for \enquote{low} extremes (0.5-0.7\%yr). For all trends we observe a spatial dissimilarity in the significance and rate of a trend regarding the type of quantile considered.\\
 
 % Added from section 1
 %Despite the dissimilarity between stations in the type of quantile (for which significant trends are found), a general disproportional increase of relatively high intensities compared to relatively moderate intensities  can be recognized in the amount of significant increasing trends per quantile.
@@ -1090,7 +1134,7 @@ f[,lapply(.SD,multi.rr,n=1,y=58),by=STN]
 
 All significant trends in counts of wet hours are verified as being negative by Table \ref{tab:rates_freq2d}. The relative decreasing rates for the wettest (50-0.1\%) 2 days are on the order of 0.1 \% per year, while the trends in the mean 2-day wetness decreases with 0.08-0.29\%/yr. The strongest negative trend (50\% of Maastricht) has a negative rate of approximately 36\% in 58 years. For frequency data we do not find the same disproportionality as for intensity data. The mean and the relatively drier 2-days (i.e. lower quantile fits) decrease faster in wetness than the wetter 2-days. \\
 
-Considering the signal for whole the Netherlands, this corresponds to a reduction of 10.7\% in wetness over 58 years. In absolute terms, this means that we have about 100 wet hours per year less, which is equal to the effect of moving from De Bilt to Vlissingen (or from Eelde to De Kooy) regarding the the spatial difference in wetness. \\
+Considering the signal for whole the Netherlands, this corresponds to a reduction of 10.7\% in wetness over 58 years. In absolute terms, this means that we have about 100 wet hours per year less, which is equal to the effect of moving from the northern part of the Netherlands (De Bilt or Eelde) to the southern part (Vlissingen or Maastricht) regarding the the spatial difference in wetness (REF Section SenS). Mind that coastal regions also have al lower frequency of wet hours in general. \\
 
 %Note that 88\% of the hours is dry, so approximately 6 hours every 2 days are wet.
 %The relative decrease for the highest yearly rate (-0.12), computed as $ \left(\frac{\delta F}{F_0}\right) \cdot 100 \%$ hours a 2 days, is 0.32\% per year. Here, $F_0$ is the starting frequency of wet hours a 2 days, and $\delta F$ is the change in the fitted $\tau$-quantile values in 58 year.
@@ -1098,7 +1142,7 @@ Considering the signal for whole the Netherlands, this corresponds to a reductio
 % The significant negative trends remaining are the 50\%-, and 75\%-quantile regression lines of De Bilt, the 90\%-quantile regression lines of Eelde, the 99.9\%-quantile regression line of Vlissingen, and the 50\%, 90\%, and 95\%-regression line of Maastricht. For De Kooy no  significant negative trends are detected. Maastricht has the highest number of significant rates and Vlissingen has only one significant trend, but the highest in magnitude.
 Overall, a negative signal in frequency is found with large dissimilarity in the significance of trends regarding quantile and station. \\
 
-\subsection{Summer vs winter} \ref{subsec:SWfreq}
+\subsection{Summer vs winter} \label{subsec:SWfreq}
 %ONLY TEXT Summer and winter 2d
 % see scripts more downwards
 When frequency data is differentiated on summer and winter season, we only find significant negative summer trends for the 25-5\% wettest (as in most wet hours) 2-days with rates of -0.25 to -0.33 \%/yr. This equals an absolute decrease in 58 years of approximately 2 wet hours/day for the wettest summer days (i.e. days with a mean of 11 wet hours a day).
@@ -1550,13 +1594,18 @@ save(p_flm_all, file="./inst/tussenStap/p_flm_all.rda")
 % \caption{P-table for ordinary least squares regression fits for all year, summer and winter frequencies, when all stations are combined}
 % \end{table}
 
-In short, in this section we found multiple indications of decreasing trends in the number of wet hours for all station. Next to visible negative slopes in the quantile and linear ordinary least squares regression, several negative trends in frequency of wet hours were detected being significant (even on the 99\% confidence level) for frequency data on a 2-day and on a yearly resolution. The negative trends are on the order of 0.1-0.6 \%/yr. For the whole Netherlands it holds that there on are on average 100 wet hours less a year, which equals spatial differences in wetness between coastal and non-coastal stations. However, the negative signal in frequency of wet hours is less robust than the positive signal in intensity maxima, as for the former larger spatial differences in the number of significant trends exist than for the latter. Besides, we detect a reverse disproportionality. In other words, the mean and the drier 2 days show a stronger decrease in the counts of wet hours than the wetter days. \\
+\subsection{Summary}
+
+In short, in this section we found multiple indications of decreasing trends in the number of wet hours for all station. Next to visible negative slopes in the quantile and linear ordinary least squares regression, several negative trends in frequency of wet hours were detected being significant (even on the 99\% confidence level) for frequency data on a 2-day and on a yearly resolution. The negative trends for the wettest 2 days range between 0.1-0.6 \%/yr. The mean wetness decreases at a rate of 0.08-0.29 \%/yr (depending on the station). For the whole Netherlands the total change in 58 years correspond to 100 wet hours less on average a year, which equals in magnitude the total spatial difference in mean wetness between northern and southern situated stations. So, this 58-year change is the same as moving from (more frequently raining) northern part of the Netherlands to the (less frequently raining) southern part.  \\
+% CHECK SPAT. DIF ; coast vs non-coast
+However, the negative signal in frequency of wet hours is less robust than the positive signal in intensity maxima, as for the former larger spatial differences in the number of significant trends exist than for the latter. Besides, we detect a reverse disproportionality. In other words, the mean and the drier 2 days show a stronger decrease in the counts of wet hours than the wetter days. \\
 
 Unlike the analysis of intensities we do not use maxima data in frequencies, as we consider 2-day counts of all wet hours. The lack of significant trends in frequency based on data of a yearly resolution for the quantile regression approach, as well as for the ordinary least squares regression approach, is likely due to the limited sample size.\\
 
-
-
-
+\subsection{Summer vs winter} \label{subsec:SWfreq}
+%ONLY TEXT Summer and winter 2d
+% see scripts more downwards
+When frequency data is differentiated on summer and winter season, we only find significant negative summer trends for the 25-5\% wettest (as in most wet hours) 2-days with rates of -0.25 to -0.33 \%/yr. This equals an absolute decrease in 58 years of approximately 2 wet hours/day for the wettest summer days (i.e. days with a mean of 11 wet hours a day).
 
 \section{Amount of precipitation}
 In this chapter we found significant increasing trends in the extreme hourly intensity, while no trend was detected for the mean hourly intensity. Moreover, we observed evident indications of decreasing frequency of wet hours. In view of these trends, it is interesting to investigate whether there are also changes in the total amount of precipitation through the same period. This would allow us to determine whether the two opposite trends, in 2-day intensity maxima and frequency of wet hours, cancel each other or whether one trend is more dominantly influencing the total amount of precipitation than the other. Whereas the 2-day precipitation sums are distributed non-normal, the yearly mean of 2-day precipitation sums and the yearly precipitation sums are distributed normal (Figure \ref{fig:dist_Psum}. So ordinary least squares regression is only applicable for the latter two. In Figure \ref{QR_Psum} the quantile regression for both the 2-day, and the yearly precipitation sums is shown. The 25\%-quantile is excluded from Figure \ref{fig:Psum2d}, as the fitted values are zero for this quantile on 2-day resolution.
@@ -1714,7 +1763,7 @@ save(psum_lm, file="./inst/tussenStap/psum_lm.rda")
 @
 
 <<psum_yearlylmtest,cache=TRUE,warning=FALSE>>=
-psumyr_lm <- p_test(data=Psumyearly,Psum=TRUE,lm=TRUE,Year=TRUE,STN=TRUE)
+psumyr_lm <- p_test(data=Psumyearly,freq=FALSE,Psum=TRUE,lm=TRUE,Year=TRUE,STN=TRUE)
 setnames(psumyr_lm,c("STN","Yearly sum"))
 save(psumyr_lm, file="./inst/tussenStap/psum_lm.rda")
 @
@@ -1735,11 +1784,11 @@ save(psumyr_lm, file="./inst/tussenStap/psum_lm.rda")
     \hline
     \multicolumn{8}{c}{2-day sums} \\
     \hline
-    De Kooy   & 235 &  0.21 & 0.70 &                   0.86 & \cellcolor{green} 0.97 & 0.16                  & 0.24 & 0.8198 \\
-    De Bilt   & 260 &  0.26 & 0.37 &                   0.93 & \cellcolor{green} 0.97 & 0.10                  & 0.90 & \cellcolor{green} 0.9512\\
-    Eelde     & 280 &  0.46 & 0.64 &  \cellcolor{green}1.00 & \cellcolor{green} 0.98 & 0.93                  & 0.77 & 0.8991\\
-    Vlissingen& 310 &  0.73 & 0.81 &                   0.82 &                   0.39 & \cellcolor{green}0.97 & 0.83 & 0.8314\\
-    Maastricht& 380 &  0.06 & 0.13 &                   0.36 &                   0.78 & \cellcolor{green}0.98 & 0.92 & 0.3357\\
+    De Kooy   & 235 &  0.21 & 0.70 &                   0.86 & \cellcolor{green} 0.97 & 0.16                  & 0.24 & \cellcolor{green} 1.00 \\
+    De Bilt   & 260 &  0.26 & 0.37 &                   0.93 & \cellcolor{green} 0.97 & 0.10                  & 0.90 & \cellcolor{green} 1.00\\
+    Eelde     & 280 &  0.46 & 0.64 &  \cellcolor{green}1.00 & \cellcolor{green} 0.98 & 0.93                  & 0.77 & \cellcolor{green} 1.00\\
+    Vlissingen& 310 &  0.73 & 0.81 &                   0.82 &                   0.39 & \cellcolor{green}0.97 & 0.83 & \cellcolor{green} 1.00\\
+    Maastricht& 380 &  0.06 & 0.13 &                   0.36 &                   0.78 & \cellcolor{green}0.98 & 0.92 & \cellcolor{red} 0.0001\\
     \hline
     \multicolumn{8}{c}{Yearly sums} \\
     \hline
@@ -1753,9 +1802,9 @@ save(psumyr_lm, file="./inst/tussenStap/psum_lm.rda")
   \label{tab:p_table_Psum2d}
 \end{table}
 
-In Table \ref{tab:rates_Psum2day} we observe significant trends for the 2-day precipitation sums. The p-values point out significant positive trends for the 95\%-quantiles of De Kooy and De Bilt, for the 90\%-, and 95\%-quantiles of Eelde, and for the 99\%-quantile of Vlissingen and Maastricht. All these trends are significant at the 95\% confidence level, except for the 90\%-quantile of Eelde, which is significant at the 99\% confidence level. What is striking is that the trends detected for the 95\%-quantile correspond to the more northern situated stations (De Kooy, De Bilt and Eelde) and those for the 99\%-quantile for the more southern situated stations (Vlissingen and Maastricht). This could be a temperature related difference, as mean temperature is higher for the northern part of the Netherlands, than of the southern part of the Netherlands. Moreover, we saw in Chapter 4 (REF) that higher intensities correspond to the summer months, in which the temperature is obviously higher compared to the winter months. In Chapter 6 (REF) we will investigate the precipitation intensity-temperature relationship in more detail.
+In Table \ref{tab:rates_Psum2day} we observe significant trends for the 2-day precipitation sums. The p-values point out significant positive trends for the 95\%-quantiles of De Kooy and De Bilt, for the 90\%-, and 95\%-quantiles of Eelde, and for the 99\%-quantile of Vlissingen and Maastricht. All these trends are significant at the 95\% confidence level, except for the 90\%-quantile of Eelde, which is significant at the 99\% confidence level. What is striking is that the trends detected for the 95\%-quantile correspond to the more northern situated stations (De Kooy, De Bilt and Eelde) and those for the 99\%-quantile for the more southern situated stations (Vlissingen and Maastricht). This could be a temperature related difference, as mean temperature is higher for the northern part of the Netherlands, than of the southern part of the Netherlands. Moreover, we saw in Chapter 4 (REF) that higher intensities correspond to the summer months, in which the temperature is obviously higher compared to the winter months. In Chapter 6 (REF) we will investigate the precipitation intensity-temperature relationship in more detail.\\
 
-Furthermore, we find one significant positive trend for the ordinary least squares fit on the yearly means of de Bilt. For the yearly precipitation sums, we do not find any significant trends. This might be due to a too small sample size. \\
+Furthermore, we find significant positive trends for the ordinary least squares fit on the yearly means of all stations, except Maastricht for which we find a significant negative trend. For the yearly precipitation sums, we do not find any significant trends. This might be due to a too small sample size. \\
 
 
 
@@ -1795,11 +1844,11 @@ r_psum[,lapply(.SD,multi.rr,n=1,y=58),by=STN]
     \hline
     Station   & STN & 50\%          & 75\%        & 90\%        & 95\%      & 99\%      & 99.9\% & OLS\\
     \hline
-    De Kooy   & 235 & -            & -           & -           & 0.23       & -         & -      & -\\
+    De Kooy   & 235 & -            & -           & -           & 0.23       & -         & -      & 0.31\\
     De Bilt   & 260 & -            & -           & -           & 0.22       & -         & -      & 0.059 \\
-    Eelde     & 280 & -            & -           & 0.24        & 0.22       & -         & -      & - \\
-    Vlissingen& 310 & -            & -           & -           & -          & 0.069     & -      & - \\
-    Maastricht& 380 & -            & -           & -           & -          & 0.16      & -      & - \\
+    Eelde     & 280 & -            & -           & 0.24        & 0.22       & -         & -      & 0.096 \\
+    Vlissingen& 310 & -            & -           & -           & -          & 0.069     & -      & 0.13 \\
+    Maastricht& 380 & -            & -           & -           & -          & 0.16      & -      & -0.29 \\
      \hline
   \end{tabular}
   \label{tab:rates_Psum2day}
@@ -1807,7 +1856,7 @@ r_psum[,lapply(.SD,multi.rr,n=1,y=58),by=STN]
 
 % ADD relative rate (increase of 2-day Psum over 58 years/ 2-day Psum start  )
 
-Table \ref{tab:rates_Psum2day} provides the relative rates of the trends in 2-day precipitation sums, which range between 0.05-0.25\%/yr. This can be translated to an increase of approximately 1 mm/day in 58 years for the days (90-99\% quantile) with highest accumulation amounts. The ordinary least squares fit of de Bilt demonstrates an increase in mean precipitation of 0.06 \%/year (over 58 years this is 3.5\%). \\
+Table \ref{tab:rates_Psum2day} provides the relative rates of the trends in 2-day precipitation sums, which range between 0.05-0.25\%/yr. This can be translated to an increase of approximately 1 mm/day in 58 years for the days (90-99\% quantile) with highest accumulation amounts. The ordinary least squares fits demonstrates a negative change of -0.29\%/year for Maastricht (over 58 years a reduction of 16.8\%) and for the other stations positive changes between 0.06-0.31 \%/year (over 58 years increases of 3.5-18\%).\\
 
 The absolute regression coefficients are on the order of 0.01 mm/2 days/yr (more specifically 1.2-2.7 mm/2days in 58 years). This holds only for the precipitation sums higher than the 90\%-, 95\%- or 99\%-quantiles, with spatial differences in the type of quantile for which a trend is significant. The highest absolute rate (0.046 mm/2 days/year) corresponds to the 99\%-quantile of precipitation sums for Maastricht, while the lowest rate (0.021 mm/2 days/year) relates to the same quantile, but then for Vlissingen. The spatial differences in absolute rates are not that high, as they are all of the same order. Admittedly, the detected trends apply on approximately the same quantile, so that they are better comparable than the rates for intensity maxima or frequency of wet hours. \\
 
@@ -1955,17 +2004,44 @@ grid.arrange(arrangeGrob(plot1, plot2, plot3, Legendgrob6, ncol=2),
   \label{QR_PsumS&W}
 \end{figure}
 
-First of all, Figure \ref{QR_PsumS&W} demonstrates that the few significant trends on seasonal level found are positive. The relative rates of summer trends range between 0.60-2.8 \%/yr for the 25-0.1\% highest precipitation sums (with the highest for the 99.9\% of Vlissingen). Large spatial differences are present in the relative trends of the mean 2-day precipitation sum. The summer mean precipitation accumulating per year in De Kooy has increased with 330 mm in 58 years, while for Maastricht this has decreased with  282 mm in 58 years. So, we observe an approximately 300 mm shift in yearly mean accumulated from the most southern non-coastal station to the most northern coastal station.
+First of all, Figure \ref{QR_PsumS&W} demonstrates that the few significant trends on seasonal level found are positive. The relative rates of summer trends range between 0.60-2.8 \%/yr for the 25-0.1\% highest precipitation sums (with the highest for the 99.9\% of Vlissingen). Four out of five of least squares trends of the summer mean in 2-day precipitation sum are positive, with rates between -0.43 to 0.78\%/yr. Only Maastricht shows a negative signal in the mean.
+The rates show that large spatial differences are present. The summer mean precipitation accumulating per year in De Kooy has increased with 330 mm in 58 years, while for Maastricht this has decreased with 282 mm in 58 years. So, we observe an approximately 300 mm shift in yearly mean accumulated from the most southern non-coastal station to the most northern coastal station.\\
+
+
+The winter quantile regression rates vary between 0.27 to 0.45 \%/yr (in 58 years this is an increase of 1.2-1.5 mm/day) for the highest 10-5\% 2-day sums, while the rates of the (OLS) yearly mean are all negative from -0.19 to -0.56 \%/yr (in 58 years a decrease of -0.3 to -0.9 mm/day).\\
+
+So, we observe positive trends in the highest and mean summer precipitation sums and highest winter precipitation sums, but negative trends in the mean winter precipitation sums. The positive trends in the highest summer precipitation sums are stronger than trends in the mean summer of highest winter precipitation sums.\\
+
+
+%Significant decreasing
+%summer trends: K90, K95, K99, B75, V999
+%winter trends: B90, E95, M95
+% Relative rates :
+% S   K 0.5913421, 1.023063, 0.6015186
+%     B 0.6475432
+%     V 2.7988640
+% W   B 0.45145584
+%     E 3.944068e-01
+%     M 2.707046e-01
+% #OLS RR
+%S: K 0.78083750, B 0.05747126, E 0.44880910 , V 0.52656331, M -0.43577113
+%W: K -0.3777240, B -0.2781936, E -0.1904139, V -0.5613314, M -0.2811251
+
+% Summer OLS rates: -0.44 for Maastricht , positive 0.06-0.78
 % Mean De Kooy: 4 mm (starting 2-day value) /2 (=daily value)/100*0.78083750 (is change in mm/day per year)*58(= change in mm/day/yr over 58 years)*365(= change in mm/yr over 58 years)
 % Mean Maastricht: 6.13 mm (starting 2-day value) /2 (=daily value)/100*-0.43577113(is change in mm/day per year)*58(= change in mm/day/yr over 58 years)*365(= change in mm/yr over 58 years)
-The winter rates vary between -0.27 to -0.56 \%/yr () and address the 10-5\% highest 2-day sums. \\
 
-MEAN TRENDS SIGNIFICANT???
+% Winter QR rates:
+% M95 : 15 mm (starting 2-day value) /2 (=daily value)/100*0.2707046 (is change in mm/day per year)*58(= change in mm/day/yr over 58 years)*365(= change in mm/yr over 58 years)
+% B90 : 11.4 mm (starting 2-day value) /2 (=daily value)/100*0.45145584 (is change in mm/day per year)*58(= change in mm/day/yr over 58 years)*365(= change in mm/yr over 58 years)
+
+% Winter OLS rates:
+% E yearlymean : 5.2 mm (starting 2-day value) /2 (=daily value)/100*-0.1904139 (is change in mm/day per year)*58(= change in mm/day/yr over 58 years)*365(= change in mm/yr over 58 years)
+% V yearlymean : 5.63 mm (starting 2-day value) /2 (=daily value)/100*-0.5613314 (is change in mm/day per year)*58(= change in mm/day/yr over 58 years)*365(= change in mm/yr over 58 years)
 
 De Kooy has the largest number of significant trends, which are all summer trends (for the 75\%-,90\%- and 95\% quantiles). De Bilt has one significant summer and one significant winter trend. On the one hand Vlissingen only has one significant summer trend, on the other hand Eelde and Maastricht only have significant winter trends . What is also interesting, is that three of the significant all-2-day trends, corresponding to the 95\%-quantile of De Bilt, the 95\%-quantile of Eelde, and the 99\%-quantile of Maastricht, are recognized as winter trends in Figure \ref{QR_PsumS&W}. The significant all-2-day trends of the 95\%-quantile of De Kooy and the 99\%-quantile of Vlissingen can be observed as summer trends. \\
 
 What is striking, is that the summer trends in precipitation sums are only present for coastal stations, while winter trends in precipitation sums are only present for non-coastal stations (with the position of De Bilt in between the two types, regarding its distance to the coast). If this not due to coincidence, it might be due to a different mechanism behind the positive summer and winter trends. Besides, we already observed that ordinary least squares regression of the precipitation sums for De Kooy and Vlissingen are quite similar, but mind that this accounts for precipitation sums on yearly resolution. Moreover, we detected only for non-coastal stations (i.e. Eelde and Maastricht) significant negative trends in summer frequencies of the wettest 2 days (Section \ref{subsec:SWfreq}). This corresponds well with the fact that we do not detect significant positive trends in summer precipitation sums for non-coastal stations  In Chapter 3 (REF) we hope to learn more about the reason for changes in precipitation sums and the related spatial differences. \\
-
 
 <<p_testPsumS&W,eval=FALSE>>=
 load("./inst/tussenStap/PsumS.rda")
@@ -2005,7 +2081,7 @@ save(p_Psum2dW, file="./inst/tussenStap/p_Psum2dW.rda")
 % 5: 380 0.6529 0.6302 0.5984 0.9654 0.8036 0.2465
 
 
-<<rates_freq2d_S&W,eval=FALSE>>=
+<<rates_Psum_S&W,eval=FALSE>>=
 # Calculate in an automatic way the absolute and relative rates
 
 # Create new DT's by selecting only the values needed
@@ -2033,20 +2109,41 @@ r_psumW[,lapply(.SD,multi.rr,n=1,y=58),by=STN]
 #   E 3.944068e-01
 #   M 2.707046e-01
 
+#OLS RR
+#S: K 0.78083750, B 0.05747126, E 0.44880910 , V 0.52656331, M -0.43577113
+#W: K -0.3777240, B -0.2781936, E -0.1904139, V -0.5613314, M -0.2811251
+
 @
 
+<<psum_LM,cache=TRUE,eval=FALSE>>=
+psum_lm <- p_test(data=Psum,freq=FALSE,Psum=TRUE,lm=TRUE,Year=FALSE)
+setnames(psum_lm,c("STN","Yearly mean"))
+psum_lm[, ":="(Summer = p_test(data=PsumS,freq=FALSE,Psum=TRUE,lm=TRUE,Year=FALSE)$V1,
+             Winter = p_test(data=PsumW,freq=FALSE,Psum=TRUE,lm=TRUE,Year=FALSE)$V1)]
+save(psum_lm, file="./inst/tussenStap/psum_lm.rda")
+
+#    STN Yearly mean Summer Winter
+# 1: 235       1e+00      1 0.3657
+# 2: 260       1e+00      1 1.0000
+# 3: 280       1e+00      1 1.0000
+# 4: 310       1e+00      1 0.9949
+# 5: 380       1e-04      1 0.9994
+
+# psum_yrlm <- p_test(data=Psumyearly,freq=FALSE,lm=TRUE,Year=TRUE)
+# setnames(psum_yrlm,c("STN","Yearly"))
+load("./inst/tussenStap/psum_lm.rda")
+@
 
 \subsubsection{Summary}
 
-Overall, we detected several significant positive trends in precipitation sums for the 90-99\%-quantile. For each station 1 significant trend is found, except for the station of Eelde (for which 2 trends are found). The detected trends correspond to the 95\%-quantile for the more northern situated stations (De Kooy, De Bilt and Eelde) and to the 99\%-quantile for the more southern situated stations (Vlissingen and Maastricht). This difference in quantile, which means a difference in the degree of extremeness of the intensity, could be related to temperature. The precipitation intensity-temperature relationship will be studied in Chapter 6 (REF). Although, we only consider maxima intensities in contrast to all-hour frequencies of wet hours, the trends in precipitation sums seems to be dominated more by the positive trends in intensity maxima compared to the negative trends in frequency of wet hours. In the last 58 years the 5\% highest 2-day precipitation sums have increased with 1.2-2.7 mm. When only studying summer and winter trends, we found that trends in all-2-day precipitation sums of coastal stations are in fact summer trends, while those of non-coastal stations are winter trends. \\
+Overall, we detected multiple significant positive trends in precipitation sums for the 90-99\%-quantile and in the OLS fits of the yearly means. For each station 1 significant quantile trend is found, except for the station of Eelde (for which 2 trends are found). The detected trends correspond to the 95\%-quantile for the more northern situated stations (De Kooy, De Bilt and Eelde) and to the 99\%-quantile for the more southern situated stations (Vlissingen and Maastricht). This difference in quantile, which means a difference in the degree of extremeness of the intensity, could be related to temperature. The precipitation intensity-temperature relationship will be studied in Chapter 6 (REF). Although, we only consider maxima intensities in contrast to all-hour frequencies of wet hours, the trends in precipitation sums seems to be dominated more by the positive trends in intensity maxima compared to the negative trends in frequency of wet hours. In the last 58 years the 5\% highest 2-day precipitation sums have increased with 1.2-2.7 mm. \\
+
+
+When only studying summer and winter trends, we found that trends in all-2-day precipitation sums of coastal stations are in fact summer trends, while those of non-coastal stations are winter trends. Moreover, the trends in the highest and mean summer precipitation sums and highest winter precipitation sums are positive, while the trends in the mean winter precipitation sums are negative. Besides, the positive trends in the highest summer precipitation sums are stronger (0.60-2.8 \%/yr) than trends in the mean summer (-0.43 to 0.78\%/yr) of highest winter precipitation sums (0.27 to 0.45 \%/yr). Negative trends are found for the yearly mean winter precipitation sums.
+% expected ?? look at significance and relative rates of OLS S&W fits.
 
 
 
-( Say more about disproportionality of trends in Psum ?, if I add significance of ordinary least squares regression fits on yearly mean 2-day precipitation sums
-
-
-Make short summary of this chapter?
-And make bridge to next chapter: No clear spatial differences in trends, so do not consider differentiation in mechanism behind precipitation changes in the next chapter)
 
 
 

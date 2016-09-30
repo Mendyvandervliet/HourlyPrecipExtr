@@ -833,9 +833,88 @@ mtext("Slopes (degree T/yr)",side=2,line=3)
 \label{fig:Trends_T}
 \end{figure}
 
+<<Rates_Tperyear>>=
+# Calculate in an automatic way the absolute and relative rates
+load("./inst/tussenStap/data2d.rda")
+Tallstn <- data2d[, list(Tmax2d=max(T),Year=round(mean(Year),digits=0)),by=list(d2,STN)]
+
+#load("./inst/tussenStap/Tmean.rda")
+
+# Create new DT's by selecting only the values needed
+OLS_T <- Tallstn[, as.numeric(fitted.values(lm(Tmax2d ~ d2))),by=STN]
+
+# Function to calculate the change/58, so absolute rate
+multi.r <- function(x,n,y) {
+      (tail(x,n=n) - head(x,n=n))/58
+}
+# Function to calculate the change/start_value*100/58, so relative rate
+multi.rr <- function(x,n,y) {
+      ((tail(x,n=n) - head(x,n=n))/head(x,n=n))*100/58
+}
+# Apply functions on DT
+# Absolute rates
+OLS_T[,lapply(.SD,multi.r,n=1,y=58),by=STN]
+
+#    STN         V1
+# 1: 235 0.03571269
+# 2: 260 0.03819047
+# 3: 280 0.03409210
+# 4: 310 0.03436609
+# 5: 380 0.03194660
+mean(OLS_T[,lapply(.SD,multi.r,n=1,y=58),by=STN]$V1)
+#0.03486159 degree/yr
+
+# Relative rates
+OLS_T[,lapply(.SD,multi.rr,n=1,y=58),by=STN]
+#    STN        V1
+# 1: 235 0.2986452
+# 2: 260 0.2860614
+# 3: 280 0.2667731
+# 4: 310 0.2696667
+# 5: 380 0.2321836
+mean(OLS_T[,lapply(.SD,multi.rr,n=1,y=58),by=STN]$V1)
+# 0.270666 %/yr
+
+# OLS of T mean
+
+Tallstn <- data2d[, list(Tmean2d=mean(T),Year=round(mean(Year),digits=0)),by=list(d2,STN)]
+
+#load("./inst/tussenStap/Tmean.rda")
+
+# Create new DT's by selecting only the values needed
+OLS_Tmean <- Tallstn[, as.numeric(fitted.values(lm(Tmean2d ~ d2))),by=STN]
+
+# Apply functions on DT
+# Absolute rates
+OLS_Tmean[,lapply(.SD,multi.r,n=1,y=58),by=STN]
+
+#    STN         V1
+# 1: 235 0.02844836
+# 2: 260 0.03498589
+# 3: 280 0.03243212
+# 4: 310 0.03285272
+# 5: 380 0.03211043
+mean(OLS_Tmean[,lapply(.SD,multi.r,n=1,y=58),by=STN]$V1)
+#0.0321659 degree/yr
+
+# Relative rates
+OLS_Tmean[,lapply(.SD,multi.rr,n=1,y=58),by=STN]
+#    STN        V1
+# 1: 235 0.3152814
+# 2: 260 0.3957528
+# 3: 280 0.3965521
+# 4: 310 0.3432157
+# 5: 380 0.3545020
+mean(OLS_Tmean[,lapply(.SD,multi.rr,n=1,y=58),by=STN]$V1)
+# 0.3610608 %/yr
+@
+
 Second, we studied the trends in temperature for the same period, of which the results are shown in Figure \ref{fig:Trends_T}. In contrast to FH, positive quantile and ordinary least squares (OLS) trends are found for the 2-day maxima in T (Figure \ref{fig:QR_2dT}). What is more striking, is that for the quantile lines the general rule, namely that for the higher the quantile we have a stronger trend, is not applicable here. Figure \ref{fig:yr_rates_T} demonstrates that the weakest slope is detected for the 75\%-quantile (0.025 $^{\circ}$C/yr). Nonetheless, the strongest slope is detected for the highest (99\%) quantile (increase in 2-day maxima of 0.06 $^{\circ}$C/yr), % 0.05563636/27.5*100*58 = 0.2%/yr = for 58 yrs  11.73%
-. Besides, not only the 90\%- and 95\%-quantile lines have a stronger slope than the OLS line, but also the 25\%- and 50\%-quantile lines. The OLS of the yearly means T maxima gives an increase of 3.4 $^{\circ}$C/century, which is almost four times as high as the global rate in temperature for this time period (\ref{subsec:theory}). % 0.034 / 12.75 * 100 = 0.27%/yr = for 58 yrs 15.5%
-Note that we only consider heavy hourly precipitation (i.e. 2-day maxima of precipitation) measured in the Netherlands, and we know from Chapter (INTRO REF) that local extremes increase faster than the global average.\\
+. Besides, not only the 90\%- and 95\%-quantile lines have a stronger slope than the OLS line, but also the 25\%- and 50\%-quantile lines. \\
+
+The OLS of the 2-day or yearly means T maxima gives an increase of approximately 3.5 $^{\circ}$C/century, which is almost four times as high as the global rate in temperature for this time period (\ref{subsec:theory}). % 0.034 / 12.75 * 100 = 0.27%/yr = for 58 yrs 15.5%
+Note that we only consider temperature extremes (i.e. 2-day maxima) measured in the Netherlands, and we know from Chapter (INTRO REF) that local extremes can increase faster than the global average.
+The relative rates vary between 0.23-0.30 \%/year. Rates are higher for the northern coastal region compared to the southern inland region of the Netherlands.  \\
 % COMPARE relative trends to relative trends in 2-day P, F and Psum
 <<QR_TD>>=
 TD <- data2d[, list(TDmax2d=max(TD),Year=round(mean(Year),digits=0)),by=list(d2,STN)] #list(d2,STN)
