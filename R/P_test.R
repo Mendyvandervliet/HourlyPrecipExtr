@@ -60,13 +60,13 @@ p_test <- function(data,tau,N=9999, freq=FALSE,Psum=FALSE, lm=FALSE,Year=TRUE, m
       p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]
       }
       else{        # LM fits
-        reps <- data[, list(replicate(N, round(as.numeric(coef(lm(sample(Psum) ~ d2))[2]),digits=7))),by=STN]
-        obs <- data[, list(round(as.numeric(coef(lm(Psum ~ d2))[2]),digits=7)),by=STN]
+        reps <- data[, list(replicate(N, round(as.numeric(coef(lm(sample(yr_mean) ~ Year))[2]),digits=7))),by=STN]
+        obs <- data[, list(round(as.numeric(coef(lm(yr_mean ~ Year))[2]),digits=7)),by=STN]
         setkey(reps,STN)
         setkey(obs,STN)
         tmp <- merge(reps,obs)
         setnames(tmp, c("STN","reps","obs"))
-        p <- tmp[, list(unique((1+sum(obs > reps))/(N+1))),by=STN]
+        p <- tmp[, list(unique((1+sum(obs < reps))/(N+1))),by=STN]
       }
     }
     else{
